@@ -1,4 +1,3 @@
-```md
 # LAST CALL
 
 ## Post-Apocalypse Survivor Communication Platform
@@ -108,4 +107,3 @@ LAST CALL combines:
 
 The apocalypse is not just visual —
 it directly changes how the application behaves.
-```
