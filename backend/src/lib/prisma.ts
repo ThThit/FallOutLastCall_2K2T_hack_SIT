@@ -1,10 +1,11 @@
-// import { PrismaClient } from "../generated/prisma/client.js";
-// import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-// import "dotenv/config";
+import { PrismaClient } from '../generated/prisma/client.js';
+import { PrismaLibSql } from '@prisma/adapter-libsql';
+import 'dotenv/config';
 
-// const connectionString = process.env.DATABASE_URL || "file:./dev.db";
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) throw new Error('DATABASE_URL is missing');
 
-// const adapter = new PrismaBetterSqlite3({ url: connectionString });
-// const prisma = new PrismaClient({ adapter });
+const adapter = new PrismaLibSql({ url: connectionString });
+const prisma = new PrismaClient({ adapter });
 
-// export default prisma;
+export default prisma;
