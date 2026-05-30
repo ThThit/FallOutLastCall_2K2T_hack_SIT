@@ -46,9 +46,9 @@ export function SignalFeedPage({ authCallsign, userRole }: SignalFeedPageProps) 
 
   return (
     <>
-      <div className="space-y-4">
-        {/* Identity + Sort — single combined bar */}
-        <div className="flex items-center justify-between bg-charcoal border border-terminal-green/20 px-4 py-2">
+      <div className="flex flex-col h-full">
+        {/* Identity + Sort — single combined bar (static) */}
+        <div className="flex items-center justify-between bg-charcoal border border-terminal-green/20 px-4 py-2 shrink-0">
           <div className="flex items-center gap-2">
             <span className="text-xs font-mono text-muted-foreground">IDENTITY:</span>
             {callsign ? (
@@ -92,32 +92,35 @@ export function SignalFeedPage({ authCallsign, userRole }: SignalFeedPageProps) 
 
         <button
           onClick={() => setShowBroadcast(true)}
-          className="w-full border-2 border-dashed border-terminal-green/30 hover:border-terminal-green/50 py-6 flex items-center justify-center gap-2 text-terminal-green font-mono text-sm tracking-wide transition-colors"
+          className="w-full border-2 border-dashed border-terminal-green/30 hover:border-terminal-green/50 py-6 flex items-center justify-center gap-2 text-terminal-green font-mono text-sm tracking-wide transition-colors shrink-0 mt-4"
         >
           <Plus className="w-4 h-4" />
           BROADCAST NEW SIGNAL
         </button>
 
-        {signalsLoading && (
-          <p className="text-xs font-mono text-muted-foreground text-center py-8 tracking-widest animate-pulse">
-            SCANNING FREQUENCIES...
-          </p>
-        )}
-        {!signalsLoading && signals.length === 0 && (
-          <p className="text-xs font-mono text-muted-foreground text-center py-8">
-            NO SIGNALS DETECTED
-          </p>
-        )}
-        {!signalsLoading && signals.map((signal) => (
-          <SignalCard
-            key={signal.id}
-            signal={signal}
-            callsign={callsign}
-            userRole={userRole}
-            onDelete={(id) => setSignals((prev) => prev.filter((s) => s.id !== id))}
-            onUpdate={(updated) => setSignals((prev) => prev.map((s) => s.id === updated.id ? { ...s, ...updated } : s))}
-          />
-        ))}
+        {/* Only the signal list scrolls */}
+        <div className="flex-1 overflow-y-auto min-h-0 space-y-4 mt-4 pr-1">
+          {signalsLoading && (
+            <p className="text-xs font-mono text-muted-foreground text-center py-8 tracking-widest animate-pulse">
+              SCANNING FREQUENCIES...
+            </p>
+          )}
+          {!signalsLoading && signals.length === 0 && (
+            <p className="text-xs font-mono text-muted-foreground text-center py-8">
+              NO SIGNALS DETECTED
+            </p>
+          )}
+          {!signalsLoading && signals.map((signal) => (
+            <SignalCard
+              key={signal.id}
+              signal={signal}
+              callsign={callsign}
+              userRole={userRole}
+              onDelete={(id) => setSignals((prev) => prev.filter((s) => s.id !== id))}
+              onUpdate={(updated) => setSignals((prev) => prev.map((s) => s.id === updated.id ? { ...s, ...updated } : s))}
+            />
+          ))}
+        </div>
       </div>
 
       {showBroadcast && (

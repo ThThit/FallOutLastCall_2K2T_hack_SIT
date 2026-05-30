@@ -1,3 +1,26 @@
 @import "tailwindcss";
 @import "./styles/theme.css";
 @import "./styles/tailwind.css";
+
+/* Lock the app to the viewport — no full-page scrollbar */
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Terminal-styled scrollbar for scrollable regions (signal feed, etc.) */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: rgba(0, 255, 65, 0.05);
+}
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 65, 0.3);
+  border-radius: 4px;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 65, 0.5);
+}

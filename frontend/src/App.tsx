@@ -161,9 +161,9 @@ export default function App() {
           <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
         </div>
 
-        <main className="flex-1 overflow-auto">
-          <div className="max-w-7xl mx-auto p-6">
-            <div className="flex items-center justify-between mb-6">
+        <main className="flex-1 overflow-hidden">
+          <div className="max-w-7xl mx-auto p-6 h-full flex flex-col">
+            <div className="flex items-center justify-between mb-6 shrink-0">
               <div>
                 <h1 className="tracking-tight text-white mb-1">
                   {activeSection === 'signals' && 'SIGNAL FEED'}
@@ -190,27 +190,29 @@ export default function App() {
               </div>
             </div>
 
-            {activeSection === 'signals' && <SignalFeedPage authCallsign={user?.username} userRole={user?.role} />}
+            <div className="flex-1 overflow-y-auto min-h-0">
+              {activeSection === 'signals' && <SignalFeedPage authCallsign={user?.username} userRole={user?.role} />}
 
-            {activeSection === 'vault' && <VaultView />}
+              {activeSection === 'vault' && <VaultView />}
 
-            {activeSection === 'market' && <MarketplaceView />}
+              {activeSection === 'market' && <MarketplaceView />}
 
-            {activeSection === 'memories' && (
-              <MemoryArchiveFeed currentUser={user?.username ?? null} />
-            )}
+              {activeSection === 'memories' && (
+                <MemoryArchiveFeed currentUser={user?.username ?? null} />
+              )}
 
-            {activeSection === 'survivors' && (
-              <div className="space-y-8">
-                <SurvivorProfile />
-                <ReputationLeaderboard />
-              </div>
-            )}
+              {activeSection === 'survivors' && (
+                <div className="space-y-8">
+                  <SurvivorProfile />
+                  <ReputationLeaderboard />
+                </div>
+              )}
 
-            {activeSection === 'sectors' && <SectorMap />}
+              {activeSection === 'sectors' && <SectorMap />}
 
 
-            {activeSection === 'settings' && <SettingsView />}
+              {activeSection === 'settings' && <SettingsView />}
+            </div>
           </div>
         </main>
       </div>
