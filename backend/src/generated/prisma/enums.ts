@@ -9,31 +9,7 @@
 * 🟢 You can import this file directly.
 */
 
-export const VerificationStatus = {
-  VERIFIED: 'VERIFIED',
-  SUSPICIOUS: 'SUSPICIOUS',
-  OUTDATED: 'OUTDATED'
-} as const
-
-export type VerificationStatus = (typeof VerificationStatus)[keyof typeof VerificationStatus]
 
 
-export const SignalCategory = {
-  SHELTER: 'SHELTER',
-  DANGER: 'DANGER',
-  SUPPLIES: 'SUPPLIES',
-  EVACUATION: 'EVACUATION',
-  MEDICAL: 'MEDICAL'
-} as const
-
-export type SignalCategory = (typeof SignalCategory)[keyof typeof SignalCategory]
-
-
-export const DangerLevel = {
-  LOW: 'LOW',
-  MEDIUM: 'MEDIUM',
-  HIGH: 'HIGH',
-  CRITICAL: 'CRITICAL'
-} as const
-
-export type DangerLevel = (typeof DangerLevel)[keyof typeof DangerLevel]
+// This file is empty because there are no enums in the schema.
+export {}

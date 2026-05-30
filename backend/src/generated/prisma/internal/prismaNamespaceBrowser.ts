@@ -53,7 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   Signal: 'Signal',
-  SignalVerification: 'SignalVerification'
+  Comment: 'Comment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -82,13 +82,14 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 
 export const SignalScalarFieldEnum = {
   id: 'id',
-  title: 'title',
-  message: 'message',
-  category: 'category',
-  dangerLevel: 'dangerLevel',
-  userId: 'userId',
+  authorName: 'authorName',
+  content: 'content',
+  sector: 'sector',
+  priority: 'priority',
   trustScore: 'trustScore',
-  verificationRate: 'verificationRate',
+  verifiedCount: 'verifiedCount',
+  unverifiedCount: 'unverifiedCount',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -96,15 +97,15 @@ export const SignalScalarFieldEnum = {
 export type SignalScalarFieldEnum = (typeof SignalScalarFieldEnum)[keyof typeof SignalScalarFieldEnum]
 
 
-export const SignalVerificationScalarFieldEnum = {
+export const CommentScalarFieldEnum = {
   id: 'id',
   signalId: 'signalId',
-  userId: 'userId',
-  status: 'status',
+  authorName: 'authorName',
+  content: 'content',
   createdAt: 'createdAt'
 } as const
 
-export type SignalVerificationScalarFieldEnum = (typeof SignalVerificationScalarFieldEnum)[keyof typeof SignalVerificationScalarFieldEnum]
+export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -113,4 +114,12 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

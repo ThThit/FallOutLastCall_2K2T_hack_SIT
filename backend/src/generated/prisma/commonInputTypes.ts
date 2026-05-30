@@ -97,20 +97,6 @@ export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDateTimeFilter<$PrismaModel>
 }
 
-export type EnumSignalCategoryFilter<$PrismaModel = never> = {
-  equals?: $Enums.SignalCategory | Prisma.EnumSignalCategoryFieldRefInput<$PrismaModel>
-  in?: $Enums.SignalCategory[]
-  notIn?: $Enums.SignalCategory[]
-  not?: Prisma.NestedEnumSignalCategoryFilter<$PrismaModel> | $Enums.SignalCategory
-}
-
-export type EnumDangerLevelFilter<$PrismaModel = never> = {
-  equals?: $Enums.DangerLevel | Prisma.EnumDangerLevelFieldRefInput<$PrismaModel>
-  in?: $Enums.DangerLevel[]
-  notIn?: $Enums.DangerLevel[]
-  not?: Prisma.NestedEnumDangerLevelFilter<$PrismaModel> | $Enums.DangerLevel
-}
-
 export type FloatFilter<$PrismaModel = never> = {
   equals?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   in?: number[]
@@ -122,24 +108,20 @@ export type FloatFilter<$PrismaModel = never> = {
   not?: Prisma.NestedFloatFilter<$PrismaModel> | number
 }
 
-export type EnumSignalCategoryWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.SignalCategory | Prisma.EnumSignalCategoryFieldRefInput<$PrismaModel>
-  in?: $Enums.SignalCategory[]
-  notIn?: $Enums.SignalCategory[]
-  not?: Prisma.NestedEnumSignalCategoryWithAggregatesFilter<$PrismaModel> | $Enums.SignalCategory
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumSignalCategoryFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumSignalCategoryFilter<$PrismaModel>
+export type DateTimeNullableFilter<$PrismaModel = never> = {
+  equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null
+  in?: Date[] | string[] | null
+  notIn?: Date[] | string[] | null
+  lt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  lte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  gt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  gte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
 }
 
-export type EnumDangerLevelWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.DangerLevel | Prisma.EnumDangerLevelFieldRefInput<$PrismaModel>
-  in?: $Enums.DangerLevel[]
-  notIn?: $Enums.DangerLevel[]
-  not?: Prisma.NestedEnumDangerLevelWithAggregatesFilter<$PrismaModel> | $Enums.DangerLevel
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumDangerLevelFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumDangerLevelFilter<$PrismaModel>
+export type SortOrderInput = {
+  sort: Prisma.SortOrder
+  nulls?: Prisma.NullsOrder
 }
 
 export type FloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -158,21 +140,18 @@ export type FloatWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedFloatFilter<$PrismaModel>
 }
 
-export type EnumVerificationStatusFilter<$PrismaModel = never> = {
-  equals?: $Enums.VerificationStatus | Prisma.EnumVerificationStatusFieldRefInput<$PrismaModel>
-  in?: $Enums.VerificationStatus[]
-  notIn?: $Enums.VerificationStatus[]
-  not?: Prisma.NestedEnumVerificationStatusFilter<$PrismaModel> | $Enums.VerificationStatus
-}
-
-export type EnumVerificationStatusWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.VerificationStatus | Prisma.EnumVerificationStatusFieldRefInput<$PrismaModel>
-  in?: $Enums.VerificationStatus[]
-  notIn?: $Enums.VerificationStatus[]
-  not?: Prisma.NestedEnumVerificationStatusWithAggregatesFilter<$PrismaModel> | $Enums.VerificationStatus
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumVerificationStatusFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumVerificationStatusFilter<$PrismaModel>
+export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null
+  in?: Date[] | string[] | null
+  notIn?: Date[] | string[] | null
+  lt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  lte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  gt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  gte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
 }
 
 export type NestedStringFilter<$PrismaModel = never> = {
@@ -269,38 +248,15 @@ export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDateTimeFilter<$PrismaModel>
 }
 
-export type NestedEnumSignalCategoryFilter<$PrismaModel = never> = {
-  equals?: $Enums.SignalCategory | Prisma.EnumSignalCategoryFieldRefInput<$PrismaModel>
-  in?: $Enums.SignalCategory[]
-  notIn?: $Enums.SignalCategory[]
-  not?: Prisma.NestedEnumSignalCategoryFilter<$PrismaModel> | $Enums.SignalCategory
-}
-
-export type NestedEnumDangerLevelFilter<$PrismaModel = never> = {
-  equals?: $Enums.DangerLevel | Prisma.EnumDangerLevelFieldRefInput<$PrismaModel>
-  in?: $Enums.DangerLevel[]
-  notIn?: $Enums.DangerLevel[]
-  not?: Prisma.NestedEnumDangerLevelFilter<$PrismaModel> | $Enums.DangerLevel
-}
-
-export type NestedEnumSignalCategoryWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.SignalCategory | Prisma.EnumSignalCategoryFieldRefInput<$PrismaModel>
-  in?: $Enums.SignalCategory[]
-  notIn?: $Enums.SignalCategory[]
-  not?: Prisma.NestedEnumSignalCategoryWithAggregatesFilter<$PrismaModel> | $Enums.SignalCategory
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumSignalCategoryFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumSignalCategoryFilter<$PrismaModel>
-}
-
-export type NestedEnumDangerLevelWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.DangerLevel | Prisma.EnumDangerLevelFieldRefInput<$PrismaModel>
-  in?: $Enums.DangerLevel[]
-  notIn?: $Enums.DangerLevel[]
-  not?: Prisma.NestedEnumDangerLevelWithAggregatesFilter<$PrismaModel> | $Enums.DangerLevel
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumDangerLevelFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumDangerLevelFilter<$PrismaModel>
+export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+  equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null
+  in?: Date[] | string[] | null
+  notIn?: Date[] | string[] | null
+  lt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  lte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  gt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  gte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
 }
 
 export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -319,21 +275,29 @@ export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedFloatFilter<$PrismaModel>
 }
 
-export type NestedEnumVerificationStatusFilter<$PrismaModel = never> = {
-  equals?: $Enums.VerificationStatus | Prisma.EnumVerificationStatusFieldRefInput<$PrismaModel>
-  in?: $Enums.VerificationStatus[]
-  notIn?: $Enums.VerificationStatus[]
-  not?: Prisma.NestedEnumVerificationStatusFilter<$PrismaModel> | $Enums.VerificationStatus
+export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null
+  in?: Date[] | string[] | null
+  notIn?: Date[] | string[] | null
+  lt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  lte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  gt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  gte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
 }
 
-export type NestedEnumVerificationStatusWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.VerificationStatus | Prisma.EnumVerificationStatusFieldRefInput<$PrismaModel>
-  in?: $Enums.VerificationStatus[]
-  notIn?: $Enums.VerificationStatus[]
-  not?: Prisma.NestedEnumVerificationStatusWithAggregatesFilter<$PrismaModel> | $Enums.VerificationStatus
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumVerificationStatusFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumVerificationStatusFilter<$PrismaModel>
+export type NestedIntNullableFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
+  in?: number[] | null
+  notIn?: number[] | null
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntNullableFilter<$PrismaModel> | number | null
 }
 
 

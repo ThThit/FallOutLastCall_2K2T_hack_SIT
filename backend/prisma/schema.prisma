@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -13,71 +8,33 @@ datasource db {
 }
 
 model User {
-  id              String               @id @default(cuid())
-  username        String               @unique
+  id              String   @id @default(cuid())
+  username        String   @unique
   password        String
-
-  reputationScore Int                  @default(0)
-
-  signals         Signal[]
-  verifications   SignalVerification[]
-
-  createdAt       DateTime             @default(now())
+  reputationScore Int      @default(0)
+  createdAt       DateTime @default(now())
 }
 
 model Signal {
-  id               String                @id @default(cuid())
-
-  title            String
-  message          String
-  category         SignalCategory
-  dangerLevel      DangerLevel
-
-  userId           String
-  user             User                  @relation(fields: [userId], references: [id])
-
-  verifications    SignalVerification[]
-
-  trustScore       Float                 @default(0)
-  verificationRate Float                 @default(0)
-
-  createdAt        DateTime              @default(now())
-  updatedAt        DateTime              @updatedAt
+  id              String    @id @default(cuid())
+  authorName      String
+  content         String
+  sector          Int
+  priority        String    @default("STANDARD")
+  trustScore      Float     @default(50)
+  verifiedCount   Int       @default(0)
+  unverifiedCount Int       @default(0)
+  deletedAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  comments        Comment[]
 }
 
-model SignalVerification {
-  id          String             @id @default(cuid())
-
-  signalId    String
-  signal      Signal             @relation(fields: [signalId], references: [id])
-
-  userId      String
-  user        User               @relation(fields: [userId], references: [id])
-
-  status      VerificationStatus
-
-  createdAt   DateTime           @default(now())
-
-  @@unique([signalId, userId])
-}
-
-enum VerificationStatus {
-  VERIFIED
-  SUSPICIOUS
-  OUTDATED
-}
-
-enum SignalCategory {
-  SHELTER
-  DANGER
-  SUPPLIES
-  EVACUATION
-  MEDICAL
-}
-
-enum DangerLevel {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
+model Comment {
+  id         String   @id @default(cuid())
+  signalId   String
+  signal     Signal   @relation(fields: [signalId], references: [id])
+  authorName String
+  content    String
+  createdAt  DateTime @default(now())
 }

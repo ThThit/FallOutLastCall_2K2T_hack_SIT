@@ -28,7 +28,7 @@ export type User = Prisma.UserModel
  */
 export type Signal = Prisma.SignalModel
 /**
- * Model SignalVerification
+ * Model Comment
  * 
  */
-export type SignalVerification = Prisma.SignalVerificationModel
+export type Comment = Prisma.CommentModel
