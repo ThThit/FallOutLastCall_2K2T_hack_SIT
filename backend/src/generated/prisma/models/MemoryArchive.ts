@@ -264,6 +264,7 @@ export type MemoryArchiveWhereInput = {
   isRestored?: Prisma.BoolFilter<"MemoryArchive"> | boolean
   createdAt?: Prisma.DateTimeFilter<"MemoryArchive"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"MemoryArchive"> | Date | string
+  revisions?: Prisma.MemoryArchiveRevisionListRelationFilter
 }
 
 export type MemoryArchiveOrderByWithRelationInput = {
@@ -278,6 +279,7 @@ export type MemoryArchiveOrderByWithRelationInput = {
   isRestored?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  revisions?: Prisma.MemoryArchiveRevisionOrderByRelationAggregateInput
 }
 
 export type MemoryArchiveWhereUniqueInput = Prisma.AtLeast<{
@@ -295,6 +297,7 @@ export type MemoryArchiveWhereUniqueInput = Prisma.AtLeast<{
   isRestored?: Prisma.BoolFilter<"MemoryArchive"> | boolean
   createdAt?: Prisma.DateTimeFilter<"MemoryArchive"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"MemoryArchive"> | Date | string
+  revisions?: Prisma.MemoryArchiveRevisionListRelationFilter
 }, "id">
 
 export type MemoryArchiveOrderByWithAggregationInput = {
@@ -345,6 +348,7 @@ export type MemoryArchiveCreateInput = {
   isRestored?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  revisions?: Prisma.MemoryArchiveRevisionCreateNestedManyWithoutMemoryInput
 }
 
 export type MemoryArchiveUncheckedCreateInput = {
@@ -359,6 +363,7 @@ export type MemoryArchiveUncheckedCreateInput = {
   isRestored?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  revisions?: Prisma.MemoryArchiveRevisionUncheckedCreateNestedManyWithoutMemoryInput
 }
 
 export type MemoryArchiveUpdateInput = {
@@ -373,6 +378,7 @@ export type MemoryArchiveUpdateInput = {
   isRestored?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  revisions?: Prisma.MemoryArchiveRevisionUpdateManyWithoutMemoryNestedInput
 }
 
 export type MemoryArchiveUncheckedUpdateInput = {
@@ -387,6 +393,7 @@ export type MemoryArchiveUncheckedUpdateInput = {
   isRestored?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  revisions?: Prisma.MemoryArchiveRevisionUncheckedUpdateManyWithoutMemoryNestedInput
 }
 
 export type MemoryArchiveCreateManyInput = {
@@ -481,10 +488,130 @@ export type MemoryArchiveSumOrderByAggregateInput = {
   decayLevel?: Prisma.SortOrder
 }
 
+export type MemoryArchiveScalarRelationFilter = {
+  is?: Prisma.MemoryArchiveWhereInput
+  isNot?: Prisma.MemoryArchiveWhereInput
+}
+
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
+export type MemoryArchiveCreateNestedOneWithoutRevisionsInput = {
+  create?: Prisma.XOR<Prisma.MemoryArchiveCreateWithoutRevisionsInput, Prisma.MemoryArchiveUncheckedCreateWithoutRevisionsInput>
+  connectOrCreate?: Prisma.MemoryArchiveCreateOrConnectWithoutRevisionsInput
+  connect?: Prisma.MemoryArchiveWhereUniqueInput
+}
+
+export type MemoryArchiveUpdateOneRequiredWithoutRevisionsNestedInput = {
+  create?: Prisma.XOR<Prisma.MemoryArchiveCreateWithoutRevisionsInput, Prisma.MemoryArchiveUncheckedCreateWithoutRevisionsInput>
+  connectOrCreate?: Prisma.MemoryArchiveCreateOrConnectWithoutRevisionsInput
+  upsert?: Prisma.MemoryArchiveUpsertWithoutRevisionsInput
+  connect?: Prisma.MemoryArchiveWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MemoryArchiveUpdateToOneWithWhereWithoutRevisionsInput, Prisma.MemoryArchiveUpdateWithoutRevisionsInput>, Prisma.MemoryArchiveUncheckedUpdateWithoutRevisionsInput>
+}
+
+export type MemoryArchiveCreateWithoutRevisionsInput = {
+  id?: string
+  title: string
+  survivorAlias?: string
+  category: string
+  content: string
+  emotionalTag: string
+  date?: Date | string
+  decayLevel?: number
+  isRestored?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type MemoryArchiveUncheckedCreateWithoutRevisionsInput = {
+  id?: string
+  title: string
+  survivorAlias?: string
+  category: string
+  content: string
+  emotionalTag: string
+  date?: Date | string
+  decayLevel?: number
+  isRestored?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type MemoryArchiveCreateOrConnectWithoutRevisionsInput = {
+  where: Prisma.MemoryArchiveWhereUniqueInput
+  create: Prisma.XOR<Prisma.MemoryArchiveCreateWithoutRevisionsInput, Prisma.MemoryArchiveUncheckedCreateWithoutRevisionsInput>
+}
+
+export type MemoryArchiveUpsertWithoutRevisionsInput = {
+  update: Prisma.XOR<Prisma.MemoryArchiveUpdateWithoutRevisionsInput, Prisma.MemoryArchiveUncheckedUpdateWithoutRevisionsInput>
+  create: Prisma.XOR<Prisma.MemoryArchiveCreateWithoutRevisionsInput, Prisma.MemoryArchiveUncheckedCreateWithoutRevisionsInput>
+  where?: Prisma.MemoryArchiveWhereInput
+}
+
+export type MemoryArchiveUpdateToOneWithWhereWithoutRevisionsInput = {
+  where?: Prisma.MemoryArchiveWhereInput
+  data: Prisma.XOR<Prisma.MemoryArchiveUpdateWithoutRevisionsInput, Prisma.MemoryArchiveUncheckedUpdateWithoutRevisionsInput>
+}
+
+export type MemoryArchiveUpdateWithoutRevisionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  survivorAlias?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  emotionalTag?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  decayLevel?: Prisma.IntFieldUpdateOperationsInput | number
+  isRestored?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MemoryArchiveUncheckedUpdateWithoutRevisionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  survivorAlias?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  emotionalTag?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  decayLevel?: Prisma.IntFieldUpdateOperationsInput | number
+  isRestored?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+
+/**
+ * Count Type MemoryArchiveCountOutputType
+ */
+
+export type MemoryArchiveCountOutputType = {
+  revisions: number
+}
+
+export type MemoryArchiveCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  revisions?: boolean | MemoryArchiveCountOutputTypeCountRevisionsArgs
+}
+
+/**
+ * MemoryArchiveCountOutputType without action
+ */
+export type MemoryArchiveCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MemoryArchiveCountOutputType
+   */
+  select?: Prisma.MemoryArchiveCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * MemoryArchiveCountOutputType without action
+ */
+export type MemoryArchiveCountOutputTypeCountRevisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MemoryArchiveRevisionWhereInput
+}
 
 
 export type MemoryArchiveSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -499,6 +626,8 @@ export type MemoryArchiveSelect<ExtArgs extends runtime.Types.Extensions.Interna
   isRestored?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  revisions?: boolean | Prisma.MemoryArchive$revisionsArgs<ExtArgs>
+  _count?: boolean | Prisma.MemoryArchiveCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["memoryArchive"]>
 
 export type MemoryArchiveSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -544,10 +673,18 @@ export type MemoryArchiveSelectScalar = {
 }
 
 export type MemoryArchiveOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "survivorAlias" | "category" | "content" | "emotionalTag" | "date" | "decayLevel" | "isRestored" | "createdAt" | "updatedAt", ExtArgs["result"]["memoryArchive"]>
+export type MemoryArchiveInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  revisions?: boolean | Prisma.MemoryArchive$revisionsArgs<ExtArgs>
+  _count?: boolean | Prisma.MemoryArchiveCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type MemoryArchiveIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type MemoryArchiveIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $MemoryArchivePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "MemoryArchive"
-  objects: {}
+  objects: {
+    revisions: Prisma.$MemoryArchiveRevisionPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     title: string
@@ -954,6 +1091,7 @@ readonly fields: MemoryArchiveFieldRefs;
  */
 export interface Prisma__MemoryArchiveClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  revisions<T extends Prisma.MemoryArchive$revisionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MemoryArchive$revisionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemoryArchiveRevisionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1011,6 +1149,10 @@ export type MemoryArchiveFindUniqueArgs<ExtArgs extends runtime.Types.Extensions
    */
   omit?: Prisma.MemoryArchiveOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MemoryArchiveInclude<ExtArgs> | null
+  /**
    * Filter, which MemoryArchive to fetch.
    */
   where: Prisma.MemoryArchiveWhereUniqueInput
@@ -1029,6 +1171,10 @@ export type MemoryArchiveFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Ext
    */
   omit?: Prisma.MemoryArchiveOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MemoryArchiveInclude<ExtArgs> | null
+  /**
    * Filter, which MemoryArchive to fetch.
    */
   where: Prisma.MemoryArchiveWhereUniqueInput
@@ -1046,6 +1192,10 @@ export type MemoryArchiveFindFirstArgs<ExtArgs extends runtime.Types.Extensions.
    * Omit specific fields from the MemoryArchive
    */
   omit?: Prisma.MemoryArchiveOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MemoryArchiveInclude<ExtArgs> | null
   /**
    * Filter, which MemoryArchive to fetch.
    */
@@ -1095,6 +1245,10 @@ export type MemoryArchiveFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Exte
    */
   omit?: Prisma.MemoryArchiveOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MemoryArchiveInclude<ExtArgs> | null
+  /**
    * Filter, which MemoryArchive to fetch.
    */
   where?: Prisma.MemoryArchiveWhereInput
@@ -1142,6 +1296,10 @@ export type MemoryArchiveFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Omit specific fields from the MemoryArchive
    */
   omit?: Prisma.MemoryArchiveOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MemoryArchiveInclude<ExtArgs> | null
   /**
    * Filter, which MemoryArchives to fetch.
    */
@@ -1191,6 +1349,10 @@ export type MemoryArchiveCreateArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   omit?: Prisma.MemoryArchiveOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MemoryArchiveInclude<ExtArgs> | null
+  /**
    * The data needed to create a MemoryArchive.
    */
   data: Prisma.XOR<Prisma.MemoryArchiveCreateInput, Prisma.MemoryArchiveUncheckedCreateInput>
@@ -1236,6 +1398,10 @@ export type MemoryArchiveUpdateArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the MemoryArchive
    */
   omit?: Prisma.MemoryArchiveOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MemoryArchiveInclude<ExtArgs> | null
   /**
    * The data needed to update a MemoryArchive.
    */
@@ -1303,6 +1469,10 @@ export type MemoryArchiveUpsertArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   omit?: Prisma.MemoryArchiveOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MemoryArchiveInclude<ExtArgs> | null
+  /**
    * The filter to search for the MemoryArchive to update in case it exists.
    */
   where: Prisma.MemoryArchiveWhereUniqueInput
@@ -1329,6 +1499,10 @@ export type MemoryArchiveDeleteArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   omit?: Prisma.MemoryArchiveOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MemoryArchiveInclude<ExtArgs> | null
+  /**
    * Filter which MemoryArchive to delete.
    */
   where: Prisma.MemoryArchiveWhereUniqueInput
@@ -1349,6 +1523,30 @@ export type MemoryArchiveDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
 }
 
 /**
+ * MemoryArchive.revisions
+ */
+export type MemoryArchive$revisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MemoryArchiveRevision
+   */
+  select?: Prisma.MemoryArchiveRevisionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MemoryArchiveRevision
+   */
+  omit?: Prisma.MemoryArchiveRevisionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MemoryArchiveRevisionInclude<ExtArgs> | null
+  where?: Prisma.MemoryArchiveRevisionWhereInput
+  orderBy?: Prisma.MemoryArchiveRevisionOrderByWithRelationInput | Prisma.MemoryArchiveRevisionOrderByWithRelationInput[]
+  cursor?: Prisma.MemoryArchiveRevisionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MemoryArchiveRevisionScalarFieldEnum | Prisma.MemoryArchiveRevisionScalarFieldEnum[]
+}
+
+/**
  * MemoryArchive without action
  */
 export type MemoryArchiveDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1360,4 +1558,8 @@ export type MemoryArchiveDefaultArgs<ExtArgs extends runtime.Types.Extensions.In
    * Omit specific fields from the MemoryArchive
    */
   omit?: Prisma.MemoryArchiveOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MemoryArchiveInclude<ExtArgs> | null
 }

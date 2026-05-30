@@ -77,6 +77,34 @@ model MemoryArchive {
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  revisions       MemoryArchiveRevision[]
+}
+
+model MemoryArchiveRevision {
+  id                   String   @id @default(uuid())
+  memoryId             String
+  memory               MemoryArchive @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+
+  action               String
+  note                 String?
+
+  titleBefore          String
+  titleAfter           String
+  survivorAliasBefore  String
+  survivorAliasAfter   String
+  categoryBefore       String
+  categoryAfter        String
+  contentBefore        String
+  contentAfter         String
+  emotionalTagBefore   String
+  emotionalTagAfter    String
+  decayLevelBefore     Int?
+  decayLevelAfter      Int?
+  isRestoredBefore     Boolean?
+  isRestoredAfter      Boolean?
+
+  createdAt            DateTime @default(now())
 }
 
 enum VerificationStatus {

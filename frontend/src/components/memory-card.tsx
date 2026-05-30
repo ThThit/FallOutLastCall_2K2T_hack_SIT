@@ -1,6 +1,19 @@
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { restoreMemoryData } from "../services/api";
+import { ChevronDown } from "lucide-react";
+import {
+  fetchMemoryHistory,
+  restoreMemoryData,
+  type MemoryArchiveRevision,
+} from "../services/api";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 
 const glitchChars = "█▓▒░_<>//[]#";
 
@@ -115,6 +128,10 @@ export function MemoryCard({
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
+  const [revisionHistory, setRevisionHistory] = useState<
+    MemoryArchiveRevision[]
+  >([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [displayTitle, setDisplayTitle] = useState(memory.title);
   const [displayAuthor, setDisplayAuthor] = useState(
     normalizeAlias(memory.author),
@@ -127,6 +144,9 @@ export function MemoryCard({
   const [editEmotionalTag, setEditEmotionalTag] = useState(
     memory.emotionalTag || "Hope",
   );
+
+  const selectClassName =
+    "w-full appearance-none rounded-md border border-terminal-green/35 bg-black/90 px-3 py-2 pr-10 font-mono text-sm font-semibold tracking-wide text-terminal-green shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_0_0_1px_rgba(0,255,65,0.04)] transition-colors focus:outline-none focus:border-terminal-green/70 focus:ring-2 focus:ring-terminal-green/20";
 
   const integrity = Math.max(0, 100 - currentDecay);
   const createdAt =
@@ -153,6 +173,33 @@ export function MemoryCard({
     setDisplayAuthor(normalizeAlias(memory.author));
     setDisplayContent(memory.content);
   }, [memory]);
+
+  useEffect(() => {
+    if (!isEditing) {
+      setRevisionHistory([]);
+      return;
+    }
+
+    let active = true;
+    setIsLoadingHistory(true);
+
+    fetchMemoryHistory(memory.id)
+      .then((history) => {
+        if (!active) return;
+        setRevisionHistory(history);
+      })
+      .catch((error) => {
+        console.error("Failed to load archive history", error);
+        if (active) setRevisionHistory([]);
+      })
+      .finally(() => {
+        if (active) setIsLoadingHistory(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [isEditing, memory.id]);
 
   const handleRestore = async () => {
     try {
@@ -220,6 +267,14 @@ export function MemoryCard({
 
   const isOwner = currentUser === memory.author;
 
+  const formatRevisionHeadline = (revision: MemoryArchiveRevision) => {
+    if (revision.action === "RESTORE") {
+      return "Recovered archive state";
+    }
+
+    return "Archived edit recorded";
+  };
+
   return (
     <motion.div
       initial={{ opacity: 1, scale: 1, rotateZ: 0 }}
@@ -265,8 +320,8 @@ export function MemoryCard({
         </motion.div>
       )}
 
-      <div className="flex justify-between items-start mb-2">
-        <div className="max-w-[75%]">
+      <div className="flex justify-between items-start gap-4 mb-2">
+        <div className="min-w-0 flex-1">
           <h3
             className={`font-mono font-bold ${
               currentDecay >= 65
@@ -278,8 +333,9 @@ export function MemoryCard({
           >
             {applyHeaderDecay(displayTitle, currentDecay)}
           </h3>
+
           <span
-            className={`text-xs font-mono ${
+            className={`mt-1 block text-xs font-mono whitespace-nowrap ${
               currentDecay >= 65
                 ? "text-emergency-red/60"
                 : currentDecay >= 35
@@ -287,33 +343,34 @@ export function MemoryCard({
                   : "text-muted-foreground"
             }`}
           >
-            AUTHOR: {applyHeaderDecay(displayAuthor, currentDecay)} //{" "}
-            {daysAgoLabel}
+            {applyHeaderDecay(displayAuthor, currentDecay)} // {daysAgoLabel}
           </span>
         </div>
 
-        {isOwner && (
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsEditing((value) => !value)}
-              disabled={isDeleting}
-              className="text-xs font-mono px-2 py-1 transition-colors border border-terminal-green/20 text-terminal-green/70 hover:text-terminal-green hover:bg-terminal-green/10 hover:border-terminal-green/30"
-            >
-              {isEditing ? "[CLOSE]" : "[EDIT]"}
-            </button>
-            <button
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className={`text-xs font-mono px-2 py-1 transition-colors border border-transparent ${
-                isDeleting
-                  ? "text-emergency-red bg-emergency-red/10 border-emergency-red/30 animate-pulse"
-                  : "text-emergency-red/70 hover:text-emergency-red hover:bg-emergency-red/10 hover:border-emergency-red/30"
-              }`}
-            >
-              {isDeleting ? "[PURGING]" : "[PURGE]"}
-            </button>
-          </div>
-        )}
+        <div className="flex shrink-0 flex-col items-end gap-2 text-right">
+          {isOwner && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsEditing(true)}
+                disabled={isDeleting}
+                className="text-xs font-mono px-2 py-1 transition-colors border border-terminal-green/20 text-terminal-green/70 hover:text-terminal-green hover:bg-terminal-green/10 hover:border-terminal-green/30"
+              >
+                [EDIT]
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className={`text-xs font-mono px-2 py-1 transition-colors border border-transparent ${
+                  isDeleting
+                    ? "text-emergency-red bg-emergency-red/10 border-emergency-red/30 animate-pulse"
+                    : "text-emergency-red/70 hover:text-emergency-red hover:bg-emergency-red/10 hover:border-emergency-red/30"
+                }`}
+              >
+                {isDeleting ? "[PURGING]" : "[PURGE]"}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <p
@@ -343,96 +400,189 @@ export function MemoryCard({
         {getDecayMessage(currentDecay)}
       </div>
 
-      {isEditing && !isDeleting && (
-        <div className="mb-4 border border-terminal-green/20 bg-black/60 p-4 space-y-3">
-          <div className="text-xs font-mono text-terminal-green tracking-wide uppercase">
-            Edit Memory
-          </div>
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent className="max-w-5xl border-terminal-green/30 bg-black text-terminal-green">
+          <DialogHeader className="text-left">
+            <DialogTitle className="font-mono uppercase tracking-[0.3em] text-terminal-green">
+              Edit Memory Archive
+            </DialogTitle>
+            <DialogDescription className="font-mono text-muted-foreground">
+              Modify the record and inspect its revision trail before saving.
+            </DialogDescription>
+          </DialogHeader>
 
-          {editError && (
-            <div className="text-xs font-mono text-emergency-red">
-              {editError}
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.8fr)]">
+            <div className="space-y-4">
+              {editError && (
+                <div className="text-xs font-mono text-emergency-red border border-emergency-red/30 bg-emergency-red/10 px-3 py-2">
+                  {editError}
+                </div>
+              )}
+
+              <div className="grid gap-3 md:grid-cols-2">
+                <label className="space-y-1 text-xs font-mono text-muted-foreground md:col-span-2">
+                  Title
+                  <input
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="w-full bg-charcoal border border-terminal-green/20 px-3 py-2 text-terminal-green font-mono focus:outline-none focus:border-terminal-green/50"
+                  />
+                </label>
+
+                <label className="space-y-1 text-xs font-mono text-muted-foreground md:col-span-2">
+                  Survivor Alias
+                  <input
+                    value={editAuthor}
+                    onChange={(e) => setEditAuthor(e.target.value)}
+                    className="w-full bg-charcoal border border-terminal-green/20 px-3 py-2 text-terminal-green font-mono focus:outline-none focus:border-terminal-green/50"
+                  />
+                </label>
+
+                <label className="space-y-1 text-xs font-mono text-muted-foreground md:col-span-2">
+                  Category
+                  <div className="relative">
+                    <select
+                      value={editCategory}
+                      onChange={(e) => setEditCategory(e.target.value)}
+                      className={selectClassName}
+                    >
+                      <option>Diary</option>
+                      <option>Final Message</option>
+                      <option>Survival Story</option>
+                      <option>Historical Knowledge</option>
+                      <option>Audio Log</option>
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-terminal-green/70" />
+                  </div>
+                </label>
+
+                <label className="space-y-1 text-xs font-mono text-muted-foreground md:col-span-2">
+                  Emotional Tag
+                  <div className="relative">
+                    <select
+                      value={editEmotionalTag}
+                      onChange={(e) => setEditEmotionalTag(e.target.value)}
+                      className={selectClassName}
+                    >
+                      <option>Hope</option>
+                      <option>Fear</option>
+                      <option>Loss</option>
+                      <option>Survival</option>
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-terminal-green/70" />
+                  </div>
+                </label>
+              </div>
+
+              <label className="space-y-1 text-xs font-mono text-muted-foreground block">
+                Story Content
+                <textarea
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  rows={10}
+                  className="w-full bg-charcoal border border-terminal-green/20 px-3 py-2 text-terminal-green font-mono focus:outline-none focus:border-terminal-green/50"
+                />
+              </label>
+
+              <DialogFooter className="pt-2">
+                <button
+                  onClick={handleEditSave}
+                  type="button"
+                  disabled={isSaving}
+                  className="px-3 py-2 font-mono text-xs bg-terminal-green/10 text-terminal-green border border-terminal-green/30 hover:bg-terminal-green/20 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {isSaving ? "SAVING..." : "SAVE CHANGES"}
+                </button>
+              </DialogFooter>
             </div>
-          )}
 
-          <div className="grid gap-3 md:grid-cols-2">
-            <label className="space-y-1 text-xs font-mono text-muted-foreground">
-              Title
-              <input
-                value={editTitle}
-                onChange={(e) => setEditTitle(e.target.value)}
-                className="w-full bg-charcoal border border-terminal-green/20 px-3 py-2 text-terminal-green font-mono focus:outline-none focus:border-terminal-green/50"
-              />
-            </label>
+            <aside className="space-y-3 border border-terminal-green/20 bg-black/60 p-4">
+              <div className="text-xs font-mono tracking-[0.3em] uppercase text-terminal-green/70">
+                Revision History
+              </div>
 
-            <label className="space-y-1 text-xs font-mono text-muted-foreground">
-              Survivor Alias
-              <input
-                value={editAuthor}
-                onChange={(e) => setEditAuthor(e.target.value)}
-                className="w-full bg-charcoal border border-terminal-green/20 px-3 py-2 text-terminal-green font-mono focus:outline-none focus:border-terminal-green/50"
-              />
-            </label>
+              {isLoadingHistory ? (
+                <div className="text-xs font-mono text-muted-foreground">
+                  Scanning archive logs...
+                </div>
+              ) : revisionHistory.length > 0 ? (
+                <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
+                  {revisionHistory.map((revision) => {
+                    const timestamp = new Date(
+                      revision.createdAt,
+                    ).toLocaleString([], {
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    });
 
-            <label className="space-y-1 text-xs font-mono text-muted-foreground">
-              Category
-              <select
-                value={editCategory}
-                onChange={(e) => setEditCategory(e.target.value)}
-                className="w-full bg-charcoal border border-terminal-green/20 px-3 py-2 text-terminal-green font-mono focus:outline-none focus:border-terminal-green/50"
-              >
-                <option>Diary</option>
-                <option>Final Message</option>
-                <option>Survival Story</option>
-                <option>Historical Knowledge</option>
-                <option>Audio Log</option>
-              </select>
-            </label>
+                    const changedFields = [];
+                    if (revision.titleBefore !== revision.titleAfter) {
+                      changedFields.push("Title");
+                    }
+                    if (
+                      revision.survivorAliasBefore !==
+                      revision.survivorAliasAfter
+                    ) {
+                      changedFields.push("Alias");
+                    }
+                    if (revision.categoryBefore !== revision.categoryAfter) {
+                      changedFields.push("Category");
+                    }
+                    if (revision.contentBefore !== revision.contentAfter) {
+                      changedFields.push("Content");
+                    }
+                    if (
+                      revision.emotionalTagBefore !== revision.emotionalTagAfter
+                    ) {
+                      changedFields.push("Emotion");
+                    }
+                    if (
+                      revision.decayLevelBefore !== revision.decayLevelAfter ||
+                      revision.isRestoredBefore !== revision.isRestoredAfter
+                    ) {
+                      changedFields.push("State");
+                    }
 
-            <label className="space-y-1 text-xs font-mono text-muted-foreground">
-              Emotional Tag
-              <select
-                value={editEmotionalTag}
-                onChange={(e) => setEditEmotionalTag(e.target.value)}
-                className="w-full bg-charcoal border border-terminal-green/20 px-3 py-2 text-terminal-green font-mono focus:outline-none focus:border-terminal-green/50"
-              >
-                <option>Hope</option>
-                <option>Fear</option>
-                <option>Loss</option>
-                <option>Survival</option>
-              </select>
-            </label>
+                    return (
+                      <div
+                        key={revision.id}
+                        className="border border-terminal-green/15 bg-black/80 p-3"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="text-xs font-mono text-terminal-green">
+                            {formatRevisionHeadline(revision)}
+                          </div>
+                          <div className="text-[10px] font-mono text-muted-foreground whitespace-nowrap">
+                            {timestamp}
+                          </div>
+                        </div>
+
+                        <div className="mt-2 text-[10px] font-mono uppercase tracking-[0.25em] text-warning-amber/80">
+                          {changedFields.length > 0
+                            ? changedFields.join(" • ")
+                            : "Logged change"}
+                        </div>
+
+                        {revision.note && (
+                          <div className="mt-2 text-xs font-mono text-muted-foreground">
+                            {revision.note}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-xs font-mono text-muted-foreground">
+                  No revision history recorded yet.
+                </div>
+              )}
+            </aside>
           </div>
-
-          <label className="space-y-1 text-xs font-mono text-muted-foreground block">
-            Story Content
-            <textarea
-              value={editContent}
-              onChange={(e) => setEditContent(e.target.value)}
-              rows={6}
-              className="w-full bg-charcoal border border-terminal-green/20 px-3 py-2 text-terminal-green font-mono focus:outline-none focus:border-terminal-green/50"
-            />
-          </label>
-
-          <div className="flex gap-2">
-            <button
-              onClick={handleEditSave}
-              type="button"
-              disabled={isSaving}
-              className="px-3 py-1 font-mono text-xs bg-terminal-green/10 text-terminal-green border border-terminal-green/30 hover:bg-terminal-green/20 disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {isSaving ? "SAVING..." : "SAVE CHANGES"}
-            </button>
-            <button
-              onClick={() => setIsEditing(false)}
-              type="button"
-              className="px-3 py-1 font-mono text-xs bg-charcoal text-muted-foreground border border-terminal-green/20 hover:text-terminal-green hover:border-terminal-green/30"
-            >
-              CANCEL
-            </button>
-          </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
 
       <div
         className={`flex items-center justify-between border-t pt-3 ${

@@ -27,6 +27,28 @@ export type MemoryArchive = {
   updatedAt: string;
 };
 
+export type MemoryArchiveRevision = {
+  id: string;
+  memoryId: string;
+  action: string;
+  note: string | null;
+  titleBefore: string;
+  titleAfter: string;
+  survivorAliasBefore: string;
+  survivorAliasAfter: string;
+  categoryBefore: string;
+  categoryAfter: string;
+  contentBefore: string;
+  contentAfter: string;
+  emotionalTagBefore: string;
+  emotionalTagAfter: string;
+  decayLevelBefore: number | null;
+  decayLevelAfter: number | null;
+  isRestoredBefore: boolean | null;
+  isRestoredAfter: boolean | null;
+  createdAt: string;
+};
+
 async function handleResponse(res: Response) {
   const text = await res.text();
   try {
@@ -110,4 +132,14 @@ export const restoreMemoryData = async (id: string) => {
     throw new Error("Failed to restore memory");
   }
   return response.json();
+};
+
+export const fetchMemoryHistory = async (
+  id: string,
+): Promise<MemoryArchiveRevision[]> => {
+  const res = await fetch(`${BASE_URL}/${encodeURIComponent(id)}/history`, {
+    credentials: "include",
+  });
+
+  return handleResponse(res) as Promise<MemoryArchiveRevision[]>;
 };

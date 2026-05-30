@@ -387,7 +387,8 @@ export const ModelName = {
   User: 'User',
   Signal: 'Signal',
   SignalVerification: 'SignalVerification',
-  MemoryArchive: 'MemoryArchive'
+  MemoryArchive: 'MemoryArchive',
+  MemoryArchiveRevision: 'MemoryArchiveRevision'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -403,7 +404,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "signal" | "signalVerification" | "memoryArchive"
+    modelProps: "user" | "signal" | "signalVerification" | "memoryArchive" | "memoryArchiveRevision"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -703,6 +704,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    MemoryArchiveRevision: {
+      payload: Prisma.$MemoryArchiveRevisionPayload<ExtArgs>
+      fields: Prisma.MemoryArchiveRevisionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MemoryArchiveRevisionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchiveRevisionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MemoryArchiveRevisionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchiveRevisionPayload>
+        }
+        findFirst: {
+          args: Prisma.MemoryArchiveRevisionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchiveRevisionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MemoryArchiveRevisionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchiveRevisionPayload>
+        }
+        findMany: {
+          args: Prisma.MemoryArchiveRevisionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchiveRevisionPayload>[]
+        }
+        create: {
+          args: Prisma.MemoryArchiveRevisionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchiveRevisionPayload>
+        }
+        createMany: {
+          args: Prisma.MemoryArchiveRevisionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MemoryArchiveRevisionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchiveRevisionPayload>[]
+        }
+        delete: {
+          args: Prisma.MemoryArchiveRevisionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchiveRevisionPayload>
+        }
+        update: {
+          args: Prisma.MemoryArchiveRevisionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchiveRevisionPayload>
+        }
+        deleteMany: {
+          args: Prisma.MemoryArchiveRevisionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MemoryArchiveRevisionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MemoryArchiveRevisionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchiveRevisionPayload>[]
+        }
+        upsert: {
+          args: Prisma.MemoryArchiveRevisionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchiveRevisionPayload>
+        }
+        aggregate: {
+          args: Prisma.MemoryArchiveRevisionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMemoryArchiveRevision>
+        }
+        groupBy: {
+          args: Prisma.MemoryArchiveRevisionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MemoryArchiveRevisionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MemoryArchiveRevisionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MemoryArchiveRevisionCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -794,12 +869,45 @@ export const MemoryArchiveScalarFieldEnum = {
 export type MemoryArchiveScalarFieldEnum = (typeof MemoryArchiveScalarFieldEnum)[keyof typeof MemoryArchiveScalarFieldEnum]
 
 
+export const MemoryArchiveRevisionScalarFieldEnum = {
+  id: 'id',
+  memoryId: 'memoryId',
+  action: 'action',
+  note: 'note',
+  titleBefore: 'titleBefore',
+  titleAfter: 'titleAfter',
+  survivorAliasBefore: 'survivorAliasBefore',
+  survivorAliasAfter: 'survivorAliasAfter',
+  categoryBefore: 'categoryBefore',
+  categoryAfter: 'categoryAfter',
+  contentBefore: 'contentBefore',
+  contentAfter: 'contentAfter',
+  emotionalTagBefore: 'emotionalTagBefore',
+  emotionalTagAfter: 'emotionalTagAfter',
+  decayLevelBefore: 'decayLevelBefore',
+  decayLevelAfter: 'decayLevelAfter',
+  isRestoredBefore: 'isRestoredBefore',
+  isRestoredAfter: 'isRestoredAfter',
+  createdAt: 'createdAt'
+} as const
+
+export type MemoryArchiveRevisionScalarFieldEnum = (typeof MemoryArchiveRevisionScalarFieldEnum)[keyof typeof MemoryArchiveRevisionScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
 
@@ -977,6 +1085,7 @@ export type GlobalOmitConfig = {
   signal?: Prisma.SignalOmit
   signalVerification?: Prisma.SignalVerificationOmit
   memoryArchive?: Prisma.MemoryArchiveOmit
+  memoryArchiveRevision?: Prisma.MemoryArchiveRevisionOmit
 }
 
 /* Types for Logging */

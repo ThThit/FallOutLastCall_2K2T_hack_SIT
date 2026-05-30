@@ -7,11 +7,9 @@ const router = Router();
 const archiveSchema = z.object({
   title: z.string().min(1, { message: "Transmission failed: Missing title." }),
   survivorAlias: z.string().optional().default("Anonymous"),
-  category: z
-    .string()
-    .min(1, {
-      message: "Transmission failed: Missing category classification.",
-    }),
+  category: z.string().min(1, {
+    message: "Transmission failed: Missing category classification.",
+  }),
   content: z
     .string()
     .min(1, { message: "Transmission failed: Missing content block." }),
@@ -21,6 +19,50 @@ const archiveSchema = z.object({
 });
 
 type ArchiveInput = z.infer<typeof archiveSchema>;
+
+type MemorySnapshot = {
+  title: string;
+  survivorAlias: string;
+  category: string;
+  content: string;
+  emotionalTag: string;
+  decayLevel: number;
+  isRestored: boolean;
+};
+
+const getRevisionAction = (body: Record<string, unknown>) => {
+  if (body.isRestored === true || body.decayLevel !== undefined) {
+    return "RESTORE";
+  }
+
+  return "UPDATE";
+};
+
+const buildRevisionPayload = (
+  memoryId: string,
+  action: string,
+  before: MemorySnapshot,
+  after: MemorySnapshot,
+  note?: string,
+) => ({
+  memoryId,
+  action,
+  note,
+  titleBefore: before.title,
+  titleAfter: after.title,
+  survivorAliasBefore: before.survivorAlias,
+  survivorAliasAfter: after.survivorAlias,
+  categoryBefore: before.category,
+  categoryAfter: after.category,
+  contentBefore: before.content,
+  contentAfter: after.content,
+  emotionalTagBefore: before.emotionalTag,
+  emotionalTagAfter: after.emotionalTag,
+  decayLevelBefore: before.decayLevel,
+  decayLevelAfter: after.decayLevel,
+  isRestoredBefore: before.isRestored,
+  isRestoredAfter: after.isRestored,
+});
 
 router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -108,8 +150,14 @@ router.patch(
         return res.status(422).json({ errorMessages: messages });
       }
 
-      // You can also manually add fields here if you have them in your Prisma schema
-      // but didn't put them in the original Zod schema (like decayLevel or isRestored)
+      const existingMemory = await prisma.memoryArchive.findUnique({
+        where: { id },
+      });
+
+      if (!existingMemory) {
+        return res.status(404).json({ error: "Memory not found to update." });
+      }
+
       const updateData = {
         ...parseResult.data,
         // If you are passing decayLevel or isRestored in req.body, you can grab them here:
@@ -121,9 +169,41 @@ router.patch(
         }),
       };
 
-      const updatedMemory = await prisma.memoryArchive.update({
-        where: { id },
-        data: updateData,
+      const action = getRevisionAction(req.body as Record<string, unknown>);
+
+      const updatedMemory = await prisma.$transaction(async (tx) => {
+        const updated = await tx.memoryArchive.update({
+          where: { id },
+          data: updateData,
+        });
+
+        await tx.memoryArchiveRevision.create({
+          data: buildRevisionPayload(
+            id,
+            action,
+            {
+              title: existingMemory.title,
+              survivorAlias: existingMemory.survivorAlias,
+              category: existingMemory.category,
+              content: existingMemory.content,
+              emotionalTag: existingMemory.emotionalTag,
+              decayLevel: existingMemory.decayLevel,
+              isRestored: existingMemory.isRestored,
+            },
+            {
+              title: updated.title,
+              survivorAlias: updated.survivorAlias,
+              category: updated.category,
+              content: updated.content,
+              emotionalTag: updated.emotionalTag,
+              decayLevel: updated.decayLevel,
+              isRestored: updated.isRestored,
+            },
+            action === "RESTORE" ? "Recovered archive state." : undefined,
+          ),
+        });
+
+        return updated;
       });
 
       res.json(updatedMemory);
@@ -132,6 +212,24 @@ router.patch(
       if (error.code === "P2025") {
         return res.status(404).json({ error: "Memory not found to update." });
       }
+      next(error);
+    }
+  },
+);
+
+router.get(
+  "/:id/history",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = String(req.params.id);
+
+      const history = await prisma.memoryArchiveRevision.findMany({
+        where: { memoryId: id },
+        orderBy: { createdAt: "desc" },
+      });
+
+      res.json(history);
+    } catch (error) {
       next(error);
     }
   },

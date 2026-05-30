@@ -61,3 +61,8 @@ export type SignalVerification = Prisma.SignalVerificationModel
  * 
  */
 export type MemoryArchive = Prisma.MemoryArchiveModel
+/**
+ * Model MemoryArchiveRevision
+ * 
+ */
+export type MemoryArchiveRevision = Prisma.MemoryArchiveRevisionModel

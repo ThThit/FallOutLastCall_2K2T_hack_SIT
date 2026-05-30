@@ -16,6 +16,8 @@ export function MemoryArchiveFeed({
   const [memories, setMemories] = useState<any[]>([]);
   const [memorySort, setMemorySort] = useState<"date" | "decay">("date");
   const [showSubmitForm, setShowSubmitForm] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedEmotion, setSelectedEmotion] = useState("All");
 
   const formatDaysAgo = (daysAgo: number) => {
     if (daysAgo <= 0) return "today";
@@ -45,6 +47,8 @@ export function MemoryArchiveFeed({
       author: normalizeAlias(m.survivorAlias),
       title: m.title,
       content: m.content,
+      emotionalTag: m.emotionalTag,
+      category: m.category,
       date: m.date || m.createdAt,
       createdAt: m.createdAt,
       daysAgo: Math.floor(
@@ -126,33 +130,98 @@ export function MemoryArchiveFeed({
     void loadMemories();
   };
 
+  const searchableMemories = [...memories].sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
+  const normalizedSearch = searchQuery.trim().toLowerCase();
+  const filteredMemories = searchableMemories.filter((memory) => {
+    const matchesSearch =
+      !normalizedSearch ||
+      memory.title.toLowerCase().includes(normalizedSearch) ||
+      memory.author.toLowerCase().includes(normalizedSearch);
+
+    const matchesEmotion =
+      selectedEmotion === "All" || memory.emotionalTag === selectedEmotion;
+
+    return matchesSearch && matchesEmotion;
+  });
+
+  const sortedMemories = [...filteredMemories].sort((a, b) => {
+    if (memorySort === "decay") {
+      return b.decayLevel - a.decayLevel;
+    }
+
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
+  const lastPreservedMemories = filteredMemories.slice(0, 3);
+
   return (
     <div className="space-y-6">
       {/* Sorting Controls */}
-      <div className="flex items-center gap-2 bg-charcoal border border-terminal-green/20 p-3">
-        <span className="text-xs text-muted-foreground font-mono">
-          SORT BY:
-        </span>
-        <button
-          onClick={() => setMemorySort("date")}
-          className={`px-3 py-1 font-mono text-xs transition-colors ${
-            memorySort === "date"
-              ? "bg-terminal-green/20 border border-terminal-green text-terminal-green"
-              : "bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green"
-          }`}
-        >
-          DATE
-        </button>
-        <button
-          onClick={() => setMemorySort("decay")}
-          className={`px-3 py-1 font-mono text-xs transition-colors ${
-            memorySort === "decay"
-              ? "bg-terminal-green/20 border border-terminal-green text-terminal-green"
-              : "bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green"
-          }`}
-        >
-          DECAY STATUS
-        </button>
+      <div className="space-y-3 bg-charcoal border border-terminal-green/20 p-4">
+        <div className="grid gap-3 md:grid-cols-[1.4fr_0.8fr]">
+          <label className="space-y-1 text-xs font-mono text-muted-foreground">
+            SEARCH ARCHIVE
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search title or survivor alias"
+              className="w-full bg-black/80 border border-terminal-green/30 px-3 py-2 text-terminal-green font-mono focus:outline-none focus:border-terminal-green/60"
+            />
+          </label>
+
+          <label className="space-y-1 text-xs font-mono text-muted-foreground">
+            EMOTIONAL TAG
+            <select
+              value={selectedEmotion}
+              onChange={(e) => setSelectedEmotion(e.target.value)}
+              className="w-full bg-black/80 border border-terminal-green/30 px-3 py-2 text-terminal-green font-mono focus:outline-none focus:border-terminal-green/60"
+            >
+              <option>All</option>
+              <option>Hope</option>
+              <option>Fear</option>
+              <option>Loss</option>
+              <option>Survival</option>
+            </select>
+          </label>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-muted-foreground font-mono">
+            SORT BY:
+          </span>
+          <button
+            onClick={() => setMemorySort("date")}
+            className={`px-3 py-1 font-mono text-xs transition-colors ${
+              memorySort === "date"
+                ? "bg-terminal-green/20 border border-terminal-green text-terminal-green"
+                : "bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green"
+            }`}
+          >
+            DATE
+          </button>
+          <button
+            onClick={() => setMemorySort("decay")}
+            className={`px-3 py-1 font-mono text-xs transition-colors ${
+              memorySort === "decay"
+                ? "bg-terminal-green/20 border border-terminal-green text-terminal-green"
+                : "bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green"
+            }`}
+          >
+            DECAY STATUS
+          </button>
+          <button
+            onClick={() => {
+              setSearchQuery("");
+              setSelectedEmotion("All");
+            }}
+            className="px-3 py-1 font-mono text-xs bg-black/50 border border-terminal-green/20 text-terminal-green/80 hover:text-terminal-green hover:border-terminal-green/40"
+          >
+            CLEAR FILTERS
+          </button>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
@@ -186,28 +255,52 @@ export function MemoryArchiveFeed({
         </p>
       </div>
 
+      {/* Last preserved memories */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <div className="text-xs font-mono tracking-[0.35em] text-terminal-green/70 uppercase">
+              Last Preserved Memories
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground font-mono">
+              The newest entries still holding together in the archive.
+            </p>
+          </div>
+          <div className="text-xs font-mono text-muted-foreground">
+            {lastPreservedMemories.length} preserved
+          </div>
+        </div>
+
+        {lastPreservedMemories.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {lastPreservedMemories.map((memory) => (
+              <MemoryCard
+                key={`preserved-${memory.id}`}
+                memory={memory}
+                currentUser={currentUser}
+                onDelete={handleDeleteMemory}
+                onUpdate={handleUpdateMemory}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="border border-terminal-green/20 bg-black/60 p-4 text-xs font-mono text-muted-foreground">
+            No preserved memories match the current search and emotional filter.
+          </div>
+        )}
+      </section>
+
       {/* Grid of Memories */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {memories
-          .sort((a, b) => {
-            if (memorySort === "decay") {
-              return b.decayLevel - a.decayLevel; // Highest decay first
-            } else {
-              return (
-                new Date(b.createdAt).getTime() -
-                new Date(a.createdAt).getTime()
-              );
-            }
-          })
-          .map((memory) => (
-            <MemoryCard
-              key={memory.id}
-              memory={memory}
-              currentUser={currentUser}
-              onDelete={handleDeleteMemory}
-              onUpdate={handleUpdateMemory}
-            />
-          ))}
+        {sortedMemories.map((memory) => (
+          <MemoryCard
+            key={memory.id}
+            memory={memory}
+            currentUser={currentUser}
+            onDelete={handleDeleteMemory}
+            onUpdate={handleUpdateMemory}
+          />
+        ))}
       </div>
     </div>
   );

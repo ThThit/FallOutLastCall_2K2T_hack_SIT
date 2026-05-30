@@ -54,7 +54,8 @@ export const ModelName = {
   User: 'User',
   Signal: 'Signal',
   SignalVerification: 'SignalVerification',
-  MemoryArchive: 'MemoryArchive'
+  MemoryArchive: 'MemoryArchive',
+  MemoryArchiveRevision: 'MemoryArchiveRevision'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -125,10 +126,43 @@ export const MemoryArchiveScalarFieldEnum = {
 export type MemoryArchiveScalarFieldEnum = (typeof MemoryArchiveScalarFieldEnum)[keyof typeof MemoryArchiveScalarFieldEnum]
 
 
+export const MemoryArchiveRevisionScalarFieldEnum = {
+  id: 'id',
+  memoryId: 'memoryId',
+  action: 'action',
+  note: 'note',
+  titleBefore: 'titleBefore',
+  titleAfter: 'titleAfter',
+  survivorAliasBefore: 'survivorAliasBefore',
+  survivorAliasAfter: 'survivorAliasAfter',
+  categoryBefore: 'categoryBefore',
+  categoryAfter: 'categoryAfter',
+  contentBefore: 'contentBefore',
+  contentAfter: 'contentAfter',
+  emotionalTagBefore: 'emotionalTagBefore',
+  emotionalTagAfter: 'emotionalTagAfter',
+  decayLevelBefore: 'decayLevelBefore',
+  decayLevelAfter: 'decayLevelAfter',
+  isRestoredBefore: 'isRestoredBefore',
+  isRestoredAfter: 'isRestoredAfter',
+  createdAt: 'createdAt'
+} as const
+
+export type MemoryArchiveRevisionScalarFieldEnum = (typeof MemoryArchiveRevisionScalarFieldEnum)[keyof typeof MemoryArchiveRevisionScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
