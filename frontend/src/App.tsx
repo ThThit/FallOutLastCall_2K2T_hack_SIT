@@ -19,9 +19,10 @@ import { SettingsView } from "./components/settings-view";
 import { VaultView } from "./components/vault-view";
 import { TradeModal } from "./components/trade-modal";
 import { Plus } from "lucide-react";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
-export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+function AppContent() {
+  const { isLoggedIn } = useAuth();
   const [activeSection, setActiveSection] = useState('signals');
   const [showEmergency, setShowEmergency] = useState(false);
   const [showBroadcast, setShowBroadcast] = useState(false);
@@ -32,7 +33,7 @@ export default function App() {
   const [memorySort, setMemorySort] = useState<'date' | 'decay'>('date');
 
   if (!isLoggedIn) {
-    return <LoginScreen onLogin={() => setIsLoggedIn(true)} />;
+    return <LoginScreen />;
   }
 
   const signals = [
@@ -308,8 +309,8 @@ export default function App() {
                   <button
                     onClick={() => setSignalSort('date')}
                     className={`px-3 py-1 font-mono text-xs transition-colors ${signalSort === 'date'
-                        ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
-                        : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
+                      ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
+                      : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
                       }`}
                   >
                     DATE
@@ -317,8 +318,8 @@ export default function App() {
                   <button
                     onClick={() => setSignalSort('trust')}
                     className={`px-3 py-1 font-mono text-xs transition-colors ${signalSort === 'trust'
-                        ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
-                        : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
+                      ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
+                      : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
                       }`}
                   >
                     TRUST SCORE
@@ -355,8 +356,8 @@ export default function App() {
                   <button
                     onClick={() => setMarketSort('rarity')}
                     className={`px-3 py-1 font-mono text-xs transition-colors ${marketSort === 'rarity'
-                        ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
-                        : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
+                      ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
+                      : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
                       }`}
                   >
                     RARITY
@@ -364,8 +365,8 @@ export default function App() {
                   <button
                     onClick={() => setMarketSort('condition')}
                     className={`px-3 py-1 font-mono text-xs transition-colors ${marketSort === 'condition'
-                        ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
-                        : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
+                      ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
+                      : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
                       }`}
                   >
                     CONDITION
@@ -401,8 +402,8 @@ export default function App() {
                   <button
                     onClick={() => setMemorySort('date')}
                     className={`px-3 py-1 font-mono text-xs transition-colors ${memorySort === 'date'
-                        ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
-                        : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
+                      ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
+                      : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
                       }`}
                   >
                     DATE
@@ -410,8 +411,8 @@ export default function App() {
                   <button
                     onClick={() => setMemorySort('decay')}
                     className={`px-3 py-1 font-mono text-xs transition-colors ${memorySort === 'decay'
-                        ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
-                        : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
+                      ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
+                      : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
                       }`}
                   >
                     DECAY STATUS
@@ -448,7 +449,7 @@ export default function App() {
 
             {activeSection === 'alerts' && <AlertsView />}
 
-            {activeSection === 'settings' && <SettingsView onLogout={() => setIsLoggedIn(false)} />}
+            {activeSection === 'settings' && <SettingsView />}
           </div>
         </main>
       </div>
@@ -468,5 +469,13 @@ export default function App() {
 
       <MobileNav activeSection={activeSection} onSectionChange={setActiveSection} />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

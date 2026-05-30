@@ -1,10 +1,8 @@
 import { User, LogOut, History, ArrowLeftRight } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
-interface SettingsViewProps {
-  onLogout: () => void;
-}
-
-export function SettingsView({ onLogout }: SettingsViewProps) {
+export function SettingsView() {
+  const { logout, isLoading } = useAuth();
   const tradeHistory = [
     {
       id: 't1',
@@ -108,11 +106,10 @@ export function SettingsView({ onLogout }: SettingsViewProps) {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs text-muted-foreground font-mono">{trade.date}</span>
                     <span
-                      className={`text-xs font-mono px-2 py-0.5 border ${
-                        trade.type === 'COMPLETED'
+                      className={`text-xs font-mono px-2 py-0.5 border ${trade.type === 'COMPLETED'
                           ? 'border-terminal-green/30 text-terminal-green bg-terminal-green/10'
                           : 'border-emergency-red/30 text-emergency-red bg-emergency-red/10'
-                      }`}
+                        }`}
                     >
                       {trade.type}
                     </span>
@@ -144,11 +141,12 @@ export function SettingsView({ onLogout }: SettingsViewProps) {
       {/* Logout Section */}
       <div className="bg-card border border-emergency-red/20 p-6">
         <button
-          onClick={onLogout}
-          className="w-full px-4 py-3 bg-emergency-red/10 border border-emergency-red text-emergency-red font-mono text-sm tracking-wide hover:bg-emergency-red/20 transition-colors flex items-center justify-center gap-2"
+          onClick={logout}
+          disabled={isLoading}
+          className="w-full px-4 py-3 bg-emergency-red/10 border border-emergency-red text-emergency-red font-mono text-sm tracking-wide hover:bg-emergency-red/20 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <LogOut className="w-4 h-4" />
-          DISCONNECT & LOG OUT
+          {isLoading ? 'DISCONNECTING...' : 'DISCONNECT & LOG OUT'}
         </button>
       </div>
     </div>

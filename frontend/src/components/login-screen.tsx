@@ -2,13 +2,11 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { Radio, AlertTriangle, Eye, EyeOff } from "lucide-react";
 import { GlitchText } from "./glitch-text";
+import { useAuth } from "../context/AuthContext";
 
-interface LoginScreenProps {
-  onLogin: () => void;
-}
-
-export function LoginScreen({ onLogin }: LoginScreenProps) {
-  const [callsign, setCallsign] = useState("");
+export function LoginScreen() {
+  const { login, register, isLoading, error, clearError } = useAuth();
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showWarning, setShowWarning] = useState(false);
@@ -17,28 +15,39 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (callsign.length < 3) {
+    clearError();
+
+    if (username.length < 3) {
       setWarningMessage("CALLSIGN TOO SHORT");
       setShowWarning(true);
       return;
     }
-    
+
     if (password.length < 6) {
       setWarningMessage("PASSWORD MUST BE AT LEAST 6 CHARACTERS");
       setShowWarning(true);
       return;
     }
-    
+
     if (isRegisterMode && password !== confirmPassword) {
       setWarningMessage("PASSWORDS DO NOT MATCH");
       setShowWarning(true);
       return;
     }
-    
-    onLogin();
+
+    try {
+      if (isRegisterMode) {
+        await register(username, password);
+      } else {
+        await login(username, password);
+      }
+      setShowWarning(false);
+    } catch (err: any) {
+      setWarningMessage(err.message || "Authentication failed");
+      setShowWarning(true);
+    }
   };
 
   return (
@@ -91,9 +100,9 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
               </label>
               <input
                 type="text"
-                value={callsign}
+                value={username}
                 onChange={(e) => {
-                  setCallsign(e.target.value.toUpperCase());
+                  setUsername(e.target.value.toUpperCase());
                   setShowWarning(false);
                 }}
                 placeholder="SURVIVOR-###"
@@ -171,15 +180,16 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                 animate={{ opacity: 1 }}
                 className="text-xs text-emergency-red font-mono"
               >
-                {warningMessage}
+                {warningMessage || error}
               </motion.div>
             )}
 
             <button
               type="submit"
-              className="w-full bg-terminal-green/10 hover:bg-terminal-green/20 border border-terminal-green text-terminal-green py-3 font-mono tracking-widest transition-colors"
+              disabled={isLoading}
+              className="w-full bg-terminal-green/10 hover:bg-terminal-green/20 border border-terminal-green text-terminal-green py-3 font-mono tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isRegisterMode ? 'REGISTER & CONNECT' : 'ESTABLISH CONNECTION'}
+              {isLoading ? 'CONNECTING...' : isRegisterMode ? 'REGISTER & CONNECT' : 'ESTABLISH CONNECTION'}
             </button>
 
             <button
