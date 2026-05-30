@@ -3,6 +3,17 @@ const API_BASE_URL = "http://localhost:3000/api";
 // Get auth token from localStorage - only returns token if it exists
 const getAuthToken = () => localStorage.getItem("authToken");
 
+// On a 401 (stale/expired token), clear the saved auth and return to login
+const handleAuthError = (response: Response) => {
+  if (response.status === 401) {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("userId");
+    window.location.reload();
+  }
+};
+
 // Vault API calls
 export const vaultAPI = {
   // Get all vault items
@@ -11,6 +22,7 @@ export const vaultAPI = {
     const response = await fetch(`${API_BASE_URL}/vault?${params}`, {
       headers: { Authorization: `Bearer ${getAuthToken()}` },
     });
+    handleAuthError(response);
     if (!response.ok) throw new Error("Failed to fetch vault items");
     return response.json();
   },
@@ -25,6 +37,7 @@ export const vaultAPI = {
       },
       body: JSON.stringify(vaultData),
     });
+    handleAuthError(response);
     if (!response.ok) throw new Error("Failed to add item");
     return response.json();
   },
@@ -34,6 +47,7 @@ export const vaultAPI = {
     const response = await fetch(`${API_BASE_URL}/vault/stats`, {
       headers: { Authorization: `Bearer ${getAuthToken()}` },
     });
+    handleAuthError(response);
     if (!response.ok) throw new Error("Failed to fetch stats");
     return response.json();
   },
@@ -47,6 +61,7 @@ export const vaultAPI = {
       method: "DELETE",
       headers: { Authorization: `Bearer ${getAuthToken()}` },
     });
+    handleAuthError(response);
     if (!response.ok) throw new Error("Failed to remove item");
     return response.json();
   },
@@ -60,6 +75,7 @@ export const marketplaceAPI = {
     const response = await fetch(`${API_BASE_URL}/trade?${params}`, {
       headers: { Authorization: `Bearer ${getAuthToken()}` },
     });
+    handleAuthError(response);
     if (!response.ok) throw new Error("Failed to fetch trades");
     return response.json();
   },
@@ -69,6 +85,7 @@ export const marketplaceAPI = {
     const response = await fetch(`${API_BASE_URL}/trade/available/items`, {
       headers: { Authorization: `Bearer ${getAuthToken()}` },
     });
+    handleAuthError(response);
     if (!response.ok) throw new Error("Failed to fetch available items");
     return response.json();
   },
@@ -83,6 +100,7 @@ export const marketplaceAPI = {
       },
       body: JSON.stringify(tradeData),
     });
+    handleAuthError(response);
     if (!response.ok) throw new Error("Failed to create trade");
     return response.json();
   },
@@ -97,6 +115,7 @@ export const marketplaceAPI = {
       },
       body: JSON.stringify(data),
     });
+    handleAuthError(response);
     if (!response.ok) throw new Error("Failed to update trade");
     return response.json();
   },
@@ -107,6 +126,7 @@ export const marketplaceAPI = {
       method: "DELETE",
       headers: { Authorization: `Bearer ${getAuthToken()}` },
     });
+    handleAuthError(response);
     if (!response.ok) throw new Error("Failed to cancel trade");
     return response.json();
   },
@@ -116,6 +136,7 @@ export const marketplaceAPI = {
     const response = await fetch(`${API_BASE_URL}/trade/history`, {
       headers: { Authorization: `Bearer ${getAuthToken()}` },
     });
+    handleAuthError(response);
     if (!response.ok) throw new Error("Failed to fetch trade history");
     return response.json();
   },
@@ -130,6 +151,7 @@ export const marketplaceAPI = {
       },
       body: JSON.stringify({ tradeId, acceptorVaultItemId }),
     });
+    handleAuthError(response);
     if (!response.ok) throw new Error("Failed to accept trade");
     return response.json();
   },
