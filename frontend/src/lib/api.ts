@@ -46,8 +46,8 @@ export const signalApi = {
   delete: (id: string) =>
     api.delete(`/signals/${id}`).then((r) => r.data),
 
-  vote: (id: string, type: "verified" | "unverified") =>
-    api.post<Signal>(`/signals/${id}/vote`, { type }).then((r) => r.data),
+  vote: (id: string, type: "verified" | "unverified", action: "add" | "remove" = "add") =>
+    api.post<Signal>(`/signals/${id}/vote`, { type, action }).then((r) => r.data),
 
   getComments: (id: string) =>
     api.get<Comment[]>(`/signals/${id}/comments`).then((r) => r.data),

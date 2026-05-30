@@ -27,6 +27,7 @@ const updateSignalSchema = z.object({
 
 const voteSchema = z.object({
   type: z.union([z.literal("verified"), z.literal("unverified")]),
+  action: z.union([z.literal("add"), z.literal("remove")]).default("add"),
 });
 
 const createCommentSchema = z.object({
@@ -131,14 +132,15 @@ export const voteSignal = async (req: Request, res: Response) => {
   const existing = await prisma.signal.findFirst({ where: { id, deletedAt: null } });
   if (!existing) return res.status(404).json({ error: "Signal not found" });
 
-  const newVerified =
-    result.data.type === "verified"
-      ? existing.verifiedCount + 1
-      : existing.verifiedCount;
-  const newUnverified =
-    result.data.type === "unverified"
-      ? existing.unverifiedCount + 1
-      : existing.unverifiedCount;
+  const { type, action } = result.data;
+  const delta = action === "remove" ? -1 : 1;
+
+  const newVerified = type === "verified"
+    ? Math.max(0, existing.verifiedCount + delta)
+    : existing.verifiedCount;
+  const newUnverified = type === "unverified"
+    ? Math.max(0, existing.unverifiedCount + delta)
+    : existing.unverifiedCount;
 
   const total = newVerified + newUnverified;
   const trustScore =

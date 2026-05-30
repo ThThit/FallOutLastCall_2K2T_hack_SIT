@@ -101,44 +101,37 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
 
   const handleVote = async (type: "verified" | "unverified") => {
     if (voting) return;
+    setVoting(true);
 
     const voted = getVotedSignals();
 
-    if (myVote === type) {
-      // Toggle off — undo vote locally
-      const newV = type === "verified" ? verified - 1 : verified;
-      const newU = type === "unverified" ? unverified - 1 : unverified;
-      setVerified(newV);
-      setUnverified(newU);
-      setTrustScore(recalcTrust(newV, newU));
-      setMyVote(null);
-      delete voted[signal.id];
-      localStorage.setItem("votedSignals", JSON.stringify(voted));
-      return;
-    }
-
-    if (myVote && myVote !== type) {
-      // Switch vote — undo old, apply new locally
-      const newV = type === "verified" ? verified + 1 : verified - 1;
-      const newU = type === "unverified" ? unverified + 1 : unverified - 1;
-      setVerified(newV);
-      setUnverified(newU);
-      setTrustScore(recalcTrust(newV, newU));
-      setMyVote(type);
-      voted[signal.id] = type;
-      localStorage.setItem("votedSignals", JSON.stringify(voted));
-      return;
-    }
-
-    // New vote — call backend
-    setVoting(true);
     try {
-      const updated = await signalApi.vote(signal.id, type);
-      setVerified(updated.verifiedCount);
-      setUnverified(updated.unverifiedCount);
-      setTrustScore(updated.trustScore);
-      setMyVote(type);
-      voted[signal.id] = type;
+      if (myVote === type) {
+        // Toggle off — remove vote from backend
+        const updated = await signalApi.vote(signal.id, type, "remove");
+        setVerified(updated.verifiedCount);
+        setUnverified(updated.unverifiedCount);
+        setTrustScore(updated.trustScore);
+        setMyVote(null);
+        delete voted[signal.id];
+      } else if (myVote && myVote !== type) {
+        // Switch vote — remove old, add new
+        await signalApi.vote(signal.id, myVote, "remove");
+        const updated = await signalApi.vote(signal.id, type, "add");
+        setVerified(updated.verifiedCount);
+        setUnverified(updated.unverifiedCount);
+        setTrustScore(updated.trustScore);
+        setMyVote(type);
+        voted[signal.id] = type;
+      } else {
+        // New vote
+        const updated = await signalApi.vote(signal.id, type, "add");
+        setVerified(updated.verifiedCount);
+        setUnverified(updated.unverifiedCount);
+        setTrustScore(updated.trustScore);
+        setMyVote(type);
+        voted[signal.id] = type;
+      }
       localStorage.setItem("votedSignals", JSON.stringify(voted));
     } finally {
       setVoting(false);
