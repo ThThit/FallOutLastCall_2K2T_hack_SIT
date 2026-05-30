@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { AnimatePresence } from "motion/react";
 import { Plus } from "lucide-react";
 import { signalApi } from "../apis/signal.api";
 import type { Signal } from "../types/signal.types";
@@ -96,17 +95,15 @@ export function SignalFeedPage() {
             NO SIGNALS DETECTED
           </p>
         )}
-        <AnimatePresence>
-          {!signalsLoading && signals.map((signal) => (
-            <SignalCard
-              key={signal.id}
-              signal={signal}
-              callsign={callsign}
-              onDelete={(id) => setSignals((prev) => prev.filter((s) => s.id !== id))}
-              onUpdate={(updated) => setSignals((prev) => prev.map((s) => s.id === updated.id ? { ...s, ...updated } : s))}
-            />
-          ))}
-        </AnimatePresence>
+        {!signalsLoading && signals.map((signal) => (
+          <SignalCard
+            key={signal.id}
+            signal={signal}
+            callsign={callsign}
+            onDelete={(id) => setSignals((prev) => prev.filter((s) => s.id !== id))}
+            onUpdate={(updated) => setSignals((prev) => prev.map((s) => s.id === updated.id ? { ...s, ...updated } : s))}
+          />
+        ))}
       </div>
 
       {showBroadcast && (
