@@ -8,16 +8,18 @@ interface BroadcastComposerProps {
   onCreated: (signal: Signal) => void;
   callsign: string;
   editSignal?: Signal;
+  onDelete?: (id: string) => void;
 }
 
 const SECTOR_OPTIONS = [1, 2, 3, 4, 5, 6, 8];
 const MAX_CHARS = 288;
 
-export function BroadcastComposer({ onClose, onCreated, callsign, editSignal }: BroadcastComposerProps) {
+export function BroadcastComposer({ onClose, onCreated, callsign, editSignal, onDelete }: BroadcastComposerProps) {
   const [message, setMessage] = useState(editSignal?.content ?? "");
   const [sector, setSector] = useState(editSignal ? String(editSignal.sector) : "");
   const [isEmergency, setIsEmergency] = useState(editSignal?.priority === "EMERGENCY");
   const [submitting, setSubmitting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState("");
 
   const isEdit = !!editSignal;
@@ -171,6 +173,37 @@ export function BroadcastComposer({ onClose, onCreated, callsign, editSignal }: 
               {submitting ? "BROADCASTING..." : isEdit ? "UPDATE" : "BROADCAST"}
             </button>
           </div>
+
+          {isEdit && onDelete && (
+            <div className="pt-3 border-t border-terminal-green/10">
+              {confirmDelete ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono text-muted-foreground flex-1">DELETE THIS SIGNAL?</span>
+                  <button
+                    onClick={async () => { await signalApi.delete(editSignal!.id); onDelete(editSignal!.id); onClose(); }}
+                    className="px-3 py-1.5 text-xs font-mono border transition-colors"
+                    style={{ color: '#ff4444', borderColor: 'rgba(255,68,68,0.5)' }}
+                  >
+                    YES, DELETE
+                  </button>
+                  <button
+                    onClick={() => setConfirmDelete(false)}
+                    className="px-3 py-1.5 text-xs font-mono text-muted-foreground border border-terminal-green/30 hover:text-terminal-green transition-colors"
+                  >
+                    CANCEL
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setConfirmDelete(true)}
+                  className="w-full px-4 py-2.5 text-xs font-mono tracking-wide border transition-colors hover:bg-red-500/10"
+                  style={{ color: '#ff4444', borderColor: 'rgba(255,68,68,0.4)' }}
+                >
+                  DELETE SIGNAL
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </motion.div>
     </motion.div>

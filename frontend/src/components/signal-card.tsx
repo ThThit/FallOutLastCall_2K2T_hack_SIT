@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import { MapPin, Clock, ThumbsUp, ThumbsDown, AlertTriangle, MessageSquare, Send, Pencil } from "lucide-react";
 import { signalApi, type Signal, type Comment } from "../lib/api";
@@ -59,8 +59,6 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
     () => getVotedSignals()[signal.id] ?? null
   );
   const [showEdit, setShowEdit] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
   const [tick, setTick] = useState(0);
 
   const corruptionLevel = getCorruptionLevel(signal.createdAt);
@@ -223,54 +221,13 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
               TRUST: {trustScore}%
             </div>
             {isOwn && (
-              <div className="relative">
-                <button
-                  onClick={() => { setShowMenu((v) => !v); setConfirmDelete(false); }}
-                  className="px-2 py-1 text-muted-foreground hover:text-terminal-green font-mono text-sm transition-colors"
-                >
-                  ···
-                </button>
-                {showMenu && (
-                  <div className="absolute right-0 top-7 z-10 bg-dark-gray border border-terminal-green/30 w-36 shadow-lg">
-                    <button
-                      onClick={() => { setShowEdit(true); setShowMenu(false); }}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-xs font-mono text-muted-foreground hover:text-terminal-green hover:bg-terminal-green/10 transition-colors"
-                    >
-                      <Pencil className="w-3 h-3 shrink-0" />
-                      EDIT
-                    </button>
-                    <div className="border-t border-terminal-green/10" />
-                    {confirmDelete ? (
-                      <div className="px-3 py-2 space-y-1.5">
-                        <p className="text-xs font-mono text-emergency-red">CONFIRM?</p>
-                        <div className="flex gap-1.5">
-                          <button
-                            onClick={handleDelete}
-                            className="flex-1 py-1 text-xs font-mono text-emergency-red border border-emergency-red/50 hover:bg-emergency-red/20 transition-colors"
-                          >
-                            YES
-                          </button>
-                          <button
-                            onClick={() => setConfirmDelete(false)}
-                            className="flex-1 py-1 text-xs font-mono text-muted-foreground border border-terminal-green/30 hover:text-terminal-green transition-colors"
-                          >
-                            NO
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => setConfirmDelete(true)}
-                        style={{ color: '#ff4444' }}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-xs font-mono hover:bg-red-500/10 transition-colors"
-                      >
-                        <Pencil className="w-3 h-3 shrink-0 opacity-0" />
-                        DELETE
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
+              <button
+                onClick={() => setShowEdit(true)}
+                className="flex items-center gap-1 px-2 py-1 text-xs font-mono text-muted-foreground hover:text-terminal-green transition-colors"
+              >
+                <Pencil className="w-3 h-3" />
+                EDIT
+              </button>
             )}
           </div>
         </div>
@@ -399,6 +356,10 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
           onCreated={(updated) => {
             onUpdate?.(updated);
             setShowEdit(false);
+          }}
+          onDelete={(id) => {
+            setShowEdit(false);
+            onDelete?.(id);
           }}
         />
       )}
