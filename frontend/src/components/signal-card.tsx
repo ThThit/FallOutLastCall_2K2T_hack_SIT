@@ -37,6 +37,10 @@ interface SignalCardProps {
   callsign: string;
 }
 
+function getVotedSignals(): Record<string, "verified" | "unverified"> {
+  try { return JSON.parse(localStorage.getItem("votedSignals") || "{}"); } catch { return {}; }
+}
+
 export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardProps) {
   const [verified, setVerified] = useState(signal.verifiedCount);
   const [unverified, setUnverified] = useState(signal.unverifiedCount);
@@ -48,6 +52,9 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
   const [newComment, setNewComment] = useState("");
   const [sendingComment, setSendingComment] = useState(false);
   const [voting, setVoting] = useState(false);
+  const [myVote, setMyVote] = useState<"verified" | "unverified" | null>(
+    () => getVotedSignals()[signal.id] ?? null
+  );
   const [showEdit, setShowEdit] = useState(false);
   const [tick, setTick] = useState(0);
 
@@ -78,14 +85,52 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
     setShowComments((v) => !v);
   };
 
+  const recalcTrust = (v: number, u: number) => {
+    const total = v + u;
+    return total === 0 ? 50 : Math.round((v / total) * 1000) / 10;
+  };
+
   const handleVote = async (type: "verified" | "unverified") => {
     if (voting) return;
+
+    const voted = getVotedSignals();
+
+    if (myVote === type) {
+      // Toggle off — undo vote locally
+      const newV = type === "verified" ? verified - 1 : verified;
+      const newU = type === "unverified" ? unverified - 1 : unverified;
+      setVerified(newV);
+      setUnverified(newU);
+      setTrustScore(recalcTrust(newV, newU));
+      setMyVote(null);
+      delete voted[signal.id];
+      localStorage.setItem("votedSignals", JSON.stringify(voted));
+      return;
+    }
+
+    if (myVote && myVote !== type) {
+      // Switch vote — undo old, apply new locally
+      const newV = type === "verified" ? verified + 1 : verified - 1;
+      const newU = type === "unverified" ? unverified + 1 : unverified - 1;
+      setVerified(newV);
+      setUnverified(newU);
+      setTrustScore(recalcTrust(newV, newU));
+      setMyVote(type);
+      voted[signal.id] = type;
+      localStorage.setItem("votedSignals", JSON.stringify(voted));
+      return;
+    }
+
+    // New vote — call backend
     setVoting(true);
     try {
       const updated = await signalApi.vote(signal.id, type);
       setVerified(updated.verifiedCount);
       setUnverified(updated.unverifiedCount);
       setTrustScore(updated.trustScore);
+      setMyVote(type);
+      voted[signal.id] = type;
+      localStorage.setItem("votedSignals", JSON.stringify(voted));
     } finally {
       setVoting(false);
     }
@@ -192,16 +237,22 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
         <div className="flex items-center gap-2 pt-3 border-t border-terminal-green/10">
           <button
             onClick={() => handleVote("verified")}
-            disabled={voting}
-            className="flex items-center gap-1 px-2 py-1 text-xs font-mono text-muted-foreground hover:text-terminal-green transition-colors disabled:opacity-50"
+            className={`flex items-center gap-1 px-2 py-1 text-xs font-mono transition-colors ${
+              myVote === "verified"
+                ? "text-terminal-green bg-terminal-green/10"
+                : "text-muted-foreground hover:text-terminal-green"
+            }`}
           >
             <ThumbsUp className="w-3 h-3" />
             VERIFIED ({verified})
           </button>
           <button
             onClick={() => handleVote("unverified")}
-            disabled={voting}
-            className="flex items-center gap-1 px-2 py-1 text-xs font-mono text-muted-foreground hover:text-emergency-red transition-colors disabled:opacity-50"
+            className={`flex items-center gap-1 px-2 py-1 text-xs font-mono transition-colors ${
+              myVote === "unverified"
+                ? "text-emergency-red bg-emergency-red/10"
+                : "text-muted-foreground hover:text-emergency-red"
+            }`}
           >
             <ThumbsDown className="w-3 h-3" />
             UNVERIFIED ({unverified})
