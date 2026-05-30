@@ -16,9 +16,11 @@ import { SettingsView } from "./components/settings-view";
 import { VaultView } from "./components/vault-view";
 import { TradeModal } from "./components/trade-modal";
 import { SignalFeedPage } from "./modules/signals/pages/SignalFeedPage";
+import { ReputationLeaderboard } from "./components/reputation-leaderboard";
+import { useAuth } from "./context/AuthContext";
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const { isLoggedIn, user } = useAuth();
   const [activeSection, setActiveSection] = useState('signals');
   const [showTradeModal, setShowTradeModal] = useState(false);
   const [selectedMarketItem, setSelectedMarketItem] = useState<any>(null);
@@ -26,7 +28,7 @@ export default function App() {
   const [memorySort, setMemorySort] = useState<'date' | 'decay'>('date');
 
   if (!isLoggedIn) {
-    return <LoginScreen onLogin={() => { localStorage.setItem('isLoggedIn', 'true'); setIsLoggedIn(true); }} />;
+    return <LoginScreen />;
   }
 
 
@@ -227,7 +229,7 @@ export default function App() {
               </div>
             </div>
 
-            {activeSection === 'signals' && <SignalFeedPage />}
+            {activeSection === 'signals' && <SignalFeedPage authCallsign={user?.username} />}
 
             {activeSection === 'vault' && <VaultView />}
 
@@ -326,13 +328,18 @@ export default function App() {
               </div>
             )}
 
-            {activeSection === 'survivors' && <SurvivorProfile />}
+            {activeSection === 'survivors' && (
+              <div className="space-y-8">
+                <SurvivorProfile />
+                <ReputationLeaderboard />
+              </div>
+            )}
 
             {activeSection === 'sectors' && <SectorMap />}
 
             {activeSection === 'alerts' && <AlertsView />}
 
-            {activeSection === 'settings' && <SettingsView onLogout={() => { localStorage.removeItem('isLoggedIn'); setIsLoggedIn(false); }} />}
+            {activeSection === 'settings' && <SettingsView />}
           </div>
         </main>
       </div>

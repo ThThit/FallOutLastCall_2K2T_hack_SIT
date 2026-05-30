@@ -5,15 +5,23 @@ import type { Signal } from "../types/signal.types";
 import { SignalCard } from "../components/signal-card";
 import { BroadcastComposer } from "../components/broadcast-composer";
 
-export function SignalFeedPage() {
+interface SignalFeedPageProps {
+  // When the app is integrated with auth, the logged-in username is the identity.
+  authCallsign?: string;
+}
+
+export function SignalFeedPage({ authCallsign }: SignalFeedPageProps) {
   const [signals, setSignals] = useState<Signal[]>([]);
   const [signalsLoading, setSignalsLoading] = useState(false);
   const [signalSort, setSignalSort] = useState<'date' | 'trust'>('date');
   const [showBroadcast, setShowBroadcast] = useState(false);
 
-  const [callsign, setCallsign] = useState(() => localStorage.getItem('callsign') ?? '');
+  const [localCallsign, setLocalCallsign] = useState(() => localStorage.getItem('callsign') ?? '');
   const [showCallsignPrompt, setShowCallsignPrompt] = useState(false);
   const [callsignInput, setCallsignInput] = useState('');
+
+  // Logged-in username wins; otherwise fall back to the manual callsign (standalone mode)
+  const callsign = authCallsign ?? localCallsign;
 
   useEffect(() => {
     setSignalsLoading(true);
@@ -23,14 +31,15 @@ export function SignalFeedPage() {
   }, [signalSort]);
 
   useEffect(() => {
-    if (!callsign) setShowCallsignPrompt(true);
-  }, [callsign]);
+    // Only prompt for a manual callsign when there's no logged-in identity
+    if (!authCallsign && !localCallsign) setShowCallsignPrompt(true);
+  }, [authCallsign, localCallsign]);
 
   const handleSaveCallsign = () => {
     const trimmed = callsignInput.trim().toUpperCase();
     if (!trimmed) return;
     localStorage.setItem('callsign', trimmed);
-    setCallsign(trimmed);
+    setLocalCallsign(trimmed);
     setShowCallsignPrompt(false);
   };
 
@@ -46,12 +55,15 @@ export function SignalFeedPage() {
             ) : (
               <span className="text-xs font-mono text-warning-amber animate-pulse">NOT SET</span>
             )}
-            <button
-              onClick={() => { setCallsignInput(callsign); setShowCallsignPrompt(true); }}
-              className="text-xs font-mono text-muted-foreground hover:text-terminal-green transition-colors ml-1"
-            >
-              [{callsign ? 'CHANGE' : 'SET'}]
-            </button>
+            {/* Manual change only in standalone mode (no logged-in identity) */}
+            {!authCallsign && (
+              <button
+                onClick={() => { setCallsignInput(localCallsign); setShowCallsignPrompt(true); }}
+                className="text-xs font-mono text-muted-foreground hover:text-terminal-green transition-colors ml-1"
+              >
+                [{localCallsign ? 'CHANGE' : 'SET'}]
+              </button>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
