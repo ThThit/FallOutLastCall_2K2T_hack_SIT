@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { z } from "zod";
-import prisma from "../lib/prisma.js";
+import signalService from "../services/signal.service.js";
 
 const VALID_SECTORS = [1, 2, 3, 4, 5, 6, 8];
 
@@ -35,147 +35,99 @@ const createCommentSchema = z.object({
   content: z.string().min(1),
 });
 
-function expiryFilter() {
-  const now = Date.now();
-  return {
-    OR: [
-      {
-        priority: "STANDARD",
-        createdAt: { gt: new Date(now - 7 * 24 * 60 * 60 * 1000) },
-      },
-      {
-        priority: "EMERGENCY",
-        createdAt: { gt: new Date(now - 3 * 24 * 60 * 60 * 1000) },
-      },
-    ],
-  };
-}
-
 export const createSignal = async (req: Request, res: Response) => {
-  const result = createSignalSchema.safeParse(req.body);
-  if (!result.success) return res.status(400).json({ error: result.error.issues });
+  try {
+    const result = createSignalSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ error: result.error.issues });
+    }
 
-  const signal = await prisma.signal.create({ data: result.data });
-  return res.status(201).json(signal);
+    const signal = await signalService.create(result.data);
+    return res.status(201).json(signal);
+  } catch (error: any) {
+    return res.status(error.status || 500).json({ error: error.message });
+  }
 };
 
 export const getSignals = async (req: Request, res: Response) => {
-  const { sort, q, sector } = req.query;
-
-  const where: any = {
-    deletedAt: null,
-    AND: [expiryFilter()],
-  };
-
-  if (q) {
-    where.AND.push({
-      OR: [
-        { content: { contains: String(q) } },
-        { authorName: { contains: String(q) } },
-      ],
+  try {
+    const { sort, q, sector } = req.query;
+    const signals = await signalService.getAll({
+      sort: sort ? String(sort) : undefined,
+      q: q ? String(q) : undefined,
+      sector: sector ? String(sector) : undefined,
     });
+    return res.json(signals);
+  } catch (error: any) {
+    return res.status(error.status || 500).json({ error: error.message });
   }
-
-  if (sector) {
-    const num = parseInt(String(sector));
-    if (!isNaN(num)) where.sector = num;
-  }
-
-  const orderBy =
-    sort === "trust"
-      ? { trustScore: "desc" as const }
-      : { createdAt: "desc" as const };
-
-  const signals = await prisma.signal.findMany({
-    where,
-    include: { _count: { select: { comments: true } } },
-    orderBy,
-  });
-
-  // EMERGENCY always first, then preserve sort order within each priority
-  signals.sort((a, b) => {
-    if (a.priority === "EMERGENCY" && b.priority !== "EMERGENCY") return -1;
-    if (b.priority === "EMERGENCY" && a.priority !== "EMERGENCY") return 1;
-    return 0;
-  });
-
-  return res.json(signals);
 };
 
 export const updateSignal = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const result = updateSignalSchema.safeParse(req.body);
-  if (!result.success) return res.status(400).json({ error: result.error.issues });
+  try {
+    const id = String(req.params.id);
+    const result = updateSignalSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ error: result.error.issues });
+    }
 
-  const existing = await prisma.signal.findFirst({ where: { id, deletedAt: null } });
-  if (!existing) return res.status(404).json({ error: "Signal not found" });
-
-  const signal = await prisma.signal.update({ where: { id }, data: result.data });
-  return res.json(signal);
+    const signal = await signalService.update(id, result.data);
+    return res.json(signal);
+  } catch (error: any) {
+    return res.status(error.status || 500).json({ error: error.message });
+  }
 };
 
 export const deleteSignal = async (req: Request, res: Response) => {
-  const { id } = req.params;
-
-  const existing = await prisma.signal.findFirst({ where: { id } });
-  if (!existing) return res.status(404).json({ error: "Signal not found" });
-
-  await prisma.signal.update({ where: { id }, data: { deletedAt: new Date() } });
-  return res.json({ message: "Signal deleted" });
+  try {
+    const id = String(req.params.id);
+    const result = await signalService.softDelete(id);
+    return res.json(result);
+  } catch (error: any) {
+    return res.status(error.status || 500).json({ error: error.message });
+  }
 };
 
 export const voteSignal = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const result = voteSchema.safeParse(req.body);
-  if (!result.success) return res.status(400).json({ error: result.error.issues });
+  try {
+    const id = String(req.params.id);
+    const result = voteSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ error: result.error.issues });
+    }
 
-  const existing = await prisma.signal.findFirst({ where: { id, deletedAt: null } });
-  if (!existing) return res.status(404).json({ error: "Signal not found" });
-
-  const { type, action } = result.data;
-  const delta = action === "remove" ? -1 : 1;
-
-  const newVerified = type === "verified"
-    ? Math.max(0, existing.verifiedCount + delta)
-    : existing.verifiedCount;
-  const newUnverified = type === "unverified"
-    ? Math.max(0, existing.unverifiedCount + delta)
-    : existing.unverifiedCount;
-
-  const total = newVerified + newUnverified;
-  const trustScore =
-    total === 0 ? 50 : Math.round((newVerified / total) * 1000) / 10;
-
-  const updated = await prisma.signal.update({
-    where: { id },
-    data: { verifiedCount: newVerified, unverifiedCount: newUnverified, trustScore },
-  });
-  return res.json(updated);
+    const signal = await signalService.vote(
+      id,
+      result.data.type,
+      result.data.action,
+    );
+    return res.json(signal);
+  } catch (error: any) {
+    return res.status(error.status || 500).json({ error: error.message });
+  }
 };
 
 export const createComment = async (req: Request, res: Response) => {
-  const { id: signalId } = req.params;
-  const result = createCommentSchema.safeParse(req.body);
-  if (!result.success) return res.status(400).json({ error: result.error.issues });
+  try {
+    const signalId = String(req.params.id);
+    const result = createCommentSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ error: result.error.issues });
+    }
 
-  const signal = await prisma.signal.findFirst({ where: { id: signalId, deletedAt: null } });
-  if (!signal) return res.status(404).json({ error: "Signal not found" });
-
-  const comment = await prisma.comment.create({
-    data: { signalId, ...result.data },
-  });
-  return res.status(201).json(comment);
+    const comment = await signalService.addComment(signalId, result.data);
+    return res.status(201).json(comment);
+  } catch (error: any) {
+    return res.status(error.status || 500).json({ error: error.message });
+  }
 };
 
 export const getComments = async (req: Request, res: Response) => {
-  const { id: signalId } = req.params;
-
-  const signal = await prisma.signal.findFirst({ where: { id: signalId } });
-  if (!signal) return res.status(404).json({ error: "Signal not found" });
-
-  const comments = await prisma.comment.findMany({
-    where: { signalId },
-    orderBy: { createdAt: "asc" },
-  });
-  return res.json(comments);
+  try {
+    const signalId = String(req.params.id);
+    const comments = await signalService.getComments(signalId);
+    return res.json(comments);
+  } catch (error: any) {
+    return res.status(error.status || 500).json({ error: error.message });
+  }
 };
