@@ -1,198 +1,162 @@
 import prisma from "../lib/prisma.js";
 
+// Peter's percentage trust formula (consistent with the signal card display)
+function calcTrustScore(verified: number, unverified: number) {
+    const total = verified + unverified;
+    if (total === 0) return 50;
+    return Math.round((verified / total) * 1000) / 10;
+}
+
+// Reputation = aggregate of a user's signals' (verified - unverified) counts.
+// Driven entirely by Peter's verify/unverify counts; stored on the User for profile display.
+async function recomputeReputation(userId: string) {
+    const signals = await prisma.signal.findMany({
+        where: { userId, deletedAt: null },
+        select: { verifiedCount: true, unverifiedCount: true },
+    });
+    const score = signals.reduce(
+        (sum, s) => sum + (s.verifiedCount - s.unverifiedCount),
+        0,
+    );
+    await prisma.user.update({ where: { id: userId }, data: { reputationScore: score } });
+    return score;
+}
+
 export class SignalsService {
+    // READ: all signals with trust/verification metadata (thit's enriched view)
     async getAllSignal() {
         const signals = await prisma.signal.findMany({
+            where: { deletedAt: null },
             include: { user: true },
         });
 
-        return signals.map(signal => {
-            const trustScore = signal.verifiedCount - signal.unverifiedCount;
-            return {
-                id: signal.id,
-                title: signal.title,
-                content: signal.content,
-                category: signal.category,
-                dangerLevel: signal.dangerLevel,
-                author: signal.user.username,
-                sector: signal.sector,
-                authorReputation: signal.user.reputationScore,
-                trustScore,
-                verificationStatus: signal.verifiedCount > signal.unverifiedCount
-                    ? 'VERIFIED'
-                    : signal.unverifiedCount > 0 ? 'SUSPICIOUS' : 'UNVERIFIED',
-                verifiedVotes: signal.verifiedCount,
-                unverifiedVotes: signal.unverifiedCount,
-                flagged: signal.flagged,
-                timeStamp: signal.createdAt
-            };
-        });
-    }
-
-    async createSignal(title: string, content: string, userId: string, category: string, dangerLevel: string) {
-        const user = await prisma.user.findUnique({ where: { id: userId } });
-
-        if (!user) throw new Error('User not found');
-
-        const signal = await prisma.signal.create({
-            data: {
-                title,
-                content,
-                userId,
-                category: category as any,
-                dangerLevel: dangerLevel as any,
-                sector: user.sector
-            },
-            include: { user: true }
-        });
-
-        return {
+        return signals.map((signal) => ({
             id: signal.id,
             title: signal.title,
             content: signal.content,
             category: signal.category,
             dangerLevel: signal.dangerLevel,
-            author: signal.user.username,
-            sector: signal.user.sector,
-            authorReputation: signal.user.reputationScore,
-            trustScore: 0,
-            verificationStatus: 'UNVERIFIED',
-            verifiedVotes: 0,
-            unverifiedVotes: 0,
-            flagged: false,
-            timeStamp: signal.createdAt
-        };
+            author: signal.user?.username ?? signal.authorName,
+            sector: signal.sector,
+            authorReputation: signal.user?.reputationScore ?? 0,
+            trustScore: signal.trustScore,
+            verificationStatus:
+                signal.verifiedCount > signal.unverifiedCount
+                    ? "VERIFIED"
+                    : signal.unverifiedCount > 0
+                      ? "SUSPICIOUS"
+                      : "UNVERIFIED",
+            verifiedVotes: signal.verifiedCount,
+            unverifiedVotes: signal.unverifiedCount,
+            flagged: signal.flagged,
+            timeStamp: signal.createdAt,
+        }));
     }
 
+    // CREATE: submit a verification vote on a signal
     async verifySignal(signalId: string, userId: string, status: string) {
         const signal = await prisma.signal.findUnique({
-            where: { id: parseInt(signalId) },
-            include: { user: true, verifications: true }
+            where: { id: signalId },
+            include: { user: true },
         });
+        if (!signal) throw new Error("Signal not found");
 
-        if (!signal) throw new Error('Signal not found');
-
-        const existingVerification = await prisma.verification.findUnique({
-            where: { signalId_userId: { signalId: parseInt(signalId), userId } }
+        const existing = await prisma.verification.findUnique({
+            where: { signalId_userId: { signalId, userId } },
         });
-
-        if (existingVerification) throw new Error('User has already verified this signal');
+        if (existing) throw new Error("User has already verified this signal");
 
         await prisma.verification.create({
-            data: { signalId: parseInt(signalId), userId, status: status as any }
+            data: { signalId, userId, status: status as any },
         });
 
-        const countUpdate = status === 'VERIFIED'
-            ? { verifiedCount: signal.verifiedCount + 1 }
-            : { unverifiedCount: signal.unverifiedCount + 1 };
+        // VERIFIED increases verified; SUSPICIOUS/OUTDATED increase unverified
+        const verifiedCount =
+            status === "VERIFIED" ? signal.verifiedCount + 1 : signal.verifiedCount;
+        const unverifiedCount =
+            status === "VERIFIED" ? signal.unverifiedCount : signal.unverifiedCount + 1;
+        const trustScore = calcTrustScore(verifiedCount, unverifiedCount);
 
         await prisma.signal.update({
-            where: { id: parseInt(signalId) },
-            data: countUpdate
+            where: { id: signalId },
+            data: { verifiedCount, unverifiedCount, trustScore },
         });
 
-        const verifiedCount = status === 'VERIFIED' ? signal.verifiedCount + 1 : signal.verifiedCount;
-        const unverifiedCount = status === 'VERIFIED' ? signal.unverifiedCount : signal.unverifiedCount + 1;
-        const trustScore = verifiedCount - unverifiedCount;
+        // Recompute the signal author's reputation from their verify/unverify counts
+        if (signal.userId) await recomputeReputation(signal.userId);
 
-        // Update voter reputation
-        const voterUser = await prisma.user.findUnique({ where: { id: userId } });
-        if (voterUser) {
-            const isMajority = (status === 'VERIFIED' && verifiedCount > unverifiedCount) ||
-                (status !== 'VERIFIED' && unverifiedCount > verifiedCount);
-            await prisma.user.update({
-                where: { id: userId },
-                data: { reputationScore: voterUser.reputationScore + (isMajority ? 1 : -1) }
-            });
-        }
-
-        // Update signal creator reputation
-        const creatorUser = await prisma.user.findUnique({ where: { id: signal.userId } });
-        if (creatorUser && creatorUser.id !== userId) {
-            await prisma.user.update({
-                where: { id: signal.userId },
-                data: { reputationScore: creatorUser.reputationScore + (status === 'VERIFIED' ? 2 : -1) }
-            });
-        }
-
-        // Auto-delete if misinformation threshold exceeded (2x unverified vs verified)
+        // Auto-delete: if suspicious/unverified votes exceed verified, the signal is
+        // removed as community-confirmed misinformation (thit's mechanic, soft delete).
         if (unverifiedCount > verifiedCount && unverifiedCount >= 3) {
-            await prisma.verification.deleteMany({ where: { signalId: parseInt(signalId) } });
-            await prisma.signal.delete({ where: { id: parseInt(signalId) } });
+            await prisma.signal.update({
+                where: { id: signalId },
+                data: { deletedAt: new Date(), flagged: true, flagReason: "Auto-removed: community flagged as misinformation" },
+            });
             return {
+                id: signalId,
                 deleted: true,
-                message: `Signal auto-removed: ${unverifiedCount} suspicious/outdated vs ${verifiedCount} verified votes`
+                trustScore,
+                verifiedVotes: verifiedCount,
+                unverifiedVotes: unverifiedCount,
+                message: `Signal auto-removed: ${unverifiedCount} suspicious vs ${verifiedCount} verified votes`,
             };
         }
 
-        const updatedSignal = await prisma.signal.findUnique({
-            where: { id: parseInt(signalId) },
-            include: { user: true }
-        });
-
-        if (!updatedSignal) throw new Error('Failed to fetch updated signal');
-
-        const verificationStatus = verifiedCount > unverifiedCount ? 'VERIFIED' : 'SUSPICIOUS';
-
         return {
-            id: updatedSignal.id,
-            title: updatedSignal.title,
-            content: updatedSignal.content,
-            category: updatedSignal.category,
-            dangerLevel: updatedSignal.dangerLevel,
-            author: updatedSignal.user.username,
-            sector: updatedSignal.user.sector,
-            authorReputation: updatedSignal.user.reputationScore,
+            id: signalId,
+            deleted: false,
             trustScore,
-            verificationStatus,
             verifiedVotes: verifiedCount,
             unverifiedVotes: unverifiedCount,
-            flagged: updatedSignal.flagged,
-            timeStamp: updatedSignal.createdAt
+            verificationStatus: verifiedCount > unverifiedCount ? "VERIFIED" : "SUSPICIOUS",
+            flagged: signal.flagged,
         };
     }
 
-    // READ: Detailed trust statistics for a signal
+    // READ: detailed trust statistics for a signal
     async getTrustStats(signalId: string) {
         const signal = await prisma.signal.findUnique({
-            where: { id: parseInt(signalId) },
+            where: { id: signalId },
             include: {
                 user: true,
                 verifications: {
                     include: { user: { select: { username: true, reputationScore: true } } },
-                    orderBy: { createdAt: 'desc' }
-                }
-            }
+                    orderBy: { createdAt: "desc" },
+                },
+            },
         });
+        if (!signal) throw new Error("Signal not found");
 
-        if (!signal) throw new Error('Signal not found');
-
-        const verifiedVotes = signal.verifications.filter(v => v.status === 'VERIFIED').length;
-        const suspiciousVotes = signal.verifications.filter(v => v.status === 'SUSPICIOUS').length;
-        const outdatedVotes = signal.verifications.filter(v => v.status === 'OUTDATED').length;
+        const verifiedVotes = signal.verifications.filter((v) => v.status === "VERIFIED").length;
+        const suspiciousVotes = signal.verifications.filter((v) => v.status === "SUSPICIOUS").length;
+        const outdatedVotes = signal.verifications.filter((v) => v.status === "OUTDATED").length;
         const totalVotes = signal.verifications.length;
 
         const trustPercentage = totalVotes > 0 ? (verifiedVotes / totalVotes) * 100 : 0;
-        // Laplace-smoothed confidence score
         const signalConfidence = Math.round(((verifiedVotes + 1) / (totalVotes + 2)) * 100) / 100;
 
         let reliabilityLevel: string;
-        if (totalVotes === 0) reliabilityLevel = 'UNVERIFIED';
-        else if (trustPercentage >= 75) reliabilityLevel = 'TRUSTED';
-        else if (trustPercentage >= 50) reliabilityLevel = 'HIGH';
-        else if (trustPercentage >= 25) reliabilityLevel = 'MEDIUM';
-        else reliabilityLevel = 'LOW';
+        if (totalVotes === 0) reliabilityLevel = "UNVERIFIED";
+        else if (trustPercentage >= 75) reliabilityLevel = "TRUSTED";
+        else if (trustPercentage >= 50) reliabilityLevel = "HIGH";
+        else if (trustPercentage >= 25) reliabilityLevel = "MEDIUM";
+        else reliabilityLevel = "LOW";
 
-        const communityConsensus = totalVotes === 0
-            ? 'UNVERIFIED'
-            : verifiedVotes > (suspiciousVotes + outdatedVotes) ? 'VERIFIED' : 'SUSPICIOUS';
+        const communityConsensus =
+            totalVotes === 0
+                ? "UNVERIFIED"
+                : verifiedVotes > suspiciousVotes + outdatedVotes
+                  ? "VERIFIED"
+                  : "SUSPICIOUS";
 
         return {
             signalId: signal.id,
             title: signal.title,
+            trustScore: signal.trustScore,
             trustPercentage: Math.round(trustPercentage * 10) / 10,
             signalConfidence,
-            verifiedVotes,
+            verifiedVotes: signal.verifiedCount,
+            unverifiedVotes: signal.unverifiedCount,
             suspiciousVotes,
             outdatedVotes,
             totalVotes,
@@ -200,64 +164,65 @@ export class SignalsService {
             communityConsensus,
             flagged: signal.flagged,
             flagReason: signal.flagReason,
-            authorReputation: signal.user.reputationScore,
-            verificationHistory: signal.verifications.map(v => ({
+            authorReputation: signal.user?.reputationScore ?? 0,
+            verificationHistory: signal.verifications.map((v) => ({
                 username: v.user.username,
                 voterReputation: v.user.reputationScore,
                 status: v.status,
-                timestamp: v.createdAt
-            }))
+                timestamp: v.createdAt,
+            })),
         };
     }
 
-    // DELETE: Moderator removes a harmful signal
+    // DELETE: moderator removes a harmful signal (soft delete to keep Peter's feed semantics)
     async deleteSignal(signalId: string) {
-        const signal = await prisma.signal.findUnique({ where: { id: parseInt(signalId) } });
-
-        if (!signal) throw new Error('Signal not found');
-
-        await prisma.verification.deleteMany({ where: { signalId: parseInt(signalId) } });
-        await prisma.signal.delete({ where: { id: parseInt(signalId) } });
-
-        return { deleted: true, signalId: parseInt(signalId), message: 'Signal removed by moderator' };
-    }
-
-    // DELETE: Moderator clears harmful verification entries and resets vote counts
-    async deleteHarmfulVerifications(signalId: string) {
-        const signal = await prisma.signal.findUnique({ where: { id: parseInt(signalId) } });
-
-        if (!signal) throw new Error('Signal not found');
-
-        const { count } = await prisma.verification.deleteMany({ where: { signalId: parseInt(signalId) } });
+        const signal = await prisma.signal.findUnique({ where: { id: signalId } });
+        if (!signal) throw new Error("Signal not found");
 
         await prisma.signal.update({
-            where: { id: parseInt(signalId) },
-            data: { verifiedCount: 0, unverifiedCount: 0 }
+            where: { id: signalId },
+            data: { deletedAt: new Date() },
         });
 
+        return { deleted: true, signalId, message: "Signal removed by moderator" };
+    }
+
+    // DELETE: moderator clears verification entries and resets trust
+    async deleteHarmfulVerifications(signalId: string) {
+        const signal = await prisma.signal.findUnique({ where: { id: signalId } });
+        if (!signal) throw new Error("Signal not found");
+
+        const { count } = await prisma.verification.deleteMany({ where: { signalId } });
+
+        await prisma.signal.update({
+            where: { id: signalId },
+            data: { verifiedCount: 0, unverifiedCount: 0, trustScore: 50, flagged: false, flagReason: null },
+        });
+
+        if (signal.userId) await recomputeReputation(signal.userId);
+
         return {
-            signalId: parseInt(signalId),
+            signalId,
             deletedCount: count,
-            message: `Cleared ${count} verification entries and reset trust scores`
+            message: `Cleared ${count} verification entries and reset trust scores`,
         };
     }
 
-    // UPDATE: Flag a signal as potential misinformation (any authenticated user)
+    // UPDATE: flag a signal as potential misinformation
     async flagSignal(signalId: string, reason: string) {
-        const signal = await prisma.signal.findUnique({ where: { id: parseInt(signalId) } });
-
-        if (!signal) throw new Error('Signal not found');
+        const signal = await prisma.signal.findUnique({ where: { id: signalId } });
+        if (!signal) throw new Error("Signal not found");
 
         const updated = await prisma.signal.update({
-            where: { id: parseInt(signalId) },
-            data: { flagged: true, flagReason: reason }
+            where: { id: signalId },
+            data: { flagged: true, flagReason: reason },
         });
 
         return {
             signalId: updated.id,
             flagged: updated.flagged,
             flagReason: updated.flagReason,
-            message: 'Signal flagged for moderator review'
+            message: "Signal flagged for moderator review",
         };
     }
 }

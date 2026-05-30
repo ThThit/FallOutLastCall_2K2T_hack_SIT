@@ -1,279 +1,95 @@
-// mock seeds
-
-import { PrismaClient } from "../src/generated/prisma/client.js";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
+// Unified seed — Peter's corruption-level signal showcase, linked to thit's users
+// so reputation/profile/leaderboard have real data.
+import prisma from "../src/lib/prisma.js";
 import bcrypt from "bcrypt";
-import "dotenv/config";
 
-const connectionString = process.env.DATABASE_URL;
-if (!connectionString) {
-    throw new Error("DATABASE_URL environment variable is not set");
+function daysAgo(days: number): Date {
+  return new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 }
-
-const adapter = new PrismaLibSql({ url: connectionString });
-const prisma = new PrismaClient({ adapter });
 
 async function main() {
-    // Delete existing data
-    await prisma.verification.deleteMany({});
-    await prisma.signal.deleteMany({});
-    await prisma.user.deleteMany({});
+  // Clear existing data (respect FK order)
+  await prisma.verification.deleteMany();
+  await prisma.comment.deleteMany();
+  await prisma.signal.deleteMany();
+  await prisma.user.deleteMany();
 
-    // Create users
-    const alice = await prisma.user.create({
-        data: {
-            username: "ALICE",
-            password: await bcrypt.hash("password123", 10),
-            reputationScore: 80,
-            sector: 1,
-            role: "MODERATOR",
-        },
-    });
+  const pw = await bcrypt.hash("password123", 10);
 
-    const bob = await prisma.user.create({
-        data: {
-            username: "BOB",
-            password: await bcrypt.hash("password456", 10),
-            reputationScore: 65,
-            sector: 2,
-        },
-    });
+  // Users (callsigns become real users so reputation shows on profiles)
+  const mkUser = (username: string, sector: number, reputationScore: number, role: "USER" | "MODERATOR" | "ADMIN" = "USER") =>
+    prisma.user.create({ data: { username, password: pw, sector, reputationScore, role } });
 
-    const charlie = await prisma.user.create({
-        data: {
-            username: "CHARLIE",
-            password: await bcrypt.hash("password789", 10),
-            reputationScore: 45,
-            sector: 3,
-        },
-    });
+  const medic = await mkUser("MEDIC-77", 4, 36, "MODERATOR");
+  const outpost = await mkUser("OUTPOST-47", 3, 18);
+  const nomad = await mkUser("NOMAD-12", 6, -3);
+  const sentinel = await mkUser("SENTINEL-9", 1, 7);
+  const phoenix = await mkUser("PHOENIX-03", 5, 28);
+  const guardian = await mkUser("GUARDIAN-21", 2, 42);
 
-    const diana = await prisma.user.create({
-        data: {
-            username: "DIANA",
-            password: await bcrypt.hash("password101", 10),
-            reputationScore: 90,
-            sector: 4,
-        },
-    });
+  // Signals — Peter's corruption showcase, each linked to its author user
+  const s1 = await prisma.signal.create({
+    data: {
+      authorName: "MEDIC-77", userId: medic.id,
+      content: "Medical emergency at sector 4 checkpoint. Multiple wounded. Need supplies urgently.",
+      sector: 4, priority: "EMERGENCY", trustScore: 92, verifiedCount: 38, unverifiedCount: 2,
+      createdAt: daysAgo(0.05),
+    },
+  });
+  const s2 = await prisma.signal.create({
+    data: {
+      authorName: "OUTPOST-47", userId: outpost.id,
+      content: "Safe shelter confirmed under metro station. Clean water source. Room for 8 more survivors.",
+      sector: 3, priority: "STANDARD", trustScore: 78, verifiedCount: 23, unverifiedCount: 5,
+      createdAt: daysAgo(0.1),
+    },
+  });
+  const s3 = await prisma.signal.create({
+    data: {
+      authorName: "NOMAD-12", userId: nomad.id,
+      content: "Water supply contaminated in River District. Multiple casualties reported. Do not drink.",
+      sector: 6, priority: "STANDARD", trustScore: 45, verifiedCount: 12, unverifiedCount: 15,
+      createdAt: daysAgo(1.5),
+    },
+  });
+  const s4 = await prisma.signal.create({
+    data: {
+      authorName: "SENTINEL-9", userId: sentinel.id,
+      content: "Supply cache located at old factory in north sector. Medication, fuel canisters, radio parts inside.",
+      sector: 1, priority: "STANDARD", trustScore: 62, verifiedCount: 18, unverifiedCount: 11,
+      createdAt: daysAgo(3.5),
+    },
+  });
+  const s5 = await prisma.signal.create({
+    data: {
+      authorName: "PHOENIX-03", userId: phoenix.id,
+      content: "Evacuation route through tunnel C is clear. Checkpoint at south gate. Bring identification documents.",
+      sector: 5, priority: "STANDARD", trustScore: 85, verifiedCount: 34, unverifiedCount: 6,
+      createdAt: daysAgo(5.5),
+    },
+  });
+  await prisma.signal.create({
+    data: {
+      authorName: "GUARDIAN-21", userId: guardian.id,
+      content: "Final message. Coordinates to safe zone transmitted. Follow the beacon signal. Do not stop moving.",
+      sector: 2, priority: "STANDARD", trustScore: 91, verifiedCount: 45, unverifiedCount: 3,
+      createdAt: daysAgo(6.8),
+    },
+  });
 
-    const eve = await prisma.user.create({
-        data: {
-            username: "EVE",
-            password: await bcrypt.hash("password202", 10),
-            reputationScore: 55,
-            sector: 5,
-        },
-    });
+  // Comments
+  await prisma.comment.createMany({
+    data: [
+      { signalId: s1.id, authorName: "RAVEN-47", content: "En route. ETA 20 minutes. Hold on.", createdAt: daysAgo(0.03) },
+      { signalId: s2.id, authorName: "GUARDIAN-21", content: "Confirmed. Water tested clean. Good location.", createdAt: daysAgo(0.08) },
+      { signalId: s2.id, authorName: "NOMAD-45", content: "How is the security situation there?", createdAt: daysAgo(0.05) },
+      { signalId: s3.id, authorName: "MEDIC-77", content: "Can confirm casualties. Do NOT drink from that source.", createdAt: daysAgo(1.3) },
+      { signalId: s5.id, authorName: "RAVEN-47", content: "What is your exact location? I have medical supplies.", createdAt: daysAgo(5.3) },
+      { signalId: s5.id, authorName: "PHOENIX-03", content: "Abandoned warehouse, north side. Hurry.", createdAt: daysAgo(5.2) },
+    ],
+  });
 
-    const frank = await prisma.user.create({
-        data: {
-            username: "FRANK",
-            password: await bcrypt.hash("password303", 10),
-            reputationScore: 70,
-            sector: 1,
-        },
-    });
-
-    // Create signals
-    const signal1 = await prisma.signal.create({
-        data: {
-            title: "Safe Shelter",
-            content: "Underground station is secure. Supplies available.",
-            category: "SHELTER",
-            dangerLevel: "LOW",
-            sector: 1,
-            userId: alice.id,
-            verifiedCount: 1, // bob only (alice is mod, no pre-vote)
-            unverifiedCount: 0,
-        },
-    });
-
-    const signal2 = await prisma.signal.create({
-        data: {
-            title: "Radiation Warning",
-            content: "Sector 7 showing elevated radiation levels. Avoid until further notice.",
-            category: "DANGER",
-            dangerLevel: "HIGH",
-            sector: 7,
-            userId: bob.id,
-            verifiedCount: 0, // alice removed as mod
-            unverifiedCount: 0,
-        },
-    });
-
-    const signal3 = await prisma.signal.create({
-        data: {
-            title: "Water Source Found",
-            content: "Fresh water discovered near old market. Purified and safe.",
-            category: "SUPPLIES",
-            dangerLevel: "LOW",
-            sector: 2,
-            userId: charlie.id,
-            verifiedCount: 1,
-            unverifiedCount: 0,
-        },
-    });
-
-    const signal4 = await prisma.signal.create({
-        data: {
-            title: "Trading Post Active",
-            content: "Setting up market in district 3. Medical supplies needed.",
-            category: "SUPPLIES",
-            dangerLevel: "MEDIUM",
-            sector: 3,
-            userId: alice.id,
-            verifiedCount: 0,
-            unverifiedCount: 1,
-        },
-    });
-
-    const signal5 = await prisma.signal.create({
-        data: {
-            title: "Medical Team Available",
-            content: "Dr. Harris and team available for emergency treatment. Basic supplies in stock.",
-            category: "MEDICAL",
-            dangerLevel: "LOW",
-            sector: 4,
-            userId: diana.id,
-            verifiedCount: 2,
-            unverifiedCount: 0,
-        },
-    });
-
-    const signal6 = await prisma.signal.create({
-        data: {
-            title: "Creature Sighting",
-            content: "Mutant creatures spotted near sector boundary. Multiple reports. Extreme caution advised.",
-            category: "DANGER",
-            dangerLevel: "CRITICAL",
-            sector: 6,
-            userId: eve.id,
-            verifiedCount: 2,
-            unverifiedCount: 0,
-        },
-    });
-
-    const signal7 = await prisma.signal.create({
-        data: {
-            title: "Evacuation Route Blocked",
-            content: "Main tunnel to sector 9 collapsed. Alternative routes needed.",
-            category: "EVACUATION",
-            dangerLevel: "HIGH",
-            sector: 8,
-            userId: frank.id,
-            verifiedCount: 1, // frank only (alice removed as mod)
-            unverifiedCount: 0,
-        },
-    });
-
-    const signal8 = await prisma.signal.create({
-        data: {
-            title: "Food Cache Located",
-            content: "Pre-war supplies found in bunker. Estimated 2 months supply for small group.",
-            category: "SUPPLIES",
-            dangerLevel: "LOW",
-            sector: 2,
-            userId: diana.id,
-            verifiedCount: 2,
-            unverifiedCount: 0,
-        },
-    });
-
-    const signal9 = await prisma.signal.create({
-        data: {
-            title: "Power Generator Working",
-            content: "Old power plant operational. Limited energy but enough for basic needs.",
-            category: "SUPPLIES",
-            dangerLevel: "MEDIUM",
-            sector: 5,
-            userId: bob.id,
-            verifiedCount: 1,
-            unverifiedCount: 1,
-        },
-    });
-
-    const signal10 = await prisma.signal.create({
-        data: {
-            title: "Gas Leak Detected",
-            content: "Toxic gas seeping from old industrial site. Area marked hazardous.",
-            category: "DANGER",
-            dangerLevel: "HIGH",
-            sector: 4,
-            userId: eve.id,
-            verifiedCount: 2,
-            unverifiedCount: 0,
-        },
-    });
-
-    const signal11 = await prisma.signal.create({
-        data: {
-            title: "Radio Tower Restored",
-            content: "Communication system back online. Can receive broadcasts from other settlements.",
-            category: "SUPPLIES",
-            dangerLevel: "LOW",
-            sector: 3,
-            userId: charlie.id,
-            verifiedCount: 1, // charlie only (alice removed as mod)
-            unverifiedCount: 0,
-        },
-    });
-
-    const signal12 = await prisma.signal.create({
-        data: {
-            title: "Group Moving to Sector 1",
-            content: "Refugee group of 15 people heading to sector 1. Need assistance with supplies.",
-            category: "EVACUATION",
-            dangerLevel: "MEDIUM",
-            sector: 1,
-            userId: frank.id,
-            verifiedCount: 2,
-            unverifiedCount: 0,
-        },
-    });
-
-    // Create verifications
-    await prisma.verification.createMany({
-        data: [
-            // signal1: bob only (alice is mod, kept clean for testing)
-            { signalId: signal1.id, userId: bob.id, status: "VERIFIED" },
-
-            // signal2: no pre-votes (alice removed)
-
-            { signalId: signal3.id, userId: charlie.id, status: "VERIFIED" },
-
-            { signalId: signal4.id, userId: bob.id, status: "SUSPICIOUS" },
-
-            { signalId: signal5.id, userId: diana.id, status: "VERIFIED" },
-            { signalId: signal5.id, userId: frank.id, status: "VERIFIED" },
-
-            { signalId: signal6.id, userId: eve.id, status: "VERIFIED" },
-            { signalId: signal6.id, userId: bob.id, status: "VERIFIED" },
-
-            // signal7: frank only (alice removed)
-            { signalId: signal7.id, userId: frank.id, status: "VERIFIED" },
-
-            { signalId: signal8.id, userId: diana.id, status: "VERIFIED" },
-            { signalId: signal8.id, userId: charlie.id, status: "VERIFIED" },
-
-            { signalId: signal9.id, userId: bob.id, status: "VERIFIED" },
-            { signalId: signal9.id, userId: eve.id, status: "SUSPICIOUS" },
-
-            { signalId: signal10.id, userId: eve.id, status: "VERIFIED" },
-            { signalId: signal10.id, userId: diana.id, status: "VERIFIED" },
-
-            // signal11: charlie only (alice removed)
-            { signalId: signal11.id, userId: charlie.id, status: "VERIFIED" },
-
-            { signalId: signal12.id, userId: frank.id, status: "VERIFIED" },
-            { signalId: signal12.id, userId: bob.id, status: "VERIFIED" },
-        ],
-    });
-
-    console.log("✅ Seed data created successfully!");
-    console.log("Created 6 users and 12 signals with verifications");
+  console.log("Seed complete — 6 users + 6 signals across all corruption levels + comments.");
 }
 
-main()
-    .catch(console.error)
-    .finally(() => prisma.$disconnect());
+main().catch(console.error).finally(() => prisma.$disconnect());

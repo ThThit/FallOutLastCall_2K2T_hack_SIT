@@ -1,13 +1,10 @@
 import { useState } from "react";
-import { useEffect } from "react";
 import { Scanlines } from "./components/scanlines";
 import { StatusBar } from "./components/status-bar";
 import { Sidebar } from "./components/sidebar";
 import { SignalStrength } from "./components/signal-strength";
-import { SignalCard } from "./components/signal-card";
 import { ResourceCard } from "./components/resource-card";
 import { MemoryCard } from "./components/memory-card";
-import { EmergencyAlert } from "./components/emergency-alert";
 import { LoginScreen } from "./components/login-screen";
 import { SurvivorProfile } from "./components/survivor-profile";
 import { MobileNav } from "./components/mobile-nav";
@@ -15,70 +12,170 @@ import { NoiseOverlay } from "./components/noise-overlay";
 import { SectorMap } from "./components/sector-map";
 import { AlertsView } from "./components/alerts-view";
 import { CRTGlow } from "./components/crt-glow";
-import { BroadcastComposer } from "./components/broadcast-composer";
 import { SettingsView } from "./components/settings-view";
 import { VaultView } from "./components/vault-view";
 import { TradeModal } from "./components/trade-modal";
-import { Plus } from "lucide-react";
-import { AuthProvider, useAuth } from "./context/AuthContext";
-import axiosClient from "./api/axiosClient";
-import { ReputationLeaderboard } from "./components/reputation-leaderboard";
+import { SignalFeedPage } from "./modules/signals/pages/SignalFeedPage";
 
-function AppContent() {
-  const { isLoggedIn } = useAuth();
+export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [activeSection, setActiveSection] = useState('signals');
-  const [showEmergency, setShowEmergency] = useState(false);
-  const [showBroadcast, setShowBroadcast] = useState(false);
   const [showTradeModal, setShowTradeModal] = useState(false);
   const [selectedMarketItem, setSelectedMarketItem] = useState<any>(null);
-  const [signalSort, setSignalSort] = useState<'date' | 'trust'>('date');
   const [marketSort, setMarketSort] = useState<'rarity' | 'condition'>('rarity');
   const [memorySort, setMemorySort] = useState<'date' | 'decay'>('date');
-  const [signals, setSignals] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchSignals = async () => {
-      try {
-        console.log('Fetching signals from /signals');
-        const response = await axiosClient.get('/signals');
-        console.log('Signals response:', response.data);
-        // Transform backend signals to match SignalCard format
-        const transformedSignals = response.data.map((signal: any) => ({
-          id: signal.id,
-          title: signal.title,
-          content: signal.content,
-          timeStamp: new Date(signal.timeStamp).toLocaleString(),
-          sector: signal.sector,
-          trustScore: signal.trustScore,
-          author: signal.author,
-          authorReputation: signal.authorReputation,
-          flagged: signal.flagged,
-          isCorrupted: signal.verificationStatus === 'SUSPICIOUS',
-          isEmergency: signal.dangerLevel === 'CRITICAL' || signal.dangerLevel === 'HIGH',
-          verifiedVotes: signal.verifiedVotes,
-          unverifiedVotes: signal.unverifiedVotes,
-          verificationStatus: signal.verificationStatus,
-          comments: []
-        }));
-        console.log('Transformed signals:', transformedSignals);
-        setSignals(transformedSignals);
-      } catch (error: any) {
-        console.error('Failed to fetch signals:', error.response?.data || error.message);
-        setSignals([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSignals();
-  }, []);
 
   if (!isLoggedIn) {
-    return <LoginScreen />;
+    return <LoginScreen onLogin={() => { localStorage.setItem('isLoggedIn', 'true'); setIsLoggedIn(true); }} />;
   }
 
 
+  const resources = [
+    {
+      id: '1',
+      name: 'MEDICAL KIT',
+      trader: 'OUTPOST-12',
+      quantity: 3,
+      condition: 'good' as const,
+      cost: '2x FUEL',
+      rarity: 'critical' as const,
+    },
+    {
+      id: '2',
+      name: 'BATTERIES (AA)',
+      trader: 'NOMAD-45',
+      quantity: 24,
+      condition: 'pristine' as const,
+      cost: '1x CANNED FOOD',
+      rarity: 'uncommon' as const,
+    },
+    {
+      id: '3',
+      name: 'CANNED FOOD',
+      trader: 'SAFEHOUSE-7',
+      quantity: 12,
+      condition: 'worn' as const,
+      cost: '3x BATTERIES',
+      rarity: 'common' as const,
+    },
+    {
+      id: '4',
+      name: 'AMMUNITION',
+      trader: 'GUARDIAN-21',
+      quantity: 50,
+      condition: 'good' as const,
+      cost: '1x MEDICINE',
+      rarity: 'rare' as const,
+    },
+    {
+      id: '5',
+      name: 'RADIO PARTS',
+      trader: 'TECH-88',
+      quantity: 1,
+      condition: 'damaged' as const,
+      cost: '5x FUEL',
+      rarity: 'rare' as const,
+    },
+    {
+      id: '6',
+      name: 'FUEL CANISTER',
+      trader: 'NOMAD-12',
+      quantity: 8,
+      condition: 'good' as const,
+      cost: '2x FOOD',
+      rarity: 'uncommon' as const,
+    },
+  ];
+
+  const memories = [
+    {
+      id: '1',
+      author: 'SARAH-K',
+      title: 'To whoever finds this',
+      content: 'If you\'re reading this, I made it to the northern checkpoint. Tell my brother I tried. The sunset here reminds me of home.',
+      date: '2026-04-15',
+      daysAgo: 44,
+      isDecayed: false,
+    },
+    {
+      id: '2',
+      author: 'ALEX-M',
+      title: 'Birthday message',
+      content: 'Happy 8th birthday Emma. Dad misses you every day. I hope you still remember our song. Stay strong, little one.',
+      date: '2026-03-20',
+      daysAgo: 70,
+      isDecayed: true,
+    },
+    {
+      id: '3',
+      author: 'DR-CHEN',
+      title: 'Medical log',
+      content: 'F_nal ent_y. Vac_ine res_arch l_st. All s_mples c_rrup_ed. I\'m s_rry.',
+      date: '2026-02-10',
+      daysAgo: 108,
+      isDecayed: true,
+    },
+    {
+      id: '4',
+      author: 'MARIA-L',
+      title: 'Last transmission',
+      content: 'The stars are beautiful tonight. I can see them clearly for the first time in months. Thank you for everything.',
+      date: '2026-05-01',
+      daysAgo: 28,
+      isDecayed: false,
+    },
+  ];
+
+  const vaultItems = [
+    {
+      id: 'v1',
+      name: 'Water Purification Tablets',
+      category: 'Medical',
+      rarity: 'Rare' as const,
+      condition: 95,
+      quantity: 50,
+    },
+    {
+      id: 'v2',
+      name: 'Emergency Rations',
+      category: 'Food',
+      rarity: 'Common' as const,
+      condition: 80,
+      quantity: 12,
+    },
+    {
+      id: 'v3',
+      name: 'Signal Booster',
+      category: 'Equipment',
+      rarity: 'Epic' as const,
+      condition: 70,
+      quantity: 1,
+    },
+    {
+      id: 'v4',
+      name: 'Portable Generator',
+      category: 'Tools',
+      rarity: 'Legendary' as const,
+      condition: 85,
+      quantity: 1,
+    },
+    {
+      id: 'v5',
+      name: 'Flashlight Batteries',
+      category: 'Equipment',
+      rarity: 'Common' as const,
+      condition: 100,
+      quantity: 24,
+    },
+    {
+      id: 'v6',
+      name: 'First Aid Kit',
+      category: 'Medical',
+      rarity: 'Rare' as const,
+      condition: 90,
+      quantity: 3,
+    },
+  ];
 
   const handleTradeSubmit = (marketItemId: string, offeredItemIds: string[]) => {
     // Handle trade submission
@@ -127,75 +224,10 @@ function AppContent() {
 
               <div className="flex items-center gap-3">
                 <SignalStrength />
-                {activeSection === 'signals' && (
-                  <button
-                    onClick={() => setShowEmergency(true)}
-                    className="px-4 py-2 bg-emergency-red/10 hover:bg-emergency-red/20 text-emergency-red font-mono text-xs tracking-wide transition-colors border border-emergency-red/30"
-                  >
-                    TEST ALERT
-                  </button>
-                )}
               </div>
             </div>
 
-            {activeSection === 'signals' && (
-              <div className="space-y-4">
-                {/* Sorting Controls */}
-                <div className="flex items-center gap-2 bg-charcoal border border-terminal-green/20 p-3">
-                  <span className="text-xs text-muted-foreground font-mono">SORT BY:</span>
-                  <button
-                    onClick={() => setSignalSort('date')}
-                    className={`px-3 py-1 font-mono text-xs transition-colors ${signalSort === 'date'
-                      ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
-                      : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
-                      }`}
-                  >
-                    DATE
-                  </button>
-                  <button
-                    onClick={() => setSignalSort('trust')}
-                    className={`px-3 py-1 font-mono text-xs transition-colors ${signalSort === 'trust'
-                      ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
-                      : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
-                      }`}
-                  >
-                    TRUST SCORE
-                  </button>
-                </div>
-
-                <button
-                  onClick={() => setShowBroadcast(true)}
-                  className="w-full border-2 border-dashed border-terminal-green/30 hover:border-terminal-green/50 py-6 flex items-center justify-center gap-2 text-terminal-green font-mono text-sm tracking-wide transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                  BROADCAST NEW SIGNAL
-                </button>
-                {loading ? (
-                  <div className="flex items-center justify-center py-12">
-                    <p className="text-muted-foreground font-mono animate-pulse">SCANNING SIGNALS...</p>
-                  </div>
-                ) : signals.length === 0 ? (
-                  <div className="flex items-center justify-center py-12">
-                    <p className="text-muted-foreground font-mono">NO SIGNALS RECEIVED</p>
-                  </div>
-                ) : (
-                  signals
-                    .sort((a, b) => {
-                      if (signalSort === 'trust') {
-                        return b.trustScore - a.trustScore;
-                      }
-                      return 0; // Keep original order for date
-                    })
-                    .map((signal) => (
-                      <SignalCard
-                        key={signal.id}
-                        signal={signal}
-                        onDelete={(id) => setSignals(prev => prev.filter(s => s.id !== id))}
-                      />
-                    ))
-                )}
-              </div>
-            )}
+            {activeSection === 'signals' && <SignalFeedPage />}
 
             {activeSection === 'vault' && <VaultView />}
 
@@ -207,8 +239,8 @@ function AppContent() {
                   <button
                     onClick={() => setMarketSort('rarity')}
                     className={`px-3 py-1 font-mono text-xs transition-colors ${marketSort === 'rarity'
-                      ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
-                      : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
+                        ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
+                        : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
                       }`}
                   >
                     RARITY
@@ -216,8 +248,8 @@ function AppContent() {
                   <button
                     onClick={() => setMarketSort('condition')}
                     className={`px-3 py-1 font-mono text-xs transition-colors ${marketSort === 'condition'
-                      ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
-                      : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
+                        ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
+                        : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
                       }`}
                   >
                     CONDITION
@@ -225,7 +257,22 @@ function AppContent() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
+                  {resources
+                    .sort((a, b) => {
+                      if (marketSort === 'rarity') {
+                        const rarityOrder = { common: 0, uncommon: 1, rare: 2, critical: 3 };
+                        return rarityOrder[b.rarity] - rarityOrder[a.rarity];
+                      } else {
+                        const conditionOrder = { damaged: 0, worn: 1, good: 2, pristine: 3 };
+                        return conditionOrder[b.condition] - conditionOrder[a.condition];
+                      }
+                    })
+                    .map((resource) => (
+                      <ResourceCard key={resource.id} resource={resource} onClick={() => {
+                        setSelectedMarketItem(resource);
+                        setShowTradeModal(true);
+                      }} />
+                    ))}
                 </div>
               </div>
             )}
@@ -238,8 +285,8 @@ function AppContent() {
                   <button
                     onClick={() => setMemorySort('date')}
                     className={`px-3 py-1 font-mono text-xs transition-colors ${memorySort === 'date'
-                      ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
-                      : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
+                        ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
+                        : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
                       }`}
                   >
                     DATE
@@ -247,8 +294,8 @@ function AppContent() {
                   <button
                     onClick={() => setMemorySort('decay')}
                     className={`px-3 py-1 font-mono text-xs transition-colors ${memorySort === 'decay'
-                      ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
-                      : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
+                        ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
+                        : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
                       }`}
                   >
                     DECAY STATUS
@@ -264,40 +311,44 @@ function AppContent() {
                   </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
+                  {memories
+                    .sort((a, b) => {
+                      if (memorySort === 'decay') {
+                        return (b.isDecayed ? 1 : 0) - (a.isDecayed ? 1 : 0);
+                      } else {
+                        return new Date(b.date).getTime() - new Date(a.date).getTime();
+                      }
+                    })
+                    .map((memory) => (
+                      <MemoryCard key={memory.id} memory={memory} />
+                    ))}
                 </div>
               </div>
             )}
 
-            {activeSection === 'survivors' && (
-              <div className="space-y-6">
-                <SurvivorProfile />
-                <ReputationLeaderboard />
-              </div>
-            )}
+            {activeSection === 'survivors' && <SurvivorProfile />}
 
             {activeSection === 'sectors' && <SectorMap />}
 
             {activeSection === 'alerts' && <AlertsView />}
 
-            {activeSection === 'settings' && <SettingsView />}
+            {activeSection === 'settings' && <SettingsView onLogout={() => { localStorage.removeItem('isLoggedIn'); setIsLoggedIn(false); }} />}
           </div>
         </main>
       </div>
 
-      {showEmergency && <EmergencyAlert onClose={() => setShowEmergency(false)} />}
-      {showBroadcast && <BroadcastComposer onClose={() => setShowBroadcast(false)} />}
-
+      <TradeModal
+        isOpen={showTradeModal}
+        onClose={() => {
+          setShowTradeModal(false);
+          setSelectedMarketItem(null);
+        }}
+        marketItem={selectedMarketItem}
+        vaultItems={vaultItems}
+        onSubmitTrade={handleTradeSubmit}
+      />
 
       <MobileNav activeSection={activeSection} onSectionChange={setActiveSection} />
     </div>
-  );
-}
-
-export default function App() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
   );
 }

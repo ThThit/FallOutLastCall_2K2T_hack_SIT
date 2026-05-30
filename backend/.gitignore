@@ -1,4 +1,8 @@
 node_modules
 # Keep environment variables out of version control
 .env
+# Generated Prisma client (regenerated from schema)
 /src/generated/prisma
+# SQLite databases (regenerated from migrations + seed)
+dev.db
+prisma/dev.db

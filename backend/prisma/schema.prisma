@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
+// Unified schema — Peter's Signal feed (base) + thit's Trust/Reputation layer.
+// Trust score & reputation are calculated from Peter's verifiedCount/unverifiedCount.
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -13,13 +10,12 @@ datasource db {
 }
 
 model User {
-  id       String   @id @default(cuid())
-  username String   @unique
-  password String
-  role     UserRole @default(USER)
-
-  reputationScore Int @default(0)
-  sector          Int @default(1)
+  id              String   @id @default(cuid())
+  username        String   @unique
+  password        String
+  role            UserRole @default(USER)
+  reputationScore Int      @default(0)
+  sector          Int      @default(1)
 
   signals       Signal[]
   verifications Verification[]
@@ -28,40 +24,60 @@ model User {
 }
 
 model Signal {
-  id Int @id @default(autoincrement())
+  id         String @id @default(cuid())
+  authorName String // Peter: callsign shown on the feed
 
-  title   String
+  // Optional link to an authenticated author (thit: reputation lives on the User)
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
   content String
+  sector  Int
 
-  category    SignalCategory
-  dangerLevel DangerLevel
-  sector      Int
+  // Peter's fields
+  priority  String    @default("STANDARD")
+  deletedAt DateTime?
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+  // thit's optional classification fields
+  title       String?
+  category    SignalCategory?
+  dangerLevel DangerLevel?
 
-  verifiedCount   Int @default(0)
-  unverifiedCount Int @default(0)
+  // Trust/verification — Peter's counts; thit calculates trust & reputation from these
+  trustScore      Float @default(50)
+  verifiedCount   Int   @default(0)
+  unverifiedCount Int   @default(0)
 
+  // thit's moderation
   flagged    Boolean @default(false)
   flagReason String?
 
+  comments      Comment[]
   verifications Verification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Verification {
-  id Int @id @default(autoincrement())
+model Comment {
+  id         String   @id @default(cuid())
+  signalId   String
+  signal     Signal   @relation(fields: [signalId], references: [id])
+  authorName String
+  content    String
+  createdAt  DateTime @default(now())
+}
 
-  signalId Int
-  userId   String
+model Verification {
+  id String @id @default(cuid())
+
+  signalId String
+  signal   Signal @relation(fields: [signalId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
   status VerificationStatus
-
-  signal Signal @relation(fields: [signalId], references: [id])
-  user   User   @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
 

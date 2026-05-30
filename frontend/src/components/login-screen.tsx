@@ -4,7 +4,11 @@ import { Radio, AlertTriangle, Eye, EyeOff } from "lucide-react";
 import { GlitchText } from "./glitch-text";
 import { useAuth } from "../context/AuthContext";
 
-export function LoginScreen() {
+interface LoginScreenProps {
+  onLogin?: () => void;
+}
+
+export function LoginScreen({ onLogin }: LoginScreenProps) {
   const { login, register, isLoading, error, clearError } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -43,6 +47,7 @@ export function LoginScreen() {
       } else {
         await login(username, password);
       }
+      onLogin?.();
       setShowWarning(false);
     } catch (err: any) {
       setWarningMessage(err.message || "Authentication failed");
@@ -88,7 +93,10 @@ export function LoginScreen() {
               <AlertTriangle className="w-4 h-4 text-emergency-red mt-0.5" />
               <div className="text-xs text-muted-foreground font-mono leading-relaxed">
                 <p className="text-emergency-red mb-2">SYSTEM WARNING</p>
-                <p>Network unstable. Signal interference detected. Connection may be monitored.</p>
+                <p>
+                  Network unstable. Signal interference detected. Connection may
+                  be monitored.
+                </p>
               </div>
             </div>
           </div>
@@ -96,7 +104,7 @@ export function LoginScreen() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-mono text-terminal-green tracking-wide mb-2">
-                {isRegisterMode ? 'CREATE CALLSIGN' : 'ENTER CALLSIGN'}
+                {isRegisterMode ? "CREATE CALLSIGN" : "ENTER CALLSIGN"}
               </label>
               <input
                 type="text"
@@ -113,7 +121,7 @@ export function LoginScreen() {
 
             <div>
               <label className="block text-xs font-mono text-terminal-green tracking-wide mb-2">
-                {isRegisterMode ? 'CREATE PASSWORD' : 'ENTER PASSWORD'}
+                {isRegisterMode ? "CREATE PASSWORD" : "ENTER PASSWORD"}
               </label>
               <div className="relative">
                 <input
@@ -189,7 +197,11 @@ export function LoginScreen() {
               disabled={isLoading}
               className="w-full bg-terminal-green/10 hover:bg-terminal-green/20 border border-terminal-green text-terminal-green py-3 font-mono tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? 'CONNECTING...' : isRegisterMode ? 'REGISTER & CONNECT' : 'ESTABLISH CONNECTION'}
+              {isLoading
+                ? "CONNECTING..."
+                : isRegisterMode
+                  ? "REGISTER & CONNECT"
+                  : "ESTABLISH CONNECTION"}
             </button>
 
             <button
@@ -201,7 +213,9 @@ export function LoginScreen() {
               }}
               className="w-full bg-charcoal border border-terminal-green/30 hover:border-terminal-green/50 text-muted-foreground hover:text-terminal-green py-3 font-mono text-xs tracking-wide transition-colors"
             >
-              {isRegisterMode ? 'ALREADY REGISTERED? LOG IN' : 'NEW SURVIVOR? REGISTER'}
+              {isRegisterMode
+                ? "ALREADY REGISTERED? LOG IN"
+                : "NEW SURVIVOR? REGISTER"}
             </button>
           </form>
 

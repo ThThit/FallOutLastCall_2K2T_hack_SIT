@@ -1,7 +1,5 @@
 import { Router } from 'express';
 import {
-    getSignal,
-    sendSignal,
     verifySignal,
     getTrustStats,
     deleteSignal,
@@ -13,15 +11,14 @@ import { moderatorMiddleware } from '../middlewares/moderator.middleware.js';
 
 const router = Router();
 
-// Public
-router.get('/', getSignal);
+// NOTE: GET / and POST / signals are owned by Peter's signal module (mounted first).
+// This router only adds thit's trust / verification / moderation sub-routes.
 
 // Authenticated
-router.post('/', authMiddleware, sendSignal);
 router.post('/:signalId/verify', authMiddleware, verifySignal);
 router.post('/:signalId/flag', authMiddleware, flagSignal);
 
-// Read trust data (public)
+// Public read of trust data
 router.get('/:signalId/trust', getTrustStats);
 
 // Moderator/Admin only
