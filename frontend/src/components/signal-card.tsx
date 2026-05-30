@@ -133,6 +133,8 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
         voted[signal.id] = type;
       }
       localStorage.setItem("votedSignals", JSON.stringify(voted));
+    } catch {
+      // silently ignore — voting state resets in finally
     } finally {
       setVoting(false);
     }
@@ -295,8 +297,10 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
           </button>
           <button
             onClick={() => handleVote("unverified")}
-            style={{ color: '#ff4444', backgroundColor: myVote === "unverified" ? 'rgba(255,68,68,0.1)' : undefined }}
-            className="flex items-center gap-1 px-2 py-1 text-xs font-mono transition-colors opacity-70 hover:opacity-100"
+            style={myVote === "unverified" ? { color: '#ff4444', backgroundColor: 'rgba(255,68,68,0.1)' } : undefined}
+            className={`flex items-center gap-1 px-2 py-1 text-xs font-mono transition-colors ${
+              myVote === "unverified" ? "" : "text-muted-foreground hover:text-terminal-green"
+            }`}
           >
             <ThumbsDown className="w-3 h-3" />
             UNVERIFIED ({unverified})
