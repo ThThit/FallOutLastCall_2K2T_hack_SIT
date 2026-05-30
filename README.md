@@ -2,6 +2,32 @@
 
 ## Post-Apocalypse Survivor Communication Platform
 
+LAST CALL is a survivor communication network for a world where the internet is
+unstable and information cannot always be trusted. Survivors broadcast emergency
+signals, verify each other's reports, trade scarce resources, and preserve
+memories before they decay. The apocalypse affects the app itself — signals and
+memories visually corrupt over time, and unreliable reports are auto-removed.
+
+This branch is the **full integrated build** of all four team features:
+
+| Feature | Owner | What it does |
+|---|---|---|
+| **Survivor Signals** | Peter | Broadcast feed: create / edit / delete signals, comments, corruption decay, auto-expiry |
+| **Trust & Verification** | thit | Verify/unverify voting, trust scores, reputation, flagging, moderator removal |
+| **Resource Trading & Vault** | vivi | Personal vault inventory + barter marketplace |
+| **Memory Archive** | (member 4) | Preserve survivor memories that visually decay with age |
+
+---
+
+## Tech Stack
+
+- **Frontend:** React + TypeScript + TailwindCSS + Framer Motion (Vite)
+- **Backend:** Express + TypeScript + Zod + Prisma ORM
+- **Database:** SQLite
+- **Integration:** Axios
+
+---
+
 ## Setup & Running
 
 ### 1. Backend
@@ -12,19 +38,22 @@ npm install
 ```
 
 Create a `.env` file in `/backend`:
+
 ```env
 DATABASE_URL="file:./dev.db"
 JWT_SECRET="your-secret-key"
 FRONTEND_URL="http://localhost:5173"
 ```
 
-Run migrations and seed the database:
+Create the database and seed it:
+
 ```bash
-npx prisma migrate dev
-npx prisma db seed
+npx prisma db push      # creates tables from the schema
+npm run seed            # loads demo users, signals, memories
 ```
 
-Start the dev server:
+Start the backend:
+
 ```bash
 npm run dev
 # running on http://localhost:3000
@@ -39,132 +68,144 @@ npm run dev
 # running on http://localhost:5173
 ```
 
+> **Tip:** Re-run `npm run seed` any time you want to reset the demo data. If you
+> see an "authentication" error after reseeding, just log out and log back in
+> (the old session token becomes stale).
+
 ---
 
 ## Seed Accounts
 
-The seed creates 6 users. **ALICE is the moderator.**
+The seed creates 6 survivors. **MEDIC-77 is the moderator.** Password for all
+accounts is `password123`.
 
-| Username | Password | Role | Sector |
-|---|---|---|---|
-| ALICE | password123 | MODERATOR | 1 |
-| BOB | password456 | USER | 2 |
-| CHARLIE | password789 | USER | 3 |
-| DIANA | password101 | USER | 4 |
-| EVE | password202 | USER | 5 |
-| FRANK | password303 | USER | 1 |
+| Callsign | Password | Role | Sector | Reputation |
+|---|---|---|---|---|
+| MEDIC-77 | password123 | MODERATOR | 4 | 36 |
+| OUTPOST-47 | password123 | USER | 3 | 18 |
+| NOMAD-12 | password123 | USER | 6 | -3 |
+| SENTINEL-9 | password123 | USER | 1 | 7 |
+| PHOENIX-03 | password123 | USER | 5 | 28 |
+| GUARDIAN-21 | password123 | USER | 2 | 42 |
 
----
-
-## Testing Implemented Features
-
-### 1. Authentication
-
-**Register a new account**
-1. Open `http://localhost:5173`
-2. Click **REGISTER** on the login screen
-3. Enter a username and password → submit
-4. You are automatically logged in
-
-**Login with a seed account**
-1. Enter `ALICE` / `password123` → login
-2. You land on the Signal Feed
-
-**Logout**
-1. Go to **ABOUT ME** (sidebar or mobile nav)
-2. Click **DISCONNECT & LOG OUT**
+The seed also creates **7 signals** aged across the corruption scale and **3 memory
+archives** (aged 7 / 15 / 70 days) to showcase decay.
 
 ---
 
-### 2. Signal Feed (CREATE + READ)
+## Features & How to Test
 
-**View all signals**
-- The Signal Feed loads automatically on login
-- Signals show title, author callsign, sector, timestamp, trust score, and author reputation
-- Sort by DATE or TRUST SCORE using the controls at the top
+### 1. Authentication + Sector
 
-**Broadcast a new signal**
-1. Click **BROADCAST NEW SIGNAL**
-2. Fill in title, content, danger level, category
-3. Submit — the new signal appears at the top of the feed
+**Register**
+1. Open `http://localhost:5173` → click **NEW SURVIVOR? REGISTER**
+2. Enter a callsign (format `name#digits`, e.g. `scout#7`), a password, confirm it
+3. Pick **YOUR SECTOR** (1–8) from the dropdown
+4. Submit → you're logged in, sector saved to your profile
 
----
+**Login** — enter `MEDIC-77` / `password123` → lands on the Signal Feed.
 
-### 3. Verification Voting (CREATE)
-
-Each signal card has three vote buttons.
-
-**Vote on a signal**
-1. Click **VERIFIED**, **SUSPICIOUS**, or **OUTDATED** on any signal card
-2. The trust score and vote counts animate to the new values
-3. The verification status updates (VERIFIED / SUSPICIOUS / UNVERIFIED)
-4. Your vote is shown: *You voted: VERIFIED*
-5. Buttons lock after voting — one vote per user per signal
-
-**Trigger auto-delete**
-1. Log in as three different users (BOB, CHARLIE, DIANA in separate browsers / incognito)
-2. Each votes **SUSPICIOUS** or **OUTDATED** on the same signal
-3. On the 3rd vote, if suspicious votes outnumber verified votes and reach 3+, the signal flashes red and is removed from the feed automatically
+**Logout** — go to **ABOUT ME** → log out (clears your session).
 
 ---
 
-### 4. Trust Details (READ)
+### 2. Signal Feed — Peter (CRUD + corruption)
 
-**View per-signal trust statistics**
-1. Click **TRUST DETAILS** at the bottom of any signal card
-2. The panel expands and fetches live data, showing:
-   - Animated trust meter bar (0–100%)
-   - Confidence score (Laplace-smoothed)
-   - Reliability badge: `TRUSTED / HIGH / MEDIUM / LOW / UNVERIFIED`
-   - Community consensus badge
-   - Vote breakdown bars (VERIFIED / SUSPICIOUS / OUTDATED)
-   - Verifier history: each voter's callsign, vote type, and reputation score
+**Read** — the feed loads on login. EMERGENCY signals are pinned at the top with
+an orange banner. Sort with **DATE / TRUST**. Only the signal list scrolls; the
+header and controls stay fixed.
 
----
+**Corruption decay** — older signals visually decay (characters replaced with `_`):
+- < 1 day: clean
+- 1–2.5 days: light
+- 2.5–5 days: medium (+ flicker)
+- 5–6.5 days: heavy
+- 6.5 days+: severe + `[DATA CORRUPTION DETECTED]`
 
-### 5. Reputation Leaderboard (READ)
+The seeded signals span all these levels.
 
-1. Go to the **SURVIVORS** section (sidebar)
-2. The **Reputation Leaderboard** loads below the profile card
-3. Shows top 10 survivors ranked by reputation score
-4. Each entry shows: rank, username, MOD badge if moderator, sector, signals sent, verifications made, animated reputation bar
+**Broadcast (Create)**
+1. Click **+ BROADCAST NEW SIGNAL**
+2. Enter a message (max 288 chars), pick a sector, toggle **EMERGENCY** if urgent
+3. Submit → appears at the top of the feed
 
----
+**Edit / Delete (own signals)** — click **EDIT** on your own signal to update it,
+or use the delete option in the edit modal.
 
-### 6. Flag a Signal
-
-Any logged-in user can flag a signal for moderator review.
-
-1. Find the **FLAG** button in the status bar at the bottom of any signal card
-2. Click it — a modal appears asking for a reason
-3. Enter a reason and click **SUBMIT FLAG**
-4. The card gains a red top border and a **FLAGGED** badge
-5. The FLAG button disappears after flagging
+**Comments** — click **COMMENTS** on any card to expand the thread, read comments,
+and post a new one. Shows the first 3 with a **LOAD MORE** button.
 
 ---
 
-### 7. Moderator Actions (DELETE)
+### 3. Verification & Trust — thit
 
-Log in as **ALICE** (MODERATOR) to access these controls.
+**Vote** — each card has **VERIFIED** / **UNVERIFIED** buttons (Reddit-style):
+- Click to vote; click again to remove; click the other to switch
+- Trust score recalculates live (verified / total %)
 
-**Clear verifications**
-1. Find **CLEAR VOTES** in the bottom status bar of any signal card (visible only to mods)
-2. Click it — a confirmation dialog appears with a warning
-3. Confirm — vote counts reset to 0 and trust score clears
+**Auto-delete misinformation** — when a signal's **unverified votes reach 10**, it
+is automatically removed from the feed. The seeded **DRIFTER-66** signal sits at 9
+unverified — one more UNVERIFIED vote deletes it.
 
-**Delete a signal**
-1. Find **DELETE** in the bottom status bar
-2. Click it — a red confirmation dialog with a pulsing overlay appears
-3. Confirm — the card flashes **SIGNAL REMOVED** in red, then slides out and disappears from the feed
+**Reputation** — a survivor's reputation is computed from their signals'
+verify/unverify counts and shown on their profile and the leaderboard.
+
+**Leaderboard** — go to **SURVIVORS**; the Reputation Leaderboard lists the top
+survivors by reputation.
+
+**Flag** — click **FLAG** on any card → enter a reason → submit. The card shows a
+**FLAGGED** state.
+
+**Moderator removal** — log in as **MEDIC-77** (moderator); a **REMOVE** button
+appears on cards. Click it → confirm → the signal is soft-deleted and leaves the feed.
+
+---
+
+### 4. Resource Trading & Vault — vivi
+
+**Vault** — go to **VAULT**. Shows your inventory with total items, active trades,
+and vault value. **ADD ITEM** to stock resources. Items whose count hits **0 are
+removed** automatically.
+
+**Market** — go to **MARKET**:
+- Shows **other survivors'** active listings (never your own)
+- Filter by **CONDITION**; supply/demand alerts at the top
+- **MARKET / MY LISTINGS** toggle — switch to see your own listings
+- On your own listings the button is **REMOVE FROM MARKET** (not accept)
+
+**Make a trade**
+1. List an item from your vault for trade (reserves it from your vault count)
+2. As a **different** survivor with a matching item, click **ACCEPT TRADE**
+3. On success the listing is removed from the market and items transfer
+
+> To test a full trade: log in as one user, list an item; then log in as another
+> user (different account) holding the requested resource, and accept it.
 
 ---
 
-### 8. Account Info
+### 5. Memory Archive — (member 4)
 
-1. Go to **ABOUT ME** in the sidebar
-2. The account panel shows live data for the logged-in user:
-   - Username and role (color-coded)
-   - Sector, reputation score, signals sent, verifications made
-   - Trusted signal count and accuracy percentage
+Go to **ARCHIVE**:
+- Browse preserved memories; older entries are visually corrupted (decay scales
+  with age — the seed has memories at 7 / 15 / 70 days)
+- **Submit Memory** to add a new entry (title, alias, category, content, emotion)
+- Filter by category / date; restore decayed memories
 
 ---
+
+### 6. Survivor Profile (sector overview)
+
+Go to **SURVIVORS**:
+- Shows **your sector number** and a sector overview: survivors in your sector,
+  active signals, and emergencies in that sector
+- Lists the survivors registered in your sector
+- The Reputation Leaderboard appears below
+
+---
+
+## Notes
+
+- The app stays on the **same section across page reloads**.
+- The whole app is locked to the viewport — only the content area scrolls.
+- All four features share one unified database (signals use cuid IDs; trust,
+  trade/vault, and memory tables attach alongside).
