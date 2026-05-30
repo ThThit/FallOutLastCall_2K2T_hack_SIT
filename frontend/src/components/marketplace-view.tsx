@@ -469,7 +469,7 @@ function TradeCard({
                         disabled={cancelling}
                         className="w-full px-4 py-2 bg-emergency-red/10 border border-emergency-red/50 text-emergency-red font-mono text-xs tracking-wide hover:bg-emergency-red/20 transition-colors disabled:opacity-50"
                     >
-                        {cancelling ? "CANCELLING..." : "CANCEL LISTING"}
+                        {cancelling ? "REMOVING..." : "REMOVE FROM MARKET"}
                     </button>
                 ) : (
                     <button
@@ -585,7 +585,7 @@ function CancelConfirmModal({
                 <div className="flex items-start gap-3 mb-5">
                     <AlertTriangle className="w-6 h-6 text-emergency-red shrink-0 mt-0.5" />
                     <div>
-                        <div className="text-white font-mono font-bold mb-1">CANCEL LISTING?</div>
+                        <div className="text-white font-mono font-bold mb-1">REMOVE FROM MARKET?</div>
                         <div className="text-muted-foreground font-mono text-xs leading-relaxed">
                             This will remove <span className="text-emergency-red">×{trade.quantity} {name}</span> from the marketplace.
                             {isVaultLinked && (
@@ -1025,7 +1025,7 @@ export function MarketplaceView() {
                                 <TradeCard
                                     key={trade.id}
                                     trade={trade}
-                                    isOwn={trade.creatorId === myUserId}
+                                    isOwn={viewMine || trade.creatorId === myUserId}
                                     demandCount={demandScore}
                                     onAccept={() => setSelectedTrade(trade)}
                                     onCancel={() => setTradeToCancel(trade)}
