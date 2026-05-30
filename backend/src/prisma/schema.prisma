@@ -1,0 +1,133 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id       String @id @default(cuid())
+  username String @unique
+  password String
+
+  reputationScore Int @default(0)
+
+  signals       Signal[]
+  verifications SignalVerification[]
+  trades        Trade[]
+
+  createdAt DateTime @default(now())
+}
+
+model Signal {
+  id String @id @default(cuid())
+
+  title       String
+  message     String
+  category    SignalCategory
+  dangerLevel DangerLevel
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  verifications SignalVerification[]
+
+  trustScore       Float @default(0)
+  verificationRate Float @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SignalVerification {
+  id String @id @default(cuid())
+
+  signalId String
+  signal   Signal @relation(fields: [signalId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  status VerificationStatus
+
+  createdAt DateTime @default(now())
+
+  @@unique([signalId, userId])
+}
+
+model Trade {
+  id String @id @default(uuid())
+
+  resourceName String
+  quantity     Int
+
+  condition ItemCondition
+
+  requestedItem     String
+  requestedQuantity Int
+
+  traderName String
+
+  category ResourceCategory
+
+  location String?
+
+  status TradeStatus @default(ACTIVE)
+
+  creatorId String
+  creator   User   @relation(fields: [creatorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum VerificationStatus {
+  VERIFIED
+  SUSPICIOUS
+  OUTDATED
+}
+
+enum SignalCategory {
+  SHELTER
+  DANGER
+  SUPPLIES
+  EVACUATION
+  MEDICAL
+}
+
+enum DangerLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ItemCondition {
+  PRISTINE
+  GOOD
+  WORN
+  DAMAGED
+}
+
+enum TradeStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum ResourceCategory {
+  MEDICINE
+  FOOD
+  FUEL
+  BATTERIES
+  TOOLS
+  PARTS
+  AMMO
+}

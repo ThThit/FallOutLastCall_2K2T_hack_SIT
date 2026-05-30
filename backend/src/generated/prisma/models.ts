@@ -11,4 +11,5 @@
 export type * from './models/User.js'
 export type * from './models/Signal.js'
 export type * from './models/SignalVerification.js'
+export type * from './models/Trade.js'
 export type * from './commonInputTypes.js'

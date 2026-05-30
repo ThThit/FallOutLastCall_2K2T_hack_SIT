@@ -386,7 +386,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   Signal: 'Signal',
-  SignalVerification: 'SignalVerification'
+  SignalVerification: 'SignalVerification',
+  Trade: 'Trade'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -402,7 +403,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "signal" | "signalVerification"
+    modelProps: "user" | "signal" | "signalVerification" | "trade"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -628,6 +629,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Trade: {
+      payload: Prisma.$TradePayload<ExtArgs>
+      fields: Prisma.TradeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TradeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TradeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradePayload>
+        }
+        findFirst: {
+          args: Prisma.TradeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TradeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradePayload>
+        }
+        findMany: {
+          args: Prisma.TradeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradePayload>[]
+        }
+        create: {
+          args: Prisma.TradeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradePayload>
+        }
+        createMany: {
+          args: Prisma.TradeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TradeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradePayload>[]
+        }
+        delete: {
+          args: Prisma.TradeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradePayload>
+        }
+        update: {
+          args: Prisma.TradeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradePayload>
+        }
+        deleteMany: {
+          args: Prisma.TradeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TradeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TradeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradePayload>[]
+        }
+        upsert: {
+          args: Prisma.TradeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradePayload>
+        }
+        aggregate: {
+          args: Prisma.TradeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTrade>
+        }
+        groupBy: {
+          args: Prisma.TradeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TradeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TradeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TradeCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -702,12 +777,39 @@ export const SignalVerificationScalarFieldEnum = {
 export type SignalVerificationScalarFieldEnum = (typeof SignalVerificationScalarFieldEnum)[keyof typeof SignalVerificationScalarFieldEnum]
 
 
+export const TradeScalarFieldEnum = {
+  id: 'id',
+  resourceName: 'resourceName',
+  quantity: 'quantity',
+  condition: 'condition',
+  requestedItem: 'requestedItem',
+  requestedQuantity: 'requestedQuantity',
+  traderName: 'traderName',
+  category: 'category',
+  location: 'location',
+  status: 'status',
+  creatorId: 'creatorId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TradeScalarFieldEnum = (typeof TradeScalarFieldEnum)[keyof typeof TradeScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
 
@@ -762,6 +864,27 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'VerificationStatus'
  */
 export type EnumVerificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ItemCondition'
+ */
+export type EnumItemConditionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ItemCondition'>
+    
+
+
+/**
+ * Reference to a field of type 'ResourceCategory'
+ */
+export type EnumResourceCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ResourceCategory'>
+    
+
+
+/**
+ * Reference to a field of type 'TradeStatus'
+ */
+export type EnumTradeStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TradeStatus'>
     
 
 /**
@@ -877,6 +1000,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   signal?: Prisma.SignalOmit
   signalVerification?: Prisma.SignalVerificationOmit
+  trade?: Prisma.TradeOmit
 }
 
 /* Types for Logging */

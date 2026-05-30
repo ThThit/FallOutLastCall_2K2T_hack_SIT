@@ -32,3 +32,8 @@ export type Signal = Prisma.SignalModel
  * 
  */
 export type SignalVerification = Prisma.SignalVerificationModel
+/**
+ * Model Trade
+ * 
+ */
+export type Trade = Prisma.TradeModel

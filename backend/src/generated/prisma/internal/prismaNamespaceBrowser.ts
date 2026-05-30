@@ -53,7 +53,8 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   Signal: 'Signal',
-  SignalVerification: 'SignalVerification'
+  SignalVerification: 'SignalVerification',
+  Trade: 'Trade'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -107,10 +108,37 @@ export const SignalVerificationScalarFieldEnum = {
 export type SignalVerificationScalarFieldEnum = (typeof SignalVerificationScalarFieldEnum)[keyof typeof SignalVerificationScalarFieldEnum]
 
 
+export const TradeScalarFieldEnum = {
+  id: 'id',
+  resourceName: 'resourceName',
+  quantity: 'quantity',
+  condition: 'condition',
+  requestedItem: 'requestedItem',
+  requestedQuantity: 'requestedQuantity',
+  traderName: 'traderName',
+  category: 'category',
+  location: 'location',
+  status: 'status',
+  creatorId: 'creatorId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TradeScalarFieldEnum = (typeof TradeScalarFieldEnum)[keyof typeof TradeScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

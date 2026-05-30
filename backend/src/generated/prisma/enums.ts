@@ -37,3 +37,35 @@ export const DangerLevel = {
 } as const
 
 export type DangerLevel = (typeof DangerLevel)[keyof typeof DangerLevel]
+
+
+export const ItemCondition = {
+  PRISTINE: 'PRISTINE',
+  GOOD: 'GOOD',
+  WORN: 'WORN',
+  DAMAGED: 'DAMAGED'
+} as const
+
+export type ItemCondition = (typeof ItemCondition)[keyof typeof ItemCondition]
+
+
+export const TradeStatus = {
+  ACTIVE: 'ACTIVE',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type TradeStatus = (typeof TradeStatus)[keyof typeof TradeStatus]
+
+
+export const ResourceCategory = {
+  MEDICINE: 'MEDICINE',
+  FOOD: 'FOOD',
+  FUEL: 'FUEL',
+  BATTERIES: 'BATTERIES',
+  TOOLS: 'TOOLS',
+  PARTS: 'PARTS',
+  AMMO: 'AMMO'
+} as const
+
+export type ResourceCategory = (typeof ResourceCategory)[keyof typeof ResourceCategory]
