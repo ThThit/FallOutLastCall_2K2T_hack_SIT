@@ -22,7 +22,7 @@ import { Plus } from "lucide-react";
 import { signalApi, type Signal } from "./lib/api";
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [activeSection, setActiveSection] = useState('signals');
   const [showEmergency, setShowEmergency] = useState(false);
   const [showBroadcast, setShowBroadcast] = useState(false);
@@ -62,7 +62,7 @@ export default function App() {
   };
 
   if (!isLoggedIn) {
-    return <LoginScreen onLogin={() => setIsLoggedIn(true)} />;
+    return <LoginScreen onLogin={() => { localStorage.setItem('isLoggedIn', 'true'); setIsLoggedIn(true); }} />;
   }
 
 
@@ -273,6 +273,25 @@ export default function App() {
 
             {activeSection === 'signals' && (
               <div className="space-y-4">
+
+                {/* Identity bar */}
+                <div className="flex items-center justify-between border border-terminal-green/20 bg-charcoal px-4 py-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono text-muted-foreground">IDENTITY:</span>
+                    {callsign ? (
+                      <span className="text-xs font-mono text-terminal-green tracking-widest">{callsign}</span>
+                    ) : (
+                      <span className="text-xs font-mono text-warning-amber animate-pulse">NOT SET</span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => { setCallsignInput(callsign); setShowCallsignPrompt(true); }}
+                    className="text-xs font-mono text-muted-foreground hover:text-terminal-green transition-colors tracking-wide"
+                  >
+                    {callsign ? 'CHANGE' : 'SET CALLSIGN'}
+                  </button>
+                </div>
+
                 <div className="flex items-center gap-2 bg-charcoal border border-terminal-green/20 p-3">
                   <span className="text-xs text-muted-foreground font-mono">SORT BY:</span>
                   <button
@@ -428,7 +447,7 @@ export default function App() {
 
             {activeSection === 'alerts' && <AlertsView />}
 
-            {activeSection === 'settings' && <SettingsView onLogout={() => setIsLoggedIn(false)} />}
+            {activeSection === 'settings' && <SettingsView onLogout={() => { localStorage.removeItem('isLoggedIn'); setIsLoggedIn(false); }} />}
           </div>
         </main>
       </div>
