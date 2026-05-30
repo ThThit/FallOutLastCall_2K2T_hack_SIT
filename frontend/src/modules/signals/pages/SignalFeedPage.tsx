@@ -8,9 +8,10 @@ import { BroadcastComposer } from "../components/broadcast-composer";
 interface SignalFeedPageProps {
   // When the app is integrated with auth, the logged-in username is the identity.
   authCallsign?: string;
+  userRole?: string;
 }
 
-export function SignalFeedPage({ authCallsign }: SignalFeedPageProps) {
+export function SignalFeedPage({ authCallsign, userRole }: SignalFeedPageProps) {
   const [signals, setSignals] = useState<Signal[]>([]);
   const [signalsLoading, setSignalsLoading] = useState(false);
   const [signalSort, setSignalSort] = useState<'date' | 'trust'>('date');
@@ -112,6 +113,7 @@ export function SignalFeedPage({ authCallsign }: SignalFeedPageProps) {
             key={signal.id}
             signal={signal}
             callsign={callsign}
+            userRole={userRole}
             onDelete={(id) => setSignals((prev) => prev.filter((s) => s.id !== id))}
             onUpdate={(updated) => setSignals((prev) => prev.map((s) => s.id === updated.id ? { ...s, ...updated } : s))}
           />

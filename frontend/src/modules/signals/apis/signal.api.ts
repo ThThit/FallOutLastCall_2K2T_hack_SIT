@@ -26,6 +26,13 @@ export const signalApi = {
 
   addComment: (id: string, body: { authorName: string; content: string }) =>
     api.post<Comment>(`/signals/${id}/comments`, body).then((r) => r.data),
+
+  // thit's moderation endpoints (backend routes already mounted)
+  flag: (id: string, reason: string) =>
+    api.post(`/signals/${id}/flag`, { reason }).then((r) => r.data),
+
+  clearVerifications: (id: string) =>
+    api.delete(`/signals/${id}/verifications`).then((r) => r.data),
 };
 
 export type { Signal, Comment };

@@ -10,6 +10,8 @@ export interface Signal {
   deletedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  flagged?: boolean;
+  flagReason?: string | null;
   _count?: { comments: number };
 }
 

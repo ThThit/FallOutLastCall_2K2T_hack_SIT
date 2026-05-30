@@ -229,7 +229,7 @@ export default function App() {
               </div>
             </div>
 
-            {activeSection === 'signals' && <SignalFeedPage authCallsign={user?.username} />}
+            {activeSection === 'signals' && <SignalFeedPage authCallsign={user?.username} userRole={user?.role} />}
 
             {activeSection === 'vault' && <VaultView />}
 

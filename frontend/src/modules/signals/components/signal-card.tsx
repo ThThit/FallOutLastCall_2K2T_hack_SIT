@@ -9,10 +9,14 @@ import {
   MessageSquare,
   Send,
   Pencil,
+  Flag,
+  ShieldAlert,
 } from "lucide-react";
 import { signalApi } from "../apis/signal.api";
 import type { Signal, Comment } from "../types/signal.types";
 import { BroadcastComposer } from "./broadcast-composer";
+import { FlagModal } from "../../../components/flag-modal";
+import { DeleteConfirmDialog } from "../../../components/delete-confirm-dialog";
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -48,6 +52,7 @@ interface SignalCardProps {
   onDelete?: (id: string) => void;
   onUpdate?: (updated: Signal) => void;
   callsign: string;
+  userRole?: string;
 }
 
 function getVotedSignals(): Record<string, "verified" | "unverified"> {
@@ -63,6 +68,7 @@ export function SignalCard({
   onDelete,
   onUpdate,
   callsign,
+  userRole,
 }: SignalCardProps) {
   const [verified, setVerified] = useState(signal.verifiedCount);
   const [unverified, setUnverified] = useState(signal.unverifiedCount);
@@ -83,6 +89,9 @@ export function SignalCard({
     () => getVotedSignals()[signal.id] ?? null,
   );
   const [showEdit, setShowEdit] = useState(false);
+  const [showFlag, setShowFlag] = useState(false);
+  const [showModDelete, setShowModDelete] = useState(false);
+  const [flagged, setFlagged] = useState(signal.flagged ?? false);
   const [tick, setTick] = useState(0);
 
   const corruptionLevel = getCorruptionLevel(signal.createdAt);
@@ -91,6 +100,7 @@ export function SignalCard({
   const hasFlicker = corruptionLevel >= 0.3;
   const isEmergency = signal.priority === "EMERGENCY";
   const isOwn = signal.authorName === callsign;
+  const isModerator = userRole === "MODERATOR" || userRole === "ADMIN";
 
   // Re-render corruption characters on a timer when signal is corrupted
   useEffect(() => {
@@ -285,6 +295,28 @@ export function SignalCard({
                 EDIT
               </button>
             )}
+            {/* Flag — available to any authenticated user */}
+            <button
+              onClick={() => setShowFlag(true)}
+              className={`flex items-center gap-1 px-2 py-1 text-xs font-mono transition-colors ${
+                flagged
+                  ? "text-warning-amber"
+                  : "text-muted-foreground hover:text-warning-amber"
+              }`}
+            >
+              <Flag className="w-3 h-3" />
+              {flagged ? "FLAGGED" : "FLAG"}
+            </button>
+            {/* Moderator/Admin only — remove signal */}
+            {isModerator && (
+              <button
+                onClick={() => setShowModDelete(true)}
+                className="flex items-center gap-1 px-2 py-1 text-xs font-mono text-emergency-red/80 hover:text-emergency-red transition-colors"
+              >
+                <ShieldAlert className="w-3 h-3" />
+                REMOVE
+              </button>
+            )}
           </div>
         </div>
 
@@ -439,6 +471,29 @@ export function SignalCard({
           onDelete={(id) => {
             setShowEdit(false);
             onDelete?.(id);
+          }}
+        />
+      )}
+
+      {showFlag && (
+        <FlagModal
+          signalTitle={signal.content}
+          onClose={() => setShowFlag(false)}
+          onConfirm={async (reason) => {
+            await signalApi.flag(signal.id, reason);
+            setFlagged(true);
+          }}
+        />
+      )}
+
+      {showModDelete && (
+        <DeleteConfirmDialog
+          mode="signal"
+          signalTitle={signal.content}
+          onClose={() => setShowModDelete(false)}
+          onConfirm={async () => {
+            await signalApi.delete(signal.id);
+            onDelete?.(signal.id);
           }}
         />
       )}
