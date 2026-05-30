@@ -28,10 +28,12 @@ export type AggregateUser = {
 
 export type UserAvgAggregateOutputType = {
   reputationScore: number | null
+  sector: number | null
 }
 
 export type UserSumAggregateOutputType = {
   reputationScore: number | null
+  sector: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -39,6 +41,7 @@ export type UserMinAggregateOutputType = {
   username: string | null
   password: string | null
   reputationScore: number | null
+  sector: number | null
   createdAt: Date | null
 }
 
@@ -47,6 +50,7 @@ export type UserMaxAggregateOutputType = {
   username: string | null
   password: string | null
   reputationScore: number | null
+  sector: number | null
   createdAt: Date | null
 }
 
@@ -55,6 +59,7 @@ export type UserCountAggregateOutputType = {
   username: number
   password: number
   reputationScore: number
+  sector: number
   createdAt: number
   _all: number
 }
@@ -62,10 +67,12 @@ export type UserCountAggregateOutputType = {
 
 export type UserAvgAggregateInputType = {
   reputationScore?: true
+  sector?: true
 }
 
 export type UserSumAggregateInputType = {
   reputationScore?: true
+  sector?: true
 }
 
 export type UserMinAggregateInputType = {
@@ -73,6 +80,7 @@ export type UserMinAggregateInputType = {
   username?: true
   password?: true
   reputationScore?: true
+  sector?: true
   createdAt?: true
 }
 
@@ -81,6 +89,7 @@ export type UserMaxAggregateInputType = {
   username?: true
   password?: true
   reputationScore?: true
+  sector?: true
   createdAt?: true
 }
 
@@ -89,6 +98,7 @@ export type UserCountAggregateInputType = {
   username?: true
   password?: true
   reputationScore?: true
+  sector?: true
   createdAt?: true
   _all?: true
 }
@@ -184,6 +194,7 @@ export type UserGroupByOutputType = {
   username: string
   password: string
   reputationScore: number
+  sector: number
   createdAt: Date
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
@@ -215,9 +226,10 @@ export type UserWhereInput = {
   username?: Prisma.StringFilter<"User"> | string
   password?: Prisma.StringFilter<"User"> | string
   reputationScore?: Prisma.IntFilter<"User"> | number
+  sector?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   signals?: Prisma.SignalListRelationFilter
-  verifications?: Prisma.SignalVerificationListRelationFilter
+  verifications?: Prisma.VerificationListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -225,9 +237,10 @@ export type UserOrderByWithRelationInput = {
   username?: Prisma.SortOrder
   password?: Prisma.SortOrder
   reputationScore?: Prisma.SortOrder
+  sector?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   signals?: Prisma.SignalOrderByRelationAggregateInput
-  verifications?: Prisma.SignalVerificationOrderByRelationAggregateInput
+  verifications?: Prisma.VerificationOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -238,9 +251,10 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   password?: Prisma.StringFilter<"User"> | string
   reputationScore?: Prisma.IntFilter<"User"> | number
+  sector?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   signals?: Prisma.SignalListRelationFilter
-  verifications?: Prisma.SignalVerificationListRelationFilter
+  verifications?: Prisma.VerificationListRelationFilter
 }, "id" | "username">
 
 export type UserOrderByWithAggregationInput = {
@@ -248,6 +262,7 @@ export type UserOrderByWithAggregationInput = {
   username?: Prisma.SortOrder
   password?: Prisma.SortOrder
   reputationScore?: Prisma.SortOrder
+  sector?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
@@ -264,6 +279,7 @@ export type UserScalarWhereWithAggregatesInput = {
   username?: Prisma.StringWithAggregatesFilter<"User"> | string
   password?: Prisma.StringWithAggregatesFilter<"User"> | string
   reputationScore?: Prisma.IntWithAggregatesFilter<"User"> | number
+  sector?: Prisma.IntWithAggregatesFilter<"User"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
 
@@ -272,9 +288,10 @@ export type UserCreateInput = {
   username: string
   password: string
   reputationScore?: number
+  sector?: number
   createdAt?: Date | string
   signals?: Prisma.SignalCreateNestedManyWithoutUserInput
-  verifications?: Prisma.SignalVerificationCreateNestedManyWithoutUserInput
+  verifications?: Prisma.VerificationCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -282,9 +299,10 @@ export type UserUncheckedCreateInput = {
   username: string
   password: string
   reputationScore?: number
+  sector?: number
   createdAt?: Date | string
   signals?: Prisma.SignalUncheckedCreateNestedManyWithoutUserInput
-  verifications?: Prisma.SignalVerificationUncheckedCreateNestedManyWithoutUserInput
+  verifications?: Prisma.VerificationUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -292,9 +310,10 @@ export type UserUpdateInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   reputationScore?: Prisma.IntFieldUpdateOperationsInput | number
+  sector?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   signals?: Prisma.SignalUpdateManyWithoutUserNestedInput
-  verifications?: Prisma.SignalVerificationUpdateManyWithoutUserNestedInput
+  verifications?: Prisma.VerificationUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -302,9 +321,10 @@ export type UserUncheckedUpdateInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   reputationScore?: Prisma.IntFieldUpdateOperationsInput | number
+  sector?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   signals?: Prisma.SignalUncheckedUpdateManyWithoutUserNestedInput
-  verifications?: Prisma.SignalVerificationUncheckedUpdateManyWithoutUserNestedInput
+  verifications?: Prisma.VerificationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -312,6 +332,7 @@ export type UserCreateManyInput = {
   username: string
   password: string
   reputationScore?: number
+  sector?: number
   createdAt?: Date | string
 }
 
@@ -320,6 +341,7 @@ export type UserUpdateManyMutationInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   reputationScore?: Prisma.IntFieldUpdateOperationsInput | number
+  sector?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -328,6 +350,7 @@ export type UserUncheckedUpdateManyInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   reputationScore?: Prisma.IntFieldUpdateOperationsInput | number
+  sector?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -336,11 +359,13 @@ export type UserCountOrderByAggregateInput = {
   username?: Prisma.SortOrder
   password?: Prisma.SortOrder
   reputationScore?: Prisma.SortOrder
+  sector?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
   reputationScore?: Prisma.SortOrder
+  sector?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -348,6 +373,7 @@ export type UserMaxOrderByAggregateInput = {
   username?: Prisma.SortOrder
   password?: Prisma.SortOrder
   reputationScore?: Prisma.SortOrder
+  sector?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -356,11 +382,13 @@ export type UserMinOrderByAggregateInput = {
   username?: Prisma.SortOrder
   password?: Prisma.SortOrder
   reputationScore?: Prisma.SortOrder
+  sector?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
   reputationScore?: Prisma.SortOrder
+  sector?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -417,8 +445,9 @@ export type UserCreateWithoutSignalsInput = {
   username: string
   password: string
   reputationScore?: number
+  sector?: number
   createdAt?: Date | string
-  verifications?: Prisma.SignalVerificationCreateNestedManyWithoutUserInput
+  verifications?: Prisma.VerificationCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSignalsInput = {
@@ -426,8 +455,9 @@ export type UserUncheckedCreateWithoutSignalsInput = {
   username: string
   password: string
   reputationScore?: number
+  sector?: number
   createdAt?: Date | string
-  verifications?: Prisma.SignalVerificationUncheckedCreateNestedManyWithoutUserInput
+  verifications?: Prisma.VerificationUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSignalsInput = {
@@ -451,8 +481,9 @@ export type UserUpdateWithoutSignalsInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   reputationScore?: Prisma.IntFieldUpdateOperationsInput | number
+  sector?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  verifications?: Prisma.SignalVerificationUpdateManyWithoutUserNestedInput
+  verifications?: Prisma.VerificationUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSignalsInput = {
@@ -460,8 +491,9 @@ export type UserUncheckedUpdateWithoutSignalsInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   reputationScore?: Prisma.IntFieldUpdateOperationsInput | number
+  sector?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  verifications?: Prisma.SignalVerificationUncheckedUpdateManyWithoutUserNestedInput
+  verifications?: Prisma.VerificationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutVerificationsInput = {
@@ -469,6 +501,7 @@ export type UserCreateWithoutVerificationsInput = {
   username: string
   password: string
   reputationScore?: number
+  sector?: number
   createdAt?: Date | string
   signals?: Prisma.SignalCreateNestedManyWithoutUserInput
 }
@@ -478,6 +511,7 @@ export type UserUncheckedCreateWithoutVerificationsInput = {
   username: string
   password: string
   reputationScore?: number
+  sector?: number
   createdAt?: Date | string
   signals?: Prisma.SignalUncheckedCreateNestedManyWithoutUserInput
 }
@@ -503,6 +537,7 @@ export type UserUpdateWithoutVerificationsInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   reputationScore?: Prisma.IntFieldUpdateOperationsInput | number
+  sector?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   signals?: Prisma.SignalUpdateManyWithoutUserNestedInput
 }
@@ -512,6 +547,7 @@ export type UserUncheckedUpdateWithoutVerificationsInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   reputationScore?: Prisma.IntFieldUpdateOperationsInput | number
+  sector?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   signals?: Prisma.SignalUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -552,7 +588,7 @@ export type UserCountOutputTypeCountSignalsArgs<ExtArgs extends runtime.Types.Ex
  * UserCountOutputType without action
  */
 export type UserCountOutputTypeCountVerificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.SignalVerificationWhereInput
+  where?: Prisma.VerificationWhereInput
 }
 
 
@@ -561,6 +597,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   username?: boolean
   password?: boolean
   reputationScore?: boolean
+  sector?: boolean
   createdAt?: boolean
   signals?: boolean | Prisma.User$signalsArgs<ExtArgs>
   verifications?: boolean | Prisma.User$verificationsArgs<ExtArgs>
@@ -572,6 +609,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   username?: boolean
   password?: boolean
   reputationScore?: boolean
+  sector?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["user"]>
 
@@ -580,6 +618,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   username?: boolean
   password?: boolean
   reputationScore?: boolean
+  sector?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["user"]>
 
@@ -588,10 +627,11 @@ export type UserSelectScalar = {
   username?: boolean
   password?: boolean
   reputationScore?: boolean
+  sector?: boolean
   createdAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "password" | "reputationScore" | "createdAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "password" | "reputationScore" | "sector" | "createdAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   signals?: boolean | Prisma.User$signalsArgs<ExtArgs>
   verifications?: boolean | Prisma.User$verificationsArgs<ExtArgs>
@@ -604,13 +644,14 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "User"
   objects: {
     signals: Prisma.$SignalPayload<ExtArgs>[]
-    verifications: Prisma.$SignalVerificationPayload<ExtArgs>[]
+    verifications: Prisma.$VerificationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     username: string
     password: string
     reputationScore: number
+    sector: number
     createdAt: Date
   }, ExtArgs["result"]["user"]>
   composites: {}
@@ -1007,7 +1048,7 @@ readonly fields: UserFieldRefs;
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   signals<T extends Prisma.User$signalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$signalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SignalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  verifications<T extends Prisma.User$verificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$verificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SignalVerificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  verifications<T extends Prisma.User$verificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$verificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VerificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1041,6 +1082,7 @@ export interface UserFieldRefs {
   readonly username: Prisma.FieldRef<"User", 'String'>
   readonly password: Prisma.FieldRef<"User", 'String'>
   readonly reputationScore: Prisma.FieldRef<"User", 'Int'>
+  readonly sector: Prisma.FieldRef<"User", 'Int'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
 }
     
@@ -1461,23 +1503,23 @@ export type User$signalsArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
  */
 export type User$verificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the SignalVerification
+   * Select specific fields to fetch from the Verification
    */
-  select?: Prisma.SignalVerificationSelect<ExtArgs> | null
+  select?: Prisma.VerificationSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the SignalVerification
+   * Omit specific fields from the Verification
    */
-  omit?: Prisma.SignalVerificationOmit<ExtArgs> | null
+  omit?: Prisma.VerificationOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.SignalVerificationInclude<ExtArgs> | null
-  where?: Prisma.SignalVerificationWhereInput
-  orderBy?: Prisma.SignalVerificationOrderByWithRelationInput | Prisma.SignalVerificationOrderByWithRelationInput[]
-  cursor?: Prisma.SignalVerificationWhereUniqueInput
+  include?: Prisma.VerificationInclude<ExtArgs> | null
+  where?: Prisma.VerificationWhereInput
+  orderBy?: Prisma.VerificationOrderByWithRelationInput | Prisma.VerificationOrderByWithRelationInput[]
+  cursor?: Prisma.VerificationWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.SignalVerificationScalarFieldEnum | Prisma.SignalVerificationScalarFieldEnum[]
+  distinct?: Prisma.VerificationScalarFieldEnum | Prisma.VerificationScalarFieldEnum[]
 }
 
 /**

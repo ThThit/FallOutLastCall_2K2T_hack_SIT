@@ -53,7 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   Signal: 'Signal',
-  SignalVerification: 'SignalVerification'
+  Verification: 'Verification'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -74,6 +74,7 @@ export const UserScalarFieldEnum = {
   username: 'username',
   password: 'password',
   reputationScore: 'reputationScore',
+  sector: 'sector',
   createdAt: 'createdAt'
 } as const
 
@@ -83,12 +84,11 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 export const SignalScalarFieldEnum = {
   id: 'id',
   title: 'title',
-  message: 'message',
+  content: 'content',
   category: 'category',
   dangerLevel: 'dangerLevel',
+  sector: 'sector',
   userId: 'userId',
-  trustScore: 'trustScore',
-  verificationRate: 'verificationRate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -96,7 +96,7 @@ export const SignalScalarFieldEnum = {
 export type SignalScalarFieldEnum = (typeof SignalScalarFieldEnum)[keyof typeof SignalScalarFieldEnum]
 
 
-export const SignalVerificationScalarFieldEnum = {
+export const VerificationScalarFieldEnum = {
   id: 'id',
   signalId: 'signalId',
   userId: 'userId',
@@ -104,7 +104,7 @@ export const SignalVerificationScalarFieldEnum = {
   createdAt: 'createdAt'
 } as const
 
-export type SignalVerificationScalarFieldEnum = (typeof SignalVerificationScalarFieldEnum)[keyof typeof SignalVerificationScalarFieldEnum]
+export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[keyof typeof VerificationScalarFieldEnum]
 
 
 export const SortOrder = {

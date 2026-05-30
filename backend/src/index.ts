@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
-import authRoutes from "./routes/auth.routes.js"
+import authRoutes from "./routes/auth.routes.js";
+import singalRoutes from "./routes/signal.route.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,6 +23,9 @@ app.use(cookieParser());
 
 app.use(express.json({ limit: "10mb" }));
 app.use("/api/auth", authRoutes);
+
+// signal routes
+app.use('/api/signals', singalRoutes);
 
 // Health check
 app.get("/health", (req, res) => {

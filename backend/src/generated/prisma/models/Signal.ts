@@ -27,37 +27,35 @@ export type AggregateSignal = {
 }
 
 export type SignalAvgAggregateOutputType = {
-  trustScore: number | null
-  verificationRate: number | null
+  id: number | null
+  sector: number | null
 }
 
 export type SignalSumAggregateOutputType = {
-  trustScore: number | null
-  verificationRate: number | null
+  id: number | null
+  sector: number | null
 }
 
 export type SignalMinAggregateOutputType = {
-  id: string | null
+  id: number | null
   title: string | null
-  message: string | null
+  content: string | null
   category: $Enums.SignalCategory | null
   dangerLevel: $Enums.DangerLevel | null
+  sector: number | null
   userId: string | null
-  trustScore: number | null
-  verificationRate: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
 
 export type SignalMaxAggregateOutputType = {
-  id: string | null
+  id: number | null
   title: string | null
-  message: string | null
+  content: string | null
   category: $Enums.SignalCategory | null
   dangerLevel: $Enums.DangerLevel | null
+  sector: number | null
   userId: string | null
-  trustScore: number | null
-  verificationRate: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -65,12 +63,11 @@ export type SignalMaxAggregateOutputType = {
 export type SignalCountAggregateOutputType = {
   id: number
   title: number
-  message: number
+  content: number
   category: number
   dangerLevel: number
+  sector: number
   userId: number
-  trustScore: number
-  verificationRate: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -78,24 +75,23 @@ export type SignalCountAggregateOutputType = {
 
 
 export type SignalAvgAggregateInputType = {
-  trustScore?: true
-  verificationRate?: true
+  id?: true
+  sector?: true
 }
 
 export type SignalSumAggregateInputType = {
-  trustScore?: true
-  verificationRate?: true
+  id?: true
+  sector?: true
 }
 
 export type SignalMinAggregateInputType = {
   id?: true
   title?: true
-  message?: true
+  content?: true
   category?: true
   dangerLevel?: true
+  sector?: true
   userId?: true
-  trustScore?: true
-  verificationRate?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -103,12 +99,11 @@ export type SignalMinAggregateInputType = {
 export type SignalMaxAggregateInputType = {
   id?: true
   title?: true
-  message?: true
+  content?: true
   category?: true
   dangerLevel?: true
+  sector?: true
   userId?: true
-  trustScore?: true
-  verificationRate?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -116,12 +111,11 @@ export type SignalMaxAggregateInputType = {
 export type SignalCountAggregateInputType = {
   id?: true
   title?: true
-  message?: true
+  content?: true
   category?: true
   dangerLevel?: true
+  sector?: true
   userId?: true
-  trustScore?: true
-  verificationRate?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -214,14 +208,13 @@ export type SignalGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 export type SignalGroupByOutputType = {
-  id: string
+  id: number
   title: string
-  message: string
+  content: string
   category: $Enums.SignalCategory
   dangerLevel: $Enums.DangerLevel
+  sector: number
   userId: string
-  trustScore: number
-  verificationRate: number
   createdAt: Date
   updatedAt: Date
   _count: SignalCountAggregateOutputType | null
@@ -250,62 +243,58 @@ export type SignalWhereInput = {
   AND?: Prisma.SignalWhereInput | Prisma.SignalWhereInput[]
   OR?: Prisma.SignalWhereInput[]
   NOT?: Prisma.SignalWhereInput | Prisma.SignalWhereInput[]
-  id?: Prisma.StringFilter<"Signal"> | string
+  id?: Prisma.IntFilter<"Signal"> | number
   title?: Prisma.StringFilter<"Signal"> | string
-  message?: Prisma.StringFilter<"Signal"> | string
+  content?: Prisma.StringFilter<"Signal"> | string
   category?: Prisma.EnumSignalCategoryFilter<"Signal"> | $Enums.SignalCategory
   dangerLevel?: Prisma.EnumDangerLevelFilter<"Signal"> | $Enums.DangerLevel
+  sector?: Prisma.IntFilter<"Signal"> | number
   userId?: Prisma.StringFilter<"Signal"> | string
-  trustScore?: Prisma.FloatFilter<"Signal"> | number
-  verificationRate?: Prisma.FloatFilter<"Signal"> | number
   createdAt?: Prisma.DateTimeFilter<"Signal"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Signal"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  verifications?: Prisma.SignalVerificationListRelationFilter
+  verifications?: Prisma.VerificationListRelationFilter
 }
 
 export type SignalOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  message?: Prisma.SortOrder
+  content?: Prisma.SortOrder
   category?: Prisma.SortOrder
   dangerLevel?: Prisma.SortOrder
+  sector?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  trustScore?: Prisma.SortOrder
-  verificationRate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
-  verifications?: Prisma.SignalVerificationOrderByRelationAggregateInput
+  verifications?: Prisma.VerificationOrderByRelationAggregateInput
 }
 
 export type SignalWhereUniqueInput = Prisma.AtLeast<{
-  id?: string
+  id?: number
   AND?: Prisma.SignalWhereInput | Prisma.SignalWhereInput[]
   OR?: Prisma.SignalWhereInput[]
   NOT?: Prisma.SignalWhereInput | Prisma.SignalWhereInput[]
   title?: Prisma.StringFilter<"Signal"> | string
-  message?: Prisma.StringFilter<"Signal"> | string
+  content?: Prisma.StringFilter<"Signal"> | string
   category?: Prisma.EnumSignalCategoryFilter<"Signal"> | $Enums.SignalCategory
   dangerLevel?: Prisma.EnumDangerLevelFilter<"Signal"> | $Enums.DangerLevel
+  sector?: Prisma.IntFilter<"Signal"> | number
   userId?: Prisma.StringFilter<"Signal"> | string
-  trustScore?: Prisma.FloatFilter<"Signal"> | number
-  verificationRate?: Prisma.FloatFilter<"Signal"> | number
   createdAt?: Prisma.DateTimeFilter<"Signal"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Signal"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  verifications?: Prisma.SignalVerificationListRelationFilter
+  verifications?: Prisma.VerificationListRelationFilter
 }, "id">
 
 export type SignalOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  message?: Prisma.SortOrder
+  content?: Prisma.SortOrder
   category?: Prisma.SortOrder
   dangerLevel?: Prisma.SortOrder
+  sector?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  trustScore?: Prisma.SortOrder
-  verificationRate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.SignalCountOrderByAggregateInput
@@ -319,108 +308,97 @@ export type SignalScalarWhereWithAggregatesInput = {
   AND?: Prisma.SignalScalarWhereWithAggregatesInput | Prisma.SignalScalarWhereWithAggregatesInput[]
   OR?: Prisma.SignalScalarWhereWithAggregatesInput[]
   NOT?: Prisma.SignalScalarWhereWithAggregatesInput | Prisma.SignalScalarWhereWithAggregatesInput[]
-  id?: Prisma.StringWithAggregatesFilter<"Signal"> | string
+  id?: Prisma.IntWithAggregatesFilter<"Signal"> | number
   title?: Prisma.StringWithAggregatesFilter<"Signal"> | string
-  message?: Prisma.StringWithAggregatesFilter<"Signal"> | string
+  content?: Prisma.StringWithAggregatesFilter<"Signal"> | string
   category?: Prisma.EnumSignalCategoryWithAggregatesFilter<"Signal"> | $Enums.SignalCategory
   dangerLevel?: Prisma.EnumDangerLevelWithAggregatesFilter<"Signal"> | $Enums.DangerLevel
+  sector?: Prisma.IntWithAggregatesFilter<"Signal"> | number
   userId?: Prisma.StringWithAggregatesFilter<"Signal"> | string
-  trustScore?: Prisma.FloatWithAggregatesFilter<"Signal"> | number
-  verificationRate?: Prisma.FloatWithAggregatesFilter<"Signal"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Signal"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Signal"> | Date | string
 }
 
 export type SignalCreateInput = {
-  id?: string
   title: string
-  message: string
+  content: string
   category: $Enums.SignalCategory
   dangerLevel: $Enums.DangerLevel
-  trustScore?: number
-  verificationRate?: number
+  sector: number
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutSignalsInput
-  verifications?: Prisma.SignalVerificationCreateNestedManyWithoutSignalInput
+  verifications?: Prisma.VerificationCreateNestedManyWithoutSignalInput
 }
 
 export type SignalUncheckedCreateInput = {
-  id?: string
+  id?: number
   title: string
-  message: string
+  content: string
   category: $Enums.SignalCategory
   dangerLevel: $Enums.DangerLevel
+  sector: number
   userId: string
-  trustScore?: number
-  verificationRate?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  verifications?: Prisma.SignalVerificationUncheckedCreateNestedManyWithoutSignalInput
+  verifications?: Prisma.VerificationUncheckedCreateNestedManyWithoutSignalInput
 }
 
 export type SignalUpdateInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumSignalCategoryFieldUpdateOperationsInput | $Enums.SignalCategory
   dangerLevel?: Prisma.EnumDangerLevelFieldUpdateOperationsInput | $Enums.DangerLevel
-  trustScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  verificationRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  sector?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutSignalsNestedInput
-  verifications?: Prisma.SignalVerificationUpdateManyWithoutSignalNestedInput
+  verifications?: Prisma.VerificationUpdateManyWithoutSignalNestedInput
 }
 
 export type SignalUncheckedUpdateInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumSignalCategoryFieldUpdateOperationsInput | $Enums.SignalCategory
   dangerLevel?: Prisma.EnumDangerLevelFieldUpdateOperationsInput | $Enums.DangerLevel
+  sector?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  trustScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  verificationRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  verifications?: Prisma.SignalVerificationUncheckedUpdateManyWithoutSignalNestedInput
+  verifications?: Prisma.VerificationUncheckedUpdateManyWithoutSignalNestedInput
 }
 
 export type SignalCreateManyInput = {
-  id?: string
+  id?: number
   title: string
-  message: string
+  content: string
   category: $Enums.SignalCategory
   dangerLevel: $Enums.DangerLevel
+  sector: number
   userId: string
-  trustScore?: number
-  verificationRate?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type SignalUpdateManyMutationInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumSignalCategoryFieldUpdateOperationsInput | $Enums.SignalCategory
   dangerLevel?: Prisma.EnumDangerLevelFieldUpdateOperationsInput | $Enums.DangerLevel
-  trustScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  verificationRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  sector?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SignalUncheckedUpdateManyInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumSignalCategoryFieldUpdateOperationsInput | $Enums.SignalCategory
   dangerLevel?: Prisma.EnumDangerLevelFieldUpdateOperationsInput | $Enums.DangerLevel
+  sector?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  trustScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  verificationRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -438,30 +416,28 @@ export type SignalOrderByRelationAggregateInput = {
 export type SignalCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  message?: Prisma.SortOrder
+  content?: Prisma.SortOrder
   category?: Prisma.SortOrder
   dangerLevel?: Prisma.SortOrder
+  sector?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  trustScore?: Prisma.SortOrder
-  verificationRate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type SignalAvgOrderByAggregateInput = {
-  trustScore?: Prisma.SortOrder
-  verificationRate?: Prisma.SortOrder
+  id?: Prisma.SortOrder
+  sector?: Prisma.SortOrder
 }
 
 export type SignalMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  message?: Prisma.SortOrder
+  content?: Prisma.SortOrder
   category?: Prisma.SortOrder
   dangerLevel?: Prisma.SortOrder
+  sector?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  trustScore?: Prisma.SortOrder
-  verificationRate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -469,19 +445,18 @@ export type SignalMaxOrderByAggregateInput = {
 export type SignalMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  message?: Prisma.SortOrder
+  content?: Prisma.SortOrder
   category?: Prisma.SortOrder
   dangerLevel?: Prisma.SortOrder
+  sector?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  trustScore?: Prisma.SortOrder
-  verificationRate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type SignalSumOrderByAggregateInput = {
-  trustScore?: Prisma.SortOrder
-  verificationRate?: Prisma.SortOrder
+  id?: Prisma.SortOrder
+  sector?: Prisma.SortOrder
 }
 
 export type SignalScalarRelationFilter = {
@@ -539,14 +514,6 @@ export type EnumDangerLevelFieldUpdateOperationsInput = {
   set?: $Enums.DangerLevel
 }
 
-export type FloatFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type SignalCreateNestedOneWithoutVerificationsInput = {
   create?: Prisma.XOR<Prisma.SignalCreateWithoutVerificationsInput, Prisma.SignalUncheckedCreateWithoutVerificationsInput>
   connectOrCreate?: Prisma.SignalCreateOrConnectWithoutVerificationsInput
@@ -562,29 +529,26 @@ export type SignalUpdateOneRequiredWithoutVerificationsNestedInput = {
 }
 
 export type SignalCreateWithoutUserInput = {
-  id?: string
   title: string
-  message: string
+  content: string
   category: $Enums.SignalCategory
   dangerLevel: $Enums.DangerLevel
-  trustScore?: number
-  verificationRate?: number
+  sector: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  verifications?: Prisma.SignalVerificationCreateNestedManyWithoutSignalInput
+  verifications?: Prisma.VerificationCreateNestedManyWithoutSignalInput
 }
 
 export type SignalUncheckedCreateWithoutUserInput = {
-  id?: string
+  id?: number
   title: string
-  message: string
+  content: string
   category: $Enums.SignalCategory
   dangerLevel: $Enums.DangerLevel
-  trustScore?: number
-  verificationRate?: number
+  sector: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  verifications?: Prisma.SignalVerificationUncheckedCreateNestedManyWithoutSignalInput
+  verifications?: Prisma.VerificationUncheckedCreateNestedManyWithoutSignalInput
 }
 
 export type SignalCreateOrConnectWithoutUserInput = {
@@ -616,40 +580,36 @@ export type SignalScalarWhereInput = {
   AND?: Prisma.SignalScalarWhereInput | Prisma.SignalScalarWhereInput[]
   OR?: Prisma.SignalScalarWhereInput[]
   NOT?: Prisma.SignalScalarWhereInput | Prisma.SignalScalarWhereInput[]
-  id?: Prisma.StringFilter<"Signal"> | string
+  id?: Prisma.IntFilter<"Signal"> | number
   title?: Prisma.StringFilter<"Signal"> | string
-  message?: Prisma.StringFilter<"Signal"> | string
+  content?: Prisma.StringFilter<"Signal"> | string
   category?: Prisma.EnumSignalCategoryFilter<"Signal"> | $Enums.SignalCategory
   dangerLevel?: Prisma.EnumDangerLevelFilter<"Signal"> | $Enums.DangerLevel
+  sector?: Prisma.IntFilter<"Signal"> | number
   userId?: Prisma.StringFilter<"Signal"> | string
-  trustScore?: Prisma.FloatFilter<"Signal"> | number
-  verificationRate?: Prisma.FloatFilter<"Signal"> | number
   createdAt?: Prisma.DateTimeFilter<"Signal"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Signal"> | Date | string
 }
 
 export type SignalCreateWithoutVerificationsInput = {
-  id?: string
   title: string
-  message: string
+  content: string
   category: $Enums.SignalCategory
   dangerLevel: $Enums.DangerLevel
-  trustScore?: number
-  verificationRate?: number
+  sector: number
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutSignalsInput
 }
 
 export type SignalUncheckedCreateWithoutVerificationsInput = {
-  id?: string
+  id?: number
   title: string
-  message: string
+  content: string
   category: $Enums.SignalCategory
   dangerLevel: $Enums.DangerLevel
+  sector: number
   userId: string
-  trustScore?: number
-  verificationRate?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -671,77 +631,69 @@ export type SignalUpdateToOneWithWhereWithoutVerificationsInput = {
 }
 
 export type SignalUpdateWithoutVerificationsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumSignalCategoryFieldUpdateOperationsInput | $Enums.SignalCategory
   dangerLevel?: Prisma.EnumDangerLevelFieldUpdateOperationsInput | $Enums.DangerLevel
-  trustScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  verificationRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  sector?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutSignalsNestedInput
 }
 
 export type SignalUncheckedUpdateWithoutVerificationsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumSignalCategoryFieldUpdateOperationsInput | $Enums.SignalCategory
   dangerLevel?: Prisma.EnumDangerLevelFieldUpdateOperationsInput | $Enums.DangerLevel
+  sector?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  trustScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  verificationRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SignalCreateManyUserInput = {
-  id?: string
+  id?: number
   title: string
-  message: string
+  content: string
   category: $Enums.SignalCategory
   dangerLevel: $Enums.DangerLevel
-  trustScore?: number
-  verificationRate?: number
+  sector: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type SignalUpdateWithoutUserInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumSignalCategoryFieldUpdateOperationsInput | $Enums.SignalCategory
   dangerLevel?: Prisma.EnumDangerLevelFieldUpdateOperationsInput | $Enums.DangerLevel
-  trustScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  verificationRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  sector?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  verifications?: Prisma.SignalVerificationUpdateManyWithoutSignalNestedInput
+  verifications?: Prisma.VerificationUpdateManyWithoutSignalNestedInput
 }
 
 export type SignalUncheckedUpdateWithoutUserInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumSignalCategoryFieldUpdateOperationsInput | $Enums.SignalCategory
   dangerLevel?: Prisma.EnumDangerLevelFieldUpdateOperationsInput | $Enums.DangerLevel
-  trustScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  verificationRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  sector?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  verifications?: Prisma.SignalVerificationUncheckedUpdateManyWithoutSignalNestedInput
+  verifications?: Prisma.VerificationUncheckedUpdateManyWithoutSignalNestedInput
 }
 
 export type SignalUncheckedUpdateManyWithoutUserInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumSignalCategoryFieldUpdateOperationsInput | $Enums.SignalCategory
   dangerLevel?: Prisma.EnumDangerLevelFieldUpdateOperationsInput | $Enums.DangerLevel
-  trustScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  verificationRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  sector?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -773,19 +725,18 @@ export type SignalCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exten
  * SignalCountOutputType without action
  */
 export type SignalCountOutputTypeCountVerificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.SignalVerificationWhereInput
+  where?: Prisma.VerificationWhereInput
 }
 
 
 export type SignalSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
-  message?: boolean
+  content?: boolean
   category?: boolean
   dangerLevel?: boolean
+  sector?: boolean
   userId?: boolean
-  trustScore?: boolean
-  verificationRate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -796,12 +747,11 @@ export type SignalSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type SignalSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
-  message?: boolean
+  content?: boolean
   category?: boolean
   dangerLevel?: boolean
+  sector?: boolean
   userId?: boolean
-  trustScore?: boolean
-  verificationRate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -810,12 +760,11 @@ export type SignalSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type SignalSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
-  message?: boolean
+  content?: boolean
   category?: boolean
   dangerLevel?: boolean
+  sector?: boolean
   userId?: boolean
-  trustScore?: boolean
-  verificationRate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -824,17 +773,16 @@ export type SignalSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type SignalSelectScalar = {
   id?: boolean
   title?: boolean
-  message?: boolean
+  content?: boolean
   category?: boolean
   dangerLevel?: boolean
+  sector?: boolean
   userId?: boolean
-  trustScore?: boolean
-  verificationRate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type SignalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "message" | "category" | "dangerLevel" | "userId" | "trustScore" | "verificationRate" | "createdAt" | "updatedAt", ExtArgs["result"]["signal"]>
+export type SignalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "content" | "category" | "dangerLevel" | "sector" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["signal"]>
 export type SignalInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   verifications?: boolean | Prisma.Signal$verificationsArgs<ExtArgs>
@@ -851,17 +799,16 @@ export type $SignalPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   name: "Signal"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
-    verifications: Prisma.$SignalVerificationPayload<ExtArgs>[]
+    verifications: Prisma.$VerificationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    id: string
+    id: number
     title: string
-    message: string
+    content: string
     category: $Enums.SignalCategory
     dangerLevel: $Enums.DangerLevel
+    sector: number
     userId: string
-    trustScore: number
-    verificationRate: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["signal"]>
@@ -1259,7 +1206,7 @@ readonly fields: SignalFieldRefs;
 export interface Prisma__SignalClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  verifications<T extends Prisma.Signal$verificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Signal$verificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SignalVerificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  verifications<T extends Prisma.Signal$verificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Signal$verificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VerificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1289,14 +1236,13 @@ export interface Prisma__SignalClient<T, Null = never, ExtArgs extends runtime.T
  * Fields of the Signal model
  */
 export interface SignalFieldRefs {
-  readonly id: Prisma.FieldRef<"Signal", 'String'>
+  readonly id: Prisma.FieldRef<"Signal", 'Int'>
   readonly title: Prisma.FieldRef<"Signal", 'String'>
-  readonly message: Prisma.FieldRef<"Signal", 'String'>
+  readonly content: Prisma.FieldRef<"Signal", 'String'>
   readonly category: Prisma.FieldRef<"Signal", 'SignalCategory'>
   readonly dangerLevel: Prisma.FieldRef<"Signal", 'DangerLevel'>
+  readonly sector: Prisma.FieldRef<"Signal", 'Int'>
   readonly userId: Prisma.FieldRef<"Signal", 'String'>
-  readonly trustScore: Prisma.FieldRef<"Signal", 'Float'>
-  readonly verificationRate: Prisma.FieldRef<"Signal", 'Float'>
   readonly createdAt: Prisma.FieldRef<"Signal", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Signal", 'DateTime'>
 }
@@ -1702,23 +1648,23 @@ export type SignalDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
  */
 export type Signal$verificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the SignalVerification
+   * Select specific fields to fetch from the Verification
    */
-  select?: Prisma.SignalVerificationSelect<ExtArgs> | null
+  select?: Prisma.VerificationSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the SignalVerification
+   * Omit specific fields from the Verification
    */
-  omit?: Prisma.SignalVerificationOmit<ExtArgs> | null
+  omit?: Prisma.VerificationOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.SignalVerificationInclude<ExtArgs> | null
-  where?: Prisma.SignalVerificationWhereInput
-  orderBy?: Prisma.SignalVerificationOrderByWithRelationInput | Prisma.SignalVerificationOrderByWithRelationInput[]
-  cursor?: Prisma.SignalVerificationWhereUniqueInput
+  include?: Prisma.VerificationInclude<ExtArgs> | null
+  where?: Prisma.VerificationWhereInput
+  orderBy?: Prisma.VerificationOrderByWithRelationInput | Prisma.VerificationOrderByWithRelationInput[]
+  cursor?: Prisma.VerificationWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.SignalVerificationScalarFieldEnum | Prisma.SignalVerificationScalarFieldEnum[]
+  distinct?: Prisma.VerificationScalarFieldEnum | Prisma.VerificationScalarFieldEnum[]
 }
 
 /**

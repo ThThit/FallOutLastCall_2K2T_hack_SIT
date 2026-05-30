@@ -13,50 +13,50 @@ datasource db {
 }
 
 model User {
-  id              String               @id @default(cuid())
-  username        String               @unique
-  password        String
+  id       String @id @default(cuid())
+  username String @unique
+  password String
 
-  reputationScore Int                  @default(0)
+  reputationScore Int @default(0)
+  sector          Int @default(1)
 
-  signals         Signal[]
-  verifications   SignalVerification[]
+  signals       Signal[]
+  verifications Verification[]
 
-  createdAt       DateTime             @default(now())
+  createdAt DateTime @default(now())
 }
 
 model Signal {
-  id               String                @id @default(cuid())
+  id Int @id @default(autoincrement())
 
-  title            String
-  message          String
-  category         SignalCategory
-  dangerLevel      DangerLevel
+  title   String
+  content String
 
-  userId           String
-  user             User                  @relation(fields: [userId], references: [id])
+  category    SignalCategory
+  dangerLevel DangerLevel
+  sector      Int
 
-  verifications    SignalVerification[]
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  trustScore       Float                 @default(0)
-  verificationRate Float                 @default(0)
+  verifications Verification[]
 
-  createdAt        DateTime              @default(now())
-  updatedAt        DateTime              @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model SignalVerification {
-  id          String             @id @default(cuid())
+model Verification {
+  id Int @id @default(autoincrement())
 
-  signalId    String
-  signal      Signal             @relation(fields: [signalId], references: [id])
+  signalId Int
+  userId   String
 
-  userId      String
-  user        User               @relation(fields: [userId], references: [id])
+  status VerificationStatus
 
-  status      VerificationStatus
+  signal Signal @relation(fields: [signalId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
-  createdAt   DateTime           @default(now())
+  createdAt DateTime @default(now())
 
   @@unique([signalId, userId])
 }
