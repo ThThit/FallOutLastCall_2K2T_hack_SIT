@@ -274,8 +274,8 @@ export default function App() {
             {activeSection === 'signals' && (
               <div className="space-y-4">
 
-                {/* Identity bar */}
-                <div className="flex items-center justify-between border border-terminal-green/20 bg-charcoal px-4 py-2">
+                {/* Identity + Sort — single combined bar */}
+                <div className="flex items-center justify-between bg-charcoal border border-terminal-green/20 px-4 py-2">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-mono text-muted-foreground">IDENTITY:</span>
                     {callsign ? (
@@ -283,35 +283,35 @@ export default function App() {
                     ) : (
                       <span className="text-xs font-mono text-warning-amber animate-pulse">NOT SET</span>
                     )}
+                    <button
+                      onClick={() => { setCallsignInput(callsign); setShowCallsignPrompt(true); }}
+                      className="text-xs font-mono text-muted-foreground hover:text-terminal-green transition-colors ml-1"
+                    >
+                      [{callsign ? 'CHANGE' : 'SET'}]
+                    </button>
                   </div>
-                  <button
-                    onClick={() => { setCallsignInput(callsign); setShowCallsignPrompt(true); }}
-                    className="text-xs font-mono text-muted-foreground hover:text-terminal-green transition-colors tracking-wide"
-                  >
-                    {callsign ? 'CHANGE' : 'SET CALLSIGN'}
-                  </button>
-                </div>
 
-                <div className="flex items-center gap-2 bg-charcoal border border-terminal-green/20 p-3">
-                  <span className="text-xs text-muted-foreground font-mono">SORT BY:</span>
-                  <button
-                    onClick={() => setSignalSort('date')}
-                    className={`px-3 py-1 font-mono text-xs transition-colors ${signalSort === 'date'
-                        ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
-                        : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
-                      }`}
-                  >
-                    DATE
-                  </button>
-                  <button
-                    onClick={() => setSignalSort('trust')}
-                    className={`px-3 py-1 font-mono text-xs transition-colors ${signalSort === 'trust'
-                        ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
-                        : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
-                      }`}
-                  >
-                    TRUST SCORE
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground font-mono">SORT:</span>
+                    <button
+                      onClick={() => setSignalSort('date')}
+                      className={`px-2 py-0.5 font-mono text-xs transition-colors ${signalSort === 'date'
+                          ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
+                          : 'border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
+                        }`}
+                    >
+                      DATE
+                    </button>
+                    <button
+                      onClick={() => setSignalSort('trust')}
+                      className={`px-2 py-0.5 font-mono text-xs transition-colors ${signalSort === 'trust'
+                          ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
+                          : 'border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
+                        }`}
+                    >
+                      TRUST
+                    </button>
+                  </div>
                 </div>
 
                 <button
