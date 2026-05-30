@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Scanlines } from "./components/scanlines";
 import { StatusBar } from "./components/status-bar";
 import { Sidebar } from "./components/sidebar";
@@ -22,11 +22,16 @@ import { useAuth } from "./context/AuthContext";
 
 export default function App() {
   const { isLoggedIn, user } = useAuth();
-  const [activeSection, setActiveSection] = useState('signals');
+  const [activeSection, setActiveSection] = useState(() => localStorage.getItem('activeSection') || 'signals');
   const [showTradeModal, setShowTradeModal] = useState(false);
   const [selectedMarketItem, setSelectedMarketItem] = useState<any>(null);
   const [marketSort, setMarketSort] = useState<'rarity' | 'condition'>('rarity');
   const [memorySort, setMemorySort] = useState<'date' | 'decay'>('date');
+
+  // Remember the current section across reloads
+  useEffect(() => {
+    localStorage.setItem('activeSection', activeSection);
+  }, [activeSection]);
 
   if (!isLoggedIn) {
     return <LoginScreen />;
