@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const API_BASE_URL = "http://localhost:3000/api";
 
 // Get auth token from localStorage - only returns token if it exists
@@ -134,7 +133,9 @@ export const marketplaceAPI = {
     if (!response.ok) throw new Error("Failed to accept trade");
     return response.json();
   },
-=======
+};
+
+// ===== MemoryArchive API =====
 const BASE_URL = "http://localhost:3000/api/archive";
 
 export type CreateMemoryInput = {
@@ -279,5 +280,4 @@ export const fetchMemoryHistory = async (
   });
 
   return handleResponse(res) as Promise<MemoryArchiveRevision[]>;
->>>>>>> origin/MemoryArchive
 };
