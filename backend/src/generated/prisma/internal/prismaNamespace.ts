@@ -668,6 +668,7 @@ export const UserScalarFieldEnum = {
   id: 'id',
   username: 'username',
   password: 'password',
+  role: 'role',
   reputationScore: 'reputationScore',
   sector: 'sector',
   createdAt: 'createdAt'
@@ -684,6 +685,10 @@ export const SignalScalarFieldEnum = {
   dangerLevel: 'dangerLevel',
   sector: 'sector',
   userId: 'userId',
+  verifiedCount: 'verifiedCount',
+  unverifiedCount: 'unverifiedCount',
+  flagged: 'flagged',
+  flagReason: 'flagReason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -710,6 +715,14 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
 
 /**
  * Field references
@@ -720,6 +733,13 @@ export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
  * Reference to a field of type 'String'
  */
 export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String'>
+    
+
+
+/**
+ * Reference to a field of type 'UserRole'
+ */
+export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
     
 
 
@@ -748,6 +768,13 @@ export type EnumSignalCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$P
  * Reference to a field of type 'DangerLevel'
  */
 export type EnumDangerLevelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DangerLevel'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 

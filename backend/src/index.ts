@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import authRoutes from "./routes/auth.routes.js";
 import singalRoutes from "./routes/signal.route.js";
+import userRoutes from "./routes/user.route.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,6 +27,9 @@ app.use("/api/auth", authRoutes);
 
 // signal routes
 app.use('/api/signals', singalRoutes);
+
+// user routes
+app.use('/api/users', userRoutes);
 
 // Health check
 app.get("/health", (req, res) => {

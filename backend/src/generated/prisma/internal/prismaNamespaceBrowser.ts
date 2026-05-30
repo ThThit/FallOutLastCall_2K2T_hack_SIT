@@ -73,6 +73,7 @@ export const UserScalarFieldEnum = {
   id: 'id',
   username: 'username',
   password: 'password',
+  role: 'role',
   reputationScore: 'reputationScore',
   sector: 'sector',
   createdAt: 'createdAt'
@@ -89,6 +90,10 @@ export const SignalScalarFieldEnum = {
   dangerLevel: 'dangerLevel',
   sector: 'sector',
   userId: 'userId',
+  verifiedCount: 'verifiedCount',
+  unverifiedCount: 'unverifiedCount',
+  flagged: 'flagged',
+  flagReason: 'flagReason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -113,4 +118,12 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

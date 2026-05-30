@@ -17,6 +17,8 @@ axiosInstance.interceptors.request.use((config) => {
     return config;
 });
 
+export const client = axiosInstance;
+
 // --- Auth ---
 export const registerUser = async (
     userName: string,

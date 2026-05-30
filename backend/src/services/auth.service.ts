@@ -30,6 +30,7 @@ export class AuthService {
         return {
             id: user.id,
             username: user.username,
+            role: user.role,
         };
     }
 
@@ -63,6 +64,7 @@ export class AuthService {
             user: {
                 id: user.id,
                 username: user.username,
+                role: user.role,
             },
         };
     }

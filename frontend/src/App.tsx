@@ -22,6 +22,7 @@ import { TradeModal } from "./components/trade-modal";
 import { Plus } from "lucide-react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import axiosClient from "./api/axiosClient";
+import { ReputationLeaderboard } from "./components/reputation-leaderboard";
 
 function AppContent() {
   const { isLoggedIn } = useAuth();
@@ -39,10 +40,31 @@ function AppContent() {
   useEffect(() => {
     const fetchSignals = async () => {
       try {
+        console.log('Fetching signals from /signals');
         const response = await axiosClient.get('/signals');
-        setSignals(response.data);
-      } catch (error) {
-        console.error('Failed to fetch signals:', error);
+        console.log('Signals response:', response.data);
+        // Transform backend signals to match SignalCard format
+        const transformedSignals = response.data.map((signal: any) => ({
+          id: signal.id,
+          title: signal.title,
+          content: signal.content,
+          timeStamp: new Date(signal.timeStamp).toLocaleString(),
+          sector: signal.sector,
+          trustScore: signal.trustScore,
+          author: signal.author,
+          authorReputation: signal.authorReputation,
+          flagged: signal.flagged,
+          isCorrupted: signal.verificationStatus === 'SUSPICIOUS',
+          isEmergency: signal.dangerLevel === 'CRITICAL' || signal.dangerLevel === 'HIGH',
+          verifiedVotes: signal.verifiedVotes,
+          unverifiedVotes: signal.unverifiedVotes,
+          verificationStatus: signal.verificationStatus,
+          comments: []
+        }));
+        console.log('Transformed signals:', transformedSignals);
+        setSignals(transformedSignals);
+      } catch (error: any) {
+        console.error('Failed to fetch signals:', error.response?.data || error.message);
         setSignals([]);
       } finally {
         setLoading(false);
@@ -148,16 +170,30 @@ function AppContent() {
                   <Plus className="w-4 h-4" />
                   BROADCAST NEW SIGNAL
                 </button>
-                {signals
-                  .sort((a, b) => {
-                    if (signalSort === 'trust') {
-                      return b.trustScore - a.trustScore;
-                    }
-                    return 0; // Keep original order for date
-                  })
-                  .map((signal) => (
-                    <SignalCard key={signal.id} signal={signal} />
-                  ))}
+                {loading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <p className="text-muted-foreground font-mono animate-pulse">SCANNING SIGNALS...</p>
+                  </div>
+                ) : signals.length === 0 ? (
+                  <div className="flex items-center justify-center py-12">
+                    <p className="text-muted-foreground font-mono">NO SIGNALS RECEIVED</p>
+                  </div>
+                ) : (
+                  signals
+                    .sort((a, b) => {
+                      if (signalSort === 'trust') {
+                        return b.trustScore - a.trustScore;
+                      }
+                      return 0; // Keep original order for date
+                    })
+                    .map((signal) => (
+                      <SignalCard
+                        key={signal.id}
+                        signal={signal}
+                        onDelete={(id) => setSignals(prev => prev.filter(s => s.id !== id))}
+                      />
+                    ))
+                )}
               </div>
             )}
 
@@ -233,7 +269,12 @@ function AppContent() {
               </div>
             )}
 
-            {activeSection === 'survivors' && <SurvivorProfile />}
+            {activeSection === 'survivors' && (
+              <div className="space-y-6">
+                <SurvivorProfile />
+                <ReputationLeaderboard />
+              </div>
+            )}
 
             {activeSection === 'sectors' && <SectorMap />}
 

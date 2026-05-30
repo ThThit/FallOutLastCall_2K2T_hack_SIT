@@ -13,9 +13,10 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(cuid())
-  username String @unique
+  id       String   @id @default(cuid())
+  username String   @unique
   password String
+  role     UserRole @default(USER)
 
   reputationScore Int @default(0)
   sector          Int @default(1)
@@ -39,6 +40,12 @@ model Signal {
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
+  verifiedCount   Int @default(0)
+  unverifiedCount Int @default(0)
+
+  flagged    Boolean @default(false)
+  flagReason String?
+
   verifications Verification[]
 
   createdAt DateTime @default(now())
@@ -59,6 +66,12 @@ model Verification {
   createdAt DateTime @default(now())
 
   @@unique([signalId, userId])
+}
+
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
 }
 
 enum VerificationStatus {
