@@ -61,6 +61,22 @@ model SignalVerification {
   @@unique([signalId, userId])
 }
 
+model MemoryArchive {
+  id              String   @id @default(uuid())
+  title           String
+  survivorAlias   String   @default("Anonymous")
+
+  category        String
+  content         String
+  emotionalTag    String
+
+  decayLevel      Int      @default(0)
+  isRestored      Boolean  @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
 enum VerificationStatus {
   VERIFIED
   SUSPICIOUS

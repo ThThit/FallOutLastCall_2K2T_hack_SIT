@@ -386,7 +386,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   Signal: 'Signal',
-  SignalVerification: 'SignalVerification'
+  SignalVerification: 'SignalVerification',
+  MemoryArchive: 'MemoryArchive'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -402,7 +403,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "signal" | "signalVerification"
+    modelProps: "user" | "signal" | "signalVerification" | "memoryArchive"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -628,6 +629,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    MemoryArchive: {
+      payload: Prisma.$MemoryArchivePayload<ExtArgs>
+      fields: Prisma.MemoryArchiveFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MemoryArchiveFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchivePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MemoryArchiveFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchivePayload>
+        }
+        findFirst: {
+          args: Prisma.MemoryArchiveFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchivePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MemoryArchiveFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchivePayload>
+        }
+        findMany: {
+          args: Prisma.MemoryArchiveFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchivePayload>[]
+        }
+        create: {
+          args: Prisma.MemoryArchiveCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchivePayload>
+        }
+        createMany: {
+          args: Prisma.MemoryArchiveCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MemoryArchiveCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchivePayload>[]
+        }
+        delete: {
+          args: Prisma.MemoryArchiveDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchivePayload>
+        }
+        update: {
+          args: Prisma.MemoryArchiveUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchivePayload>
+        }
+        deleteMany: {
+          args: Prisma.MemoryArchiveDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MemoryArchiveUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MemoryArchiveUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchivePayload>[]
+        }
+        upsert: {
+          args: Prisma.MemoryArchiveUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MemoryArchivePayload>
+        }
+        aggregate: {
+          args: Prisma.MemoryArchiveAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMemoryArchive>
+        }
+        groupBy: {
+          args: Prisma.MemoryArchiveGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MemoryArchiveGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MemoryArchiveCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MemoryArchiveCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -702,6 +777,22 @@ export const SignalVerificationScalarFieldEnum = {
 export type SignalVerificationScalarFieldEnum = (typeof SignalVerificationScalarFieldEnum)[keyof typeof SignalVerificationScalarFieldEnum]
 
 
+export const MemoryArchiveScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  survivorAlias: 'survivorAlias',
+  category: 'category',
+  content: 'content',
+  emotionalTag: 'emotionalTag',
+  decayLevel: 'decayLevel',
+  isRestored: 'isRestored',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MemoryArchiveScalarFieldEnum = (typeof MemoryArchiveScalarFieldEnum)[keyof typeof MemoryArchiveScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -762,6 +853,13 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'VerificationStatus'
  */
 export type EnumVerificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 /**
@@ -877,6 +975,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   signal?: Prisma.SignalOmit
   signalVerification?: Prisma.SignalVerificationOmit
+  memoryArchive?: Prisma.MemoryArchiveOmit
 }
 
 /* Types for Logging */

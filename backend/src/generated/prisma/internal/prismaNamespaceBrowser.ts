@@ -53,7 +53,8 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   Signal: 'Signal',
-  SignalVerification: 'SignalVerification'
+  SignalVerification: 'SignalVerification',
+  MemoryArchive: 'MemoryArchive'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -105,6 +106,22 @@ export const SignalVerificationScalarFieldEnum = {
 } as const
 
 export type SignalVerificationScalarFieldEnum = (typeof SignalVerificationScalarFieldEnum)[keyof typeof SignalVerificationScalarFieldEnum]
+
+
+export const MemoryArchiveScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  survivorAlias: 'survivorAlias',
+  category: 'category',
+  content: 'content',
+  emotionalTag: 'emotionalTag',
+  decayLevel: 'decayLevel',
+  isRestored: 'isRestored',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MemoryArchiveScalarFieldEnum = (typeof MemoryArchiveScalarFieldEnum)[keyof typeof MemoryArchiveScalarFieldEnum]
 
 
 export const SortOrder = {
