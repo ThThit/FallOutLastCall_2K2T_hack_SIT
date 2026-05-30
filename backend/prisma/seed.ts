@@ -8,9 +8,11 @@ function daysAgo(days: number): Date {
 }
 
 async function main() {
-  // Clear existing data (respect FK order)
+  // Clear existing data (respect FK order — children before parents)
   await prisma.verification.deleteMany();
   await prisma.comment.deleteMany();
+  await prisma.trade.deleteMany();      // vivi: references User + VaultItem
+  await prisma.vaultItem.deleteMany();  // vivi: references User
   await prisma.signal.deleteMany();
   await prisma.user.deleteMany();
 
