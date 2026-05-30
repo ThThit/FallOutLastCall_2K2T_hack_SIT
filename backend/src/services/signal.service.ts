@@ -85,12 +85,12 @@ export class SignalsService {
         // Recompute the signal author's reputation from their verify/unverify counts
         if (signal.userId) await recomputeReputation(signal.userId);
 
-        // Auto-delete: if suspicious/unverified votes exceed verified, the signal is
-        // removed as community-confirmed misinformation (thit's mechanic, soft delete).
-        if (unverifiedCount > verifiedCount && unverifiedCount >= 3) {
+        // Auto-delete: once unverified/suspicious votes exceed 10, the signal is
+        // removed as community-confirmed misinformation (soft delete).
+        if (unverifiedCount > 10) {
             await prisma.signal.update({
                 where: { id: signalId },
-                data: { deletedAt: new Date(), flagged: true, flagReason: "Auto-removed: community flagged as misinformation" },
+                data: { deletedAt: new Date(), flagged: true, flagReason: "Auto-removed: exceeded misinformation threshold" },
             });
             return {
                 id: signalId,
@@ -98,7 +98,7 @@ export class SignalsService {
                 trustScore,
                 verifiedVotes: verifiedCount,
                 unverifiedVotes: unverifiedCount,
-                message: `Signal auto-removed: ${unverifiedCount} suspicious vs ${verifiedCount} verified votes`,
+                message: `Signal auto-removed: ${unverifiedCount} unverified votes exceeded the limit of 10`,
             };
         }
 
