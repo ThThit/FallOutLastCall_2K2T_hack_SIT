@@ -65,7 +65,7 @@ export const createTrade = async (req: AuthenticatedRequest, res: Response) => {
 };
 export const getTrades = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { trades, demandMap } = await getTradesService(req.query);
+    const { trades, demandMap } = await getTradesService(req.query, req.user?.id || "");
     const alerts = await generateAlerts(req.user?.id || "");
 
     res.status(200).json({

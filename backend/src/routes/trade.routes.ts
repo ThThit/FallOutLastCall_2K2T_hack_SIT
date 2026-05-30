@@ -13,7 +13,7 @@ import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.get("/", getTrades);
+router.get("/", authMiddleware, getTrades);
 
 router.get("/available/items", authMiddleware, getAvailableTradeItems);
 router.get("/history", authMiddleware, getTradeHistory);

@@ -70,10 +70,12 @@ export const createTradeService = async (tradeData: any, userId: string) => {
     include: { vaultItem: true },
   });
 };
-export const getTradesService = async (query: any) => {
+export const getTradesService = async (query: any, currentUserId?: string) => {
   const { sort, category, condition, search } = query;
 
   const where: any = { status: "ACTIVE" };
+  // Only show other survivors' listings in the market (not your own)
+  if (currentUserId) where.creatorId = { not: currentUserId };
   if (category) where.category = category;
   if (condition) where.condition = condition;
   if (search) where.resourceName = { contains: search };
