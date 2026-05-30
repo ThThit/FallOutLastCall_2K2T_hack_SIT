@@ -48,6 +48,9 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentsLoaded, setCommentsLoaded] = useState(false);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [showAllComments, setShowAllComments] = useState(false);
+  const COMMENTS_LIMIT = 3;
   const [commentCount, setCommentCount] = useState(signal._count?.comments ?? 0);
   const [newComment, setNewComment] = useState("");
   const [sendingComment, setSendingComment] = useState(false);
@@ -80,11 +83,15 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
 
   const handleToggleComments = async () => {
     if (!showComments && !commentsLoaded) {
+      setCommentsLoading(true);
+      setShowComments(true);
       const data = await signalApi.getComments(signal.id);
       setComments(data);
       setCommentsLoaded(true);
+      setCommentsLoading(false);
+    } else {
+      setShowComments((v) => !v);
     }
-    setShowComments((v) => !v);
   };
 
   const recalcTrust = (v: number, u: number) => {
@@ -309,7 +316,7 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
             className="flex items-center gap-1 px-2 py-1 text-xs font-mono text-muted-foreground hover:text-cyan-400 transition-colors ml-auto"
           >
             <MessageSquare className="w-3 h-3" />
-            COMMENTS ({commentCount})
+            COMMENTS ({commentsLoaded ? comments.length : commentCount})
           </button>
         </div>
 
@@ -319,9 +326,21 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
             animate={{ opacity: 1, height: "auto" }}
             className="mt-4 pt-4 border-t border-terminal-green/10"
           >
-            {comments.length > 0 && (
+            {commentsLoading && (
+              <p className="text-xs font-mono text-muted-foreground text-center py-4 tracking-widest animate-pulse">
+                RECEIVING TRANSMISSIONS...
+              </p>
+            )}
+
+            {!commentsLoading && commentsLoaded && comments.length === 0 && (
+              <p className="text-xs font-mono text-muted-foreground text-center py-4 tracking-wide">
+                NO TRANSMISSIONS YET — BE THE FIRST TO RESPOND
+              </p>
+            )}
+
+            {!commentsLoading && comments.length > 0 && (
               <div className="space-y-3 mb-4">
-                {comments.map((comment) => (
+                {(showAllComments ? comments : comments.slice(0, COMMENTS_LIMIT)).map((comment) => (
                   <div key={comment.id} className="bg-charcoal border border-terminal-green/10 p-3">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-mono text-cyan-400 text-xs tracking-wider">
@@ -336,6 +355,16 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
                     </p>
                   </div>
                 ))}
+                {comments.length > COMMENTS_LIMIT && (
+                  <button
+                    onClick={() => setShowAllComments((v) => !v)}
+                    className="w-full py-1.5 text-xs font-mono text-muted-foreground hover:text-terminal-green border border-terminal-green/20 hover:border-terminal-green/40 transition-colors"
+                  >
+                    {showAllComments
+                      ? 'SHOW LESS'
+                      : `LOAD MORE (${comments.length - COMMENTS_LIMIT} more)`}
+                  </button>
+                )}
               </div>
             )}
 
