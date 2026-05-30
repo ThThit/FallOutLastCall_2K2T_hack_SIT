@@ -1,20 +1,33 @@
-import express from "express"
-
+import express from "express";
 import {
-  getTrades,
   createTrade,
+  getTrades,
   updateTrade,
+  cancelTrade,
+} from "../controllers/trade.controller.js";
+
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+
+const router = express.Router();
+
+router.get("/", getTrades);
+
+router.post(
+  "/",
+  authMiddleware,
+  createTrade
+);
+
+router.patch(
+  "/:id",
+  authMiddleware,
+  updateTrade
+);
+
+router.delete(
+  "/:id",
+  authMiddleware,
   cancelTrade
-} from "../controllers/trade.controller.js"
+);
 
-const router = express.Router()
-
-router.get("/", getTrades)
-
-router.post("/", createTrade)
-
-router.patch("/:id", updateTrade)
-
-router.delete("/:id", cancelTrade)
-
-export default router
+export default router;
