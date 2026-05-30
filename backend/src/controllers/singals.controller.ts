@@ -29,6 +29,30 @@ export const verifySignal = async (req: Request, res: Response) => {
     }
 };
 
+// POST: /:signalId/vote — supports { type: 'verified'|'unverified', action: 'add'|'remove' }
+export const voteSignal = async (req: Request, res: Response) => {
+    try {
+        const signalId = req.params.signalId as string;
+        const { type, action } = req.body;
+        const userId = (req as any).userId;
+
+        if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+        if (!signalId) return res.status(400).json({ error: 'Signal ID is required' });
+        if (!type || !['verified', 'unverified'].includes(type)) return res.status(400).json({ error: 'Invalid vote type' });
+        if (!action || !['add', 'remove'].includes(action)) return res.status(400).json({ error: 'Invalid action' });
+
+        const result = await signalsService.vote(signalId, userId, type, action);
+        res.status(200).json(result);
+    } catch (error) {
+        const msg = (error as any).message;
+        if (msg.includes('not found')) return res.status(404).json({ error: msg });
+        if (msg.includes('already verified')) return res.status(409).json({ error: msg });
+        if (msg.includes('No existing verification')) return res.status(409).json({ error: msg });
+        console.error('Signal vote error:', error);
+        res.status(500).json({ error: 'Failed to process vote', details: msg });
+    }
+};
+
 // READ: Detailed trust statistics for a signal
 export const getTrustStats = async (req: Request, res: Response) => {
     try {

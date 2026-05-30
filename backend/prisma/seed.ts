@@ -48,7 +48,7 @@ async function main() {
     data: {
       authorName: "NOMAD-12", userId: nomad.id,
       content: "Water supply contaminated in River District. Multiple casualties reported. Do not drink.",
-      sector: 6, priority: "STANDARD", trustScore: 45, verifiedCount: 12, unverifiedCount: 15,
+      sector: 6, priority: "STANDARD", trustScore: 60, verifiedCount: 12, unverifiedCount: 9,
       createdAt: daysAgo(1.5),
     },
   });
@@ -56,7 +56,7 @@ async function main() {
     data: {
       authorName: "SENTINEL-9", userId: sentinel.id,
       content: "Supply cache located at old factory in north sector. Medication, fuel canisters, radio parts inside.",
-      sector: 1, priority: "STANDARD", trustScore: 62, verifiedCount: 18, unverifiedCount: 11,
+      sector: 1, priority: "STANDARD", trustScore: 69, verifiedCount: 18, unverifiedCount: 8,
       createdAt: daysAgo(3.5),
     },
   });
@@ -77,6 +77,16 @@ async function main() {
     },
   });
 
+  // Test signal at 9 unverified — one more UNVERIFIED vote tips it over 10 → auto-delete
+  await prisma.signal.create({
+    data: {
+      authorName: "DRIFTER-66", userId: medic.id,
+      content: "Trade post open at the docks. Fair prices, no questions asked. Come unarmed.",
+      sector: 5, priority: "STANDARD", trustScore: 30, verifiedCount: 4, unverifiedCount: 9,
+      createdAt: daysAgo(0.2),
+    },
+  });
+
   // Comments
   await prisma.comment.createMany({
     data: [
@@ -89,7 +99,8 @@ async function main() {
     ],
   });
 
-  console.log("Seed complete — 6 users + 6 signals across all corruption levels + comments.");
+  console.log("Seed complete — 6 users + 7 signals + comments.");
+  console.log("  DRIFTER-66 has 9 unverified — one more UNVERIFIED vote auto-deletes it.");
 }
 
 main().catch(console.error).finally(() => prisma.$disconnect());

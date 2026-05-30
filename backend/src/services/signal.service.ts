@@ -87,7 +87,7 @@ export class SignalsService {
 
         // Auto-delete: once unverified/suspicious votes exceed 10, the signal is
         // removed as community-confirmed misinformation (soft delete).
-        if (unverifiedCount > 10) {
+        if (unverifiedCount >= 10) {
             await prisma.signal.update({
                 where: { id: signalId },
                 data: { deletedAt: new Date(), flagged: true, flagReason: "Auto-removed: exceeded misinformation threshold" },
@@ -98,7 +98,7 @@ export class SignalsService {
                 trustScore,
                 verifiedVotes: verifiedCount,
                 unverifiedVotes: unverifiedCount,
-                message: `Signal auto-removed: ${unverifiedCount} unverified votes exceeded the limit of 10`,
+                message: `Signal auto-removed: ${unverifiedCount} unverified votes reached the limit of 10`,
             };
         }
 
@@ -111,6 +111,53 @@ export class SignalsService {
             verificationStatus: verifiedCount > unverifiedCount ? "VERIFIED" : "SUSPICIOUS",
             flagged: signal.flagged,
         };
+    }
+
+    // Unified vote handler for frontend: supports add/remove actions
+    // type: "verified" | "unverified", action: "add" | "remove"
+    async vote(signalId: string, userId: string, type: 'verified' | 'unverified', action: 'add' | 'remove') {
+        const signal = await prisma.signal.findUnique({ where: { id: signalId }, include: { user: true } });
+        if (!signal) throw new Error('Signal not found');
+
+        const mappedStatus = type === 'verified' ? 'VERIFIED' : 'SUSPICIOUS';
+
+        if (action === 'add') {
+            const existing = await prisma.verification.findUnique({ where: { signalId_userId: { signalId, userId } } });
+            if (existing) throw new Error('User has already verified this signal');
+
+            await prisma.verification.create({ data: { signalId, userId, status: mappedStatus as any } });
+
+            const verifiedCount = mappedStatus === 'VERIFIED' ? signal.verifiedCount + 1 : signal.verifiedCount;
+            const unverifiedCount = mappedStatus === 'VERIFIED' ? signal.unverifiedCount : signal.unverifiedCount + 1;
+            const trustScore = calcTrustScore(verifiedCount, unverifiedCount);
+
+            await prisma.signal.update({ where: { id: signalId }, data: { verifiedCount, unverifiedCount, trustScore } });
+            if (signal.userId) await recomputeReputation(signal.userId);
+
+            if (unverifiedCount >= 10) {
+                await prisma.signal.update({ where: { id: signalId }, data: { deletedAt: new Date(), flagged: true, flagReason: 'Auto-removed: exceeded misinformation threshold' } });
+                return { id: signalId, deleted: true, trustScore, verifiedVotes: verifiedCount, unverifiedVotes: unverifiedCount, message: `Signal auto-removed: ${unverifiedCount} unverified votes reached the limit of 10` };
+            }
+
+            return { id: signalId, deleted: false, trustScore, verifiedVotes: verifiedCount, unverifiedVotes: unverifiedCount, verificationStatus: verifiedCount > unverifiedCount ? 'VERIFIED' : 'SUSPICIOUS', flagged: signal.flagged };
+        } else {
+            // remove
+            const existing = await prisma.verification.findUnique({ where: { signalId_userId: { signalId, userId } } });
+            if (!existing) throw new Error('No existing verification to remove');
+
+            await prisma.verification.delete({ where: { id: existing.id } });
+
+            const verifiedCount = existing.status === 'VERIFIED' ? Math.max(0, signal.verifiedCount - 1) : signal.verifiedCount;
+            const unverifiedCount = existing.status !== 'VERIFIED' ? Math.max(0, signal.unverifiedCount - 1) : signal.unverifiedCount;
+            const trustScore = calcTrustScore(verifiedCount, unverifiedCount);
+
+            await prisma.signal.update({ where: { id: signalId }, data: { verifiedCount, unverifiedCount, trustScore } });
+            if (signal.userId) await recomputeReputation(signal.userId);
+
+            // If previously auto-deleted, don't undelete here — leave deletedAt as-is.
+
+            return { id: signalId, deleted: false, trustScore, verifiedVotes: verifiedCount, unverifiedVotes: unverifiedCount, verificationStatus: verifiedCount > unverifiedCount ? 'VERIFIED' : (unverifiedCount > 0 ? 'SUSPICIOUS' : 'UNVERIFIED'), flagged: signal.flagged };
+        }
     }
 
     // READ: detailed trust statistics for a signal

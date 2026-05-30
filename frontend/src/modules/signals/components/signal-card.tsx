@@ -1,6 +1,15 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { MapPin, Clock, ThumbsUp, ThumbsDown, AlertTriangle, MessageSquare, Send, Pencil } from "lucide-react";
+import {
+  MapPin,
+  Clock,
+  ThumbsUp,
+  ThumbsDown,
+  AlertTriangle,
+  MessageSquare,
+  Send,
+  Pencil,
+} from "lucide-react";
 import { signalApi } from "../apis/signal.api";
 import type { Signal, Comment } from "../types/signal.types";
 import { BroadcastComposer } from "./broadcast-composer";
@@ -16,19 +25,22 @@ function timeAgo(dateStr: string): string {
 
 function getCorruptionLevel(createdAt: string): number {
   const ageDays = (Date.now() - new Date(createdAt).getTime()) / 86400000;
-  if (ageDays < 1) return 0;       // clean
-  if (ageDays < 2.5) return 0.15;  // light
-  if (ageDays < 5) return 0.30;    // medium + flicker
-  if (ageDays < 6.5) return 0.50;  // heavy + flicker
-  return 0.70;                     // severe + DATA CORRUPTION DETECTED
+  if (ageDays < 1) return 0; // clean
+  if (ageDays < 2.5) return 0.15; // light
+  if (ageDays < 5) return 0.3; // medium + flicker
+  if (ageDays < 6.5) return 0.5; // heavy + flicker
+  return 0.7; // severe + DATA CORRUPTION DETECTED
 }
 
 function applyCorruption(text: string, level: number): string {
   if (level === 0) return text;
-  return text.split("").map((char) => {
-    if (char === " ") return " ";
-    return Math.random() < level ? "_" : char;
-  }).join("");
+  return text
+    .split("")
+    .map((char) => {
+      if (char === " ") return " ";
+      return Math.random() < level ? "_" : char;
+    })
+    .join("");
 }
 
 interface SignalCardProps {
@@ -39,10 +51,19 @@ interface SignalCardProps {
 }
 
 function getVotedSignals(): Record<string, "verified" | "unverified"> {
-  try { return JSON.parse(localStorage.getItem("votedSignals") || "{}"); } catch { return {}; }
+  try {
+    return JSON.parse(localStorage.getItem("votedSignals") || "{}");
+  } catch {
+    return {};
+  }
 }
 
-export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardProps) {
+export function SignalCard({
+  signal,
+  onDelete,
+  onUpdate,
+  callsign,
+}: SignalCardProps) {
   const [verified, setVerified] = useState(signal.verifiedCount);
   const [unverified, setUnverified] = useState(signal.unverifiedCount);
   const [trustScore, setTrustScore] = useState(signal.trustScore);
@@ -52,20 +73,22 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [showAllComments, setShowAllComments] = useState(false);
   const COMMENTS_LIMIT = 3;
-  const [commentCount, setCommentCount] = useState(signal._count?.comments ?? 0);
+  const [commentCount, setCommentCount] = useState(
+    signal._count?.comments ?? 0,
+  );
   const [newComment, setNewComment] = useState("");
   const [sendingComment, setSendingComment] = useState(false);
   const [voting, setVoting] = useState(false);
   const [myVote, setMyVote] = useState<"verified" | "unverified" | null>(
-    () => getVotedSignals()[signal.id] ?? null
+    () => getVotedSignals()[signal.id] ?? null,
   );
   const [showEdit, setShowEdit] = useState(false);
   const [tick, setTick] = useState(0);
 
   const corruptionLevel = getCorruptionLevel(signal.createdAt);
   const isCorrupted = corruptionLevel > 0;
-  const isSevere = corruptionLevel >= 0.70;
-  const hasFlicker = corruptionLevel >= 0.30;
+  const isSevere = corruptionLevel >= 0.7;
+  const hasFlicker = corruptionLevel >= 0.3;
   const isEmergency = signal.priority === "EMERGENCY";
   const isOwn = signal.authorName === callsign;
 
@@ -108,6 +131,13 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
       if (myVote === type) {
         // Toggle off — remove vote from backend
         const updated = await signalApi.vote(signal.id, type, "remove");
+        // If backend auto-removed the signal, remove from UI
+        if ((updated as any).deletedAt) {
+          onDelete?.(signal.id);
+          delete voted[signal.id];
+          localStorage.setItem("votedSignals", JSON.stringify(voted));
+          return;
+        }
         setVerified(updated.verifiedCount);
         setUnverified(updated.unverifiedCount);
         setTrustScore(updated.trustScore);
@@ -117,6 +147,12 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
         // Switch vote — remove old, add new
         await signalApi.vote(signal.id, myVote, "remove");
         const updated = await signalApi.vote(signal.id, type, "add");
+        if ((updated as any).deletedAt) {
+          onDelete?.(signal.id);
+          delete voted[signal.id];
+          localStorage.setItem("votedSignals", JSON.stringify(voted));
+          return;
+        }
         setVerified(updated.verifiedCount);
         setUnverified(updated.unverifiedCount);
         setTrustScore(updated.trustScore);
@@ -125,6 +161,12 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
       } else {
         // New vote
         const updated = await signalApi.vote(signal.id, type, "add");
+        if ((updated as any).deletedAt) {
+          onDelete?.(signal.id);
+          delete voted[signal.id];
+          localStorage.setItem("votedSignals", JSON.stringify(voted));
+          return;
+        }
         setVerified(updated.verifiedCount);
         setUnverified(updated.unverifiedCount);
         setTrustScore(updated.trustScore);
@@ -166,7 +208,11 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: "easeInOut" }}
-        style={isEmergency ? { borderColor: '#f97316', borderWidth: '2px' } : undefined}
+        style={
+          isEmergency
+            ? { borderColor: "#f97316", borderWidth: "2px" }
+            : undefined
+        }
         className={`border p-4 transition-colors group ${
           isEmergency
             ? "bg-orange-950/40"
@@ -175,8 +221,14 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
       >
         {isEmergency && (
           <div className="flex items-center gap-2 mb-3 pb-2 border-b border-orange-500/30">
-            <AlertTriangle className="w-3 h-3 shrink-0" style={{ color: '#ff4444' }} />
-            <span className="font-mono text-xs tracking-widest" style={{ color: '#f97316' }}>
+            <AlertTriangle
+              className="w-3 h-3 shrink-0"
+              style={{ color: "#ff4444" }}
+            />
+            <span
+              className="font-mono text-xs tracking-widest"
+              style={{ color: "#f97316" }}
+            >
               EMERGENCY SIGNAL
             </span>
           </div>
@@ -193,7 +245,10 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
                   animate={{ opacity: [1, 0.4, 1] }}
                   transition={{ duration: 0.8, repeat: Infinity }}
                 >
-                  <AlertTriangle className="w-4 h-4" style={{ color: '#ff4444' }} />
+                  <AlertTriangle
+                    className="w-4 h-4"
+                    style={{ color: "#ff4444" }}
+                  />
                 </motion.div>
               )}
             </div>
@@ -210,13 +265,15 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
           </div>
 
           <div className="flex items-center gap-2">
-            <div className={`px-2 py-1 text-xs font-mono ${
-              trustScore >= 70
-                ? "bg-terminal-green/20 text-terminal-green"
-                : trustScore >= 40
-                ? "bg-warning-amber/20 text-warning-amber"
-                : "bg-emergency-red/20 text-emergency-red"
-            }`}>
+            <div
+              className={`px-2 py-1 text-xs font-mono ${
+                trustScore >= 70
+                  ? "bg-terminal-green/20 text-terminal-green"
+                  : trustScore >= 40
+                    ? "bg-warning-amber/20 text-warning-amber"
+                    : "bg-emergency-red/20 text-emergency-red"
+              }`}
+            >
               TRUST: {trustScore}%
             </div>
             {isOwn && (
@@ -231,7 +288,9 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
           </div>
         </div>
 
-        <p className={`text-sm leading-relaxed mb-4 font-mono ${isCorrupted ? "text-terminal-green/60" : "text-white"}`}>
+        <p
+          className={`text-sm leading-relaxed mb-4 font-mono ${isCorrupted ? "text-terminal-green/60" : "text-white"}`}
+        >
           {displayContent}
         </p>
 
@@ -241,7 +300,9 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
           </p>
         )}
 
-        <div className={`flex items-center gap-2 pt-3 border-t ${isEmergency ? "border-orange-500/20" : "border-terminal-green/10"}`}>
+        <div
+          className={`flex items-center gap-2 pt-3 border-t ${isEmergency ? "border-orange-500/20" : "border-terminal-green/10"}`}
+        >
           <button
             onClick={() => handleVote("verified")}
             className={`flex items-center gap-1 px-2 py-1 text-xs font-mono transition-colors ${
@@ -255,9 +316,15 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
           </button>
           <button
             onClick={() => handleVote("unverified")}
-            style={myVote === "unverified" ? { color: '#ff4444', backgroundColor: 'rgba(255,68,68,0.1)' } : undefined}
+            style={
+              myVote === "unverified"
+                ? { color: "#ff4444", backgroundColor: "rgba(255,68,68,0.1)" }
+                : undefined
+            }
             className={`flex items-center gap-1 px-2 py-1 text-xs font-mono transition-colors ${
-              myVote === "unverified" ? "" : "text-muted-foreground hover:text-terminal-green"
+              myVote === "unverified"
+                ? ""
+                : "text-muted-foreground hover:text-terminal-green"
             }`}
           >
             <ThumbsDown className="w-3 h-3" />
@@ -273,82 +340,90 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
         </div>
 
         <AnimatePresence>
-        {showComments && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
-          >
-          <div className="mt-4 pt-4 pb-2 border-t border-terminal-green/10">
-            {commentsLoading && (
-              <p className="text-xs font-mono text-muted-foreground text-center py-4 tracking-widest animate-pulse">
-                RECEIVING TRANSMISSIONS...
-              </p>
-            )}
-
-            {!commentsLoading && commentsLoaded && comments.length === 0 && (
-              <p className="text-xs font-mono text-muted-foreground text-center py-4 tracking-wide">
-                NO TRANSMISSIONS YET — BE THE FIRST TO RESPOND
-              </p>
-            )}
-
-            {!commentsLoading && comments.length > 0 && (
-              <div className="space-y-3 mb-4">
-                {(showAllComments ? comments : comments.slice(0, COMMENTS_LIMIT)).map((comment) => (
-                  <div key={comment.id} className="bg-charcoal border border-terminal-green/10 p-3">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-mono text-cyan-400 text-xs tracking-wider">
-                        {comment.authorName}
-                      </span>
-                      <span className="text-xs text-muted-foreground font-mono">
-                        {timeAgo(comment.createdAt)}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {comment.content}
-                    </p>
-                  </div>
-                ))}
-                {comments.length > COMMENTS_LIMIT && (
-                  <button
-                    onClick={() => setShowAllComments((v) => !v)}
-                    className="w-full py-1.5 text-xs font-mono text-muted-foreground hover:text-terminal-green border border-terminal-green/20 hover:border-terminal-green/40 transition-colors"
-                  >
-                    {showAllComments
-                      ? 'SHOW LESS'
-                      : `LOAD MORE (${comments.length - COMMENTS_LIMIT} more)`}
-                  </button>
+          {showComments && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+            >
+              <div className="mt-4 pt-4 pb-2 border-t border-terminal-green/10">
+                {commentsLoading && (
+                  <p className="text-xs font-mono text-muted-foreground text-center py-4 tracking-widest animate-pulse">
+                    RECEIVING TRANSMISSIONS...
+                  </p>
                 )}
-              </div>
-            )}
 
-            <div className="flex items-center gap-2 bg-dark-gray border border-terminal-green/20 p-2">
-              <input
-                type="text"
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSendComment();
-                  }
-                }}
-                placeholder="Add comment..."
-                className="flex-1 bg-transparent px-2 py-1 text-xs font-mono text-white placeholder:text-muted-foreground focus:outline-none"
-              />
-              <button
-                onClick={handleSendComment}
-                disabled={!newComment.trim() || sendingComment}
-                className="px-3 py-1 bg-terminal-green/20 border border-terminal-green text-terminal-green font-mono text-xs hover:bg-terminal-green/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
-              >
-                <Send className="w-3 h-3" />
-                SEND
-              </button>
-            </div>
-          </div>
-          </motion.div>
-        )}
+                {!commentsLoading &&
+                  commentsLoaded &&
+                  comments.length === 0 && (
+                    <p className="text-xs font-mono text-muted-foreground text-center py-4 tracking-wide">
+                      NO TRANSMISSIONS YET — BE THE FIRST TO RESPOND
+                    </p>
+                  )}
+
+                {!commentsLoading && comments.length > 0 && (
+                  <div className="space-y-3 mb-4">
+                    {(showAllComments
+                      ? comments
+                      : comments.slice(0, COMMENTS_LIMIT)
+                    ).map((comment) => (
+                      <div
+                        key={comment.id}
+                        className="bg-charcoal border border-terminal-green/10 p-3"
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-mono text-cyan-400 text-xs tracking-wider">
+                            {comment.authorName}
+                          </span>
+                          <span className="text-xs text-muted-foreground font-mono">
+                            {timeAgo(comment.createdAt)}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {comment.content}
+                        </p>
+                      </div>
+                    ))}
+                    {comments.length > COMMENTS_LIMIT && (
+                      <button
+                        onClick={() => setShowAllComments((v) => !v)}
+                        className="w-full py-1.5 text-xs font-mono text-muted-foreground hover:text-terminal-green border border-terminal-green/20 hover:border-terminal-green/40 transition-colors"
+                      >
+                        {showAllComments
+                          ? "SHOW LESS"
+                          : `LOAD MORE (${comments.length - COMMENTS_LIMIT} more)`}
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 bg-dark-gray border border-terminal-green/20 p-2">
+                  <input
+                    type="text"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendComment();
+                      }
+                    }}
+                    placeholder="Add comment..."
+                    className="flex-1 bg-transparent px-2 py-1 text-xs font-mono text-white placeholder:text-muted-foreground focus:outline-none"
+                  />
+                  <button
+                    onClick={handleSendComment}
+                    disabled={!newComment.trim() || sendingComment}
+                    className="px-3 py-1 bg-terminal-green/20 border border-terminal-green text-terminal-green font-mono text-xs hover:bg-terminal-green/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                  >
+                    <Send className="w-3 h-3" />
+                    SEND
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
       </motion.div>
 

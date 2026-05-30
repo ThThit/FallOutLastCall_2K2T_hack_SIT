@@ -62,6 +62,7 @@ export class SignalModel {
     async getAll({ sort, q, sector }: GetSignalsQuery) {
         const where: any = {
             deletedAt: null,
+            unverifiedCount: { lt: 10 }, // hide signals at/over the misinformation threshold
             AND: [this.expiryFilter()],
         };
 
@@ -149,6 +150,22 @@ export class SignalModel {
             type === "unverified"
                 ? Math.max(0, existing.unverifiedCount + delta)
                 : existing.unverifiedCount;
+
+        // Auto-delete: once unverified votes reach 10, remove the signal as
+        // community-confirmed misinformation (soft delete).
+        if (newUnverified >= 10) {
+            return prisma.signal.update({
+                where: { id },
+                data: {
+                    verifiedCount: newVerified,
+                    unverifiedCount: newUnverified,
+                    trustScore: this.calculateTrustScore(newVerified, newUnverified),
+                    deletedAt: new Date(),
+                    flagged: true,
+                    flagReason: "Auto-removed: exceeded misinformation threshold",
+                },
+            });
+        }
 
         return prisma.signal.update({
             where: { id },

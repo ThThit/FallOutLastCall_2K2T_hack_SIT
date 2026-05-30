@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
     verifySignal,
+    voteSignal,
     getTrustStats,
     deleteSignal,
     deleteHarmfulVerifications,
@@ -16,6 +17,7 @@ const router = Router();
 
 // Authenticated
 router.post('/:signalId/verify', authMiddleware, verifySignal);
+router.post('/:signalId/vote', authMiddleware, voteSignal);
 router.post('/:signalId/flag', authMiddleware, flagSignal);
 
 // Public read of trust data
