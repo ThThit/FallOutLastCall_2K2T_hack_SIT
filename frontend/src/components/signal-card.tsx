@@ -56,6 +56,7 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
     () => getVotedSignals()[signal.id] ?? null
   );
   const [showEdit, setShowEdit] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [tick, setTick] = useState(0);
 
@@ -163,12 +164,23 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`bg-card border p-4 transition-colors group ${
+        transition={{ duration: 0.4 }}
+        style={isEmergency ? { borderColor: '#f97316', borderWidth: '2px' } : undefined}
+        className={`border p-4 transition-colors group ${
           isEmergency
-            ? "border-warning-amber/50 hover:border-warning-amber"
-            : "border-terminal-green/20 hover:border-terminal-green/40"
+            ? "bg-orange-950/40"
+            : "bg-card border-terminal-green/20 hover:border-terminal-green/40"
         } ${hasFlicker ? "animate-pulse" : ""}`}
       >
+        {isEmergency && (
+          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-orange-500/30">
+            <AlertTriangle className="w-3 h-3 shrink-0" style={{ color: '#ff4444' }} />
+            <span className="font-mono text-xs tracking-widest" style={{ color: '#f97316' }}>
+              EMERGENCY SIGNAL
+            </span>
+          </div>
+        )}
+
         <div className="flex items-start justify-between gap-4 mb-3">
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -180,7 +192,7 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
                   animate={{ opacity: [1, 0.4, 1] }}
                   transition={{ duration: 0.8, repeat: Infinity }}
                 >
-                  <AlertTriangle className="w-4 h-4 text-warning-amber" />
+                  <AlertTriangle className="w-4 h-4" style={{ color: '#ff4444' }} />
                 </motion.div>
               )}
             </div>
@@ -207,38 +219,52 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
               TRUST: {trustScore}%
             </div>
             {isOwn && (
-              <div className="flex items-center gap-1">
-                {confirmDelete ? (
-                  <>
-                    <span className="text-xs font-mono text-emergency-red">DELETE?</span>
+              <div className="relative">
+                <button
+                  onClick={() => { setShowMenu((v) => !v); setConfirmDelete(false); }}
+                  className="px-2 py-1 text-muted-foreground hover:text-terminal-green font-mono text-sm transition-colors"
+                >
+                  ···
+                </button>
+                {showMenu && (
+                  <div className="absolute right-0 top-7 z-10 bg-dark-gray border border-terminal-green/30 w-36 shadow-lg">
                     <button
-                      onClick={handleDelete}
-                      className="text-xs font-mono text-emergency-red hover:bg-emergency-red/20 px-1.5 py-0.5 border border-emergency-red/50 transition-colors"
+                      onClick={() => { setShowEdit(true); setShowMenu(false); }}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-xs font-mono text-muted-foreground hover:text-terminal-green hover:bg-terminal-green/10 transition-colors"
                     >
-                      YES
+                      <Pencil className="w-3 h-3 shrink-0" />
+                      EDIT
                     </button>
-                    <button
-                      onClick={() => setConfirmDelete(false)}
-                      className="text-xs font-mono text-muted-foreground hover:text-terminal-green px-1.5 py-0.5 border border-terminal-green/30 transition-colors"
-                    >
-                      NO
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => setShowEdit(true)}
-                      className="text-xs font-mono text-muted-foreground hover:text-terminal-green transition-colors"
-                    >
-                      <Pencil className="w-3 h-3" />
-                    </button>
-                    <button
-                      onClick={() => setConfirmDelete(true)}
-                      className="text-xs font-mono text-muted-foreground hover:text-emergency-red transition-colors"
-                    >
-                      ✕
-                    </button>
-                  </>
+                    <div className="border-t border-terminal-green/10" />
+                    {confirmDelete ? (
+                      <div className="px-3 py-2 space-y-1.5">
+                        <p className="text-xs font-mono text-emergency-red">CONFIRM?</p>
+                        <div className="flex gap-1.5">
+                          <button
+                            onClick={handleDelete}
+                            className="flex-1 py-1 text-xs font-mono text-emergency-red border border-emergency-red/50 hover:bg-emergency-red/20 transition-colors"
+                          >
+                            YES
+                          </button>
+                          <button
+                            onClick={() => setConfirmDelete(false)}
+                            className="flex-1 py-1 text-xs font-mono text-muted-foreground border border-terminal-green/30 hover:text-terminal-green transition-colors"
+                          >
+                            NO
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setConfirmDelete(true)}
+                        style={{ color: '#ff4444' }}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-xs font-mono hover:bg-red-500/10 transition-colors"
+                      >
+                        <Pencil className="w-3 h-3 shrink-0 opacity-0" />
+                        DELETE
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             )}
@@ -255,7 +281,7 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
           </p>
         )}
 
-        <div className="flex items-center gap-2 pt-3 border-t border-terminal-green/10">
+        <div className={`flex items-center gap-2 pt-3 border-t ${isEmergency ? "border-orange-500/20" : "border-terminal-green/10"}`}>
           <button
             onClick={() => handleVote("verified")}
             className={`flex items-center gap-1 px-2 py-1 text-xs font-mono transition-colors ${
