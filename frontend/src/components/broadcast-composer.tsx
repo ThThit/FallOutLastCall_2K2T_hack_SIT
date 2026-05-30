@@ -1,29 +1,53 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { X, Send, MapPin, AlertTriangle } from "lucide-react";
+import { signalApi, type Signal } from "../lib/api";
 
 interface BroadcastComposerProps {
   onClose: () => void;
+  onCreated: (signal: Signal) => void;
+  callsign: string;
+  editSignal?: Signal;
 }
 
-export function BroadcastComposer({ onClose }: BroadcastComposerProps) {
-  const [message, setMessage] = useState("");
-  const [sector, setSector] = useState("");
-  const [isEmergency, setIsEmergency] = useState(false);
-  const [charCount, setCharCount] = useState(0);
-  const maxChars = 280;
+const SECTOR_OPTIONS = [1, 2, 3, 4, 5, 6, 8];
+const MAX_CHARS = 288;
 
-  const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const text = e.target.value;
-    if (text.length <= maxChars) {
-      setMessage(text);
-      setCharCount(text.length);
-    }
-  };
+export function BroadcastComposer({ onClose, onCreated, callsign, editSignal }: BroadcastComposerProps) {
+  const [message, setMessage] = useState(editSignal?.content ?? "");
+  const [sector, setSector] = useState(editSignal ? String(editSignal.sector) : "");
+  const [isEmergency, setIsEmergency] = useState(editSignal?.priority === "EMERGENCY");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = () => {
-    if (message.trim() && sector) {
+  const isEdit = !!editSignal;
+
+  const handleSubmit = async () => {
+    if (!message.trim() || !sector || submitting) return;
+    setError("");
+    setSubmitting(true);
+    try {
+      if (isEdit) {
+        const updated = await signalApi.update(editSignal.id, {
+          content: message.trim(),
+          sector: parseInt(sector),
+          priority: isEmergency ? "EMERGENCY" : "STANDARD",
+        });
+        onCreated(updated);
+      } else {
+        const created = await signalApi.create({
+          authorName: callsign,
+          content: message.trim(),
+          sector: parseInt(sector),
+          priority: isEmergency ? "EMERGENCY" : "STANDARD",
+        });
+        onCreated(created);
+      }
       onClose();
+    } catch {
+      setError("Failed to broadcast. Try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -47,9 +71,11 @@ export function BroadcastComposer({ onClose }: BroadcastComposerProps) {
         </button>
 
         <div className="mb-6">
-          <h2 className="text-white mb-2">BROADCAST NEW SIGNAL</h2>
+          <h2 className="text-white mb-2">
+            {isEdit ? "EDIT SIGNAL" : "BROADCAST NEW SIGNAL"}
+          </h2>
           <div className="text-xs text-muted-foreground font-mono">
-            Share critical information with the survivor network
+            Broadcasting as <span className="text-terminal-green">{callsign}</span>
           </div>
         </div>
 
@@ -60,15 +86,17 @@ export function BroadcastComposer({ onClose }: BroadcastComposerProps) {
             </label>
             <textarea
               value={message}
-              onChange={handleMessageChange}
+              onChange={(e) => {
+                if (e.target.value.length <= MAX_CHARS) setMessage(e.target.value);
+              }}
               placeholder="Enter your message..."
               className="w-full bg-charcoal border border-terminal-green/30 px-4 py-3 text-white font-mono text-sm focus:border-terminal-green focus:outline-none transition-colors resize-none"
               rows={4}
             />
             <div className={`text-xs font-mono mt-1 text-right ${
-              charCount > maxChars * 0.9 ? 'text-warning-amber' : 'text-muted-foreground'
+              message.length > MAX_CHARS * 0.9 ? "text-warning-amber" : "text-muted-foreground"
             }`}>
-              {charCount} / {maxChars}
+              {message.length} / {MAX_CHARS}
             </div>
           </div>
 
@@ -84,13 +112,9 @@ export function BroadcastComposer({ onClose }: BroadcastComposerProps) {
                 className="w-full bg-charcoal border border-terminal-green/30 px-4 py-3 text-white font-mono text-sm focus:border-terminal-green focus:outline-none transition-colors"
               >
                 <option value="">Select Sector</option>
-                <option value="SECTOR 1">SECTOR 1</option>
-                <option value="SECTOR 2">SECTOR 2</option>
-                <option value="SECTOR 3">SECTOR 3</option>
-                <option value="SECTOR 4">SECTOR 4</option>
-                <option value="SECTOR 5">SECTOR 5</option>
-                <option value="SECTOR 6">SECTOR 6</option>
-                <option value="SECTOR 8">SECTOR 8</option>
+                {SECTOR_OPTIONS.map((s) => (
+                  <option key={s} value={s}>SECTOR {s}</option>
+                ))}
               </select>
             </div>
 
@@ -99,15 +123,15 @@ export function BroadcastComposer({ onClose }: BroadcastComposerProps) {
                 PRIORITY
               </label>
               <button
-                onClick={() => setIsEmergency(!isEmergency)}
+                onClick={() => setIsEmergency((v) => !v)}
                 className={`w-full px-4 py-3 font-mono text-sm tracking-wide transition-colors border ${
                   isEmergency
-                    ? 'bg-emergency-red/20 border-emergency-red text-emergency-red'
-                    : 'bg-charcoal border-terminal-green/30 text-muted-foreground'
+                    ? "bg-warning-amber/20 border-warning-amber text-warning-amber"
+                    : "bg-charcoal border-terminal-green/30 text-muted-foreground"
                 }`}
               >
                 <AlertTriangle className="w-4 h-4 inline mr-2" />
-                {isEmergency ? 'EMERGENCY' : 'STANDARD'}
+                {isEmergency ? "EMERGENCY" : "STANDARD"}
               </button>
             </div>
           </div>
@@ -115,16 +139,20 @@ export function BroadcastComposer({ onClose }: BroadcastComposerProps) {
           {isEmergency && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              className="bg-emergency-red/10 border border-emergency-red/30 p-4"
+              animate={{ opacity: 1, height: "auto" }}
+              className="bg-warning-amber/10 border border-warning-amber/30 p-4"
             >
-              <div className="text-xs font-mono text-emergency-red tracking-wide mb-2">
+              <div className="text-xs font-mono text-warning-amber tracking-wide mb-2">
                 ⚠ EMERGENCY BROADCAST
               </div>
               <p className="text-xs text-muted-foreground">
-                Emergency broadcasts will be prioritized and sent to all survivors in the network. Use only for critical threats or immediate danger.
+                Emergency broadcasts will be prioritized across the network. Use only for critical threats or immediate danger.
               </p>
             </motion.div>
+          )}
+
+          {error && (
+            <p className="text-xs font-mono text-emergency-red">{error}</p>
           )}
 
           <div className="flex gap-3 pt-4">
@@ -136,11 +164,11 @@ export function BroadcastComposer({ onClose }: BroadcastComposerProps) {
             </button>
             <button
               onClick={handleSubmit}
-              disabled={!message.trim() || !sector}
+              disabled={!message.trim() || !sector || submitting}
               className="flex-1 px-4 py-3 bg-terminal-green/10 border border-terminal-green text-terminal-green font-mono text-sm tracking-wide hover:bg-terminal-green/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Send className="w-4 h-4 inline mr-2" />
-              BROADCAST
+              {submitting ? "BROADCASTING..." : isEdit ? "UPDATE" : "BROADCAST"}
             </button>
           </div>
         </div>
