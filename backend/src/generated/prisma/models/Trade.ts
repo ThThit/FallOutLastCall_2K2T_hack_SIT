@@ -48,6 +48,9 @@ export type TradeMinAggregateOutputType = {
   location: string | null
   status: $Enums.TradeStatus | null
   creatorId: string | null
+  vaultItemId: string | null
+  acceptorId: string | null
+  acceptorVaultItemId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -64,6 +67,9 @@ export type TradeMaxAggregateOutputType = {
   location: string | null
   status: $Enums.TradeStatus | null
   creatorId: string | null
+  vaultItemId: string | null
+  acceptorId: string | null
+  acceptorVaultItemId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -80,6 +86,9 @@ export type TradeCountAggregateOutputType = {
   location: number
   status: number
   creatorId: number
+  vaultItemId: number
+  acceptorId: number
+  acceptorVaultItemId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -108,6 +117,9 @@ export type TradeMinAggregateInputType = {
   location?: true
   status?: true
   creatorId?: true
+  vaultItemId?: true
+  acceptorId?: true
+  acceptorVaultItemId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -124,6 +136,9 @@ export type TradeMaxAggregateInputType = {
   location?: true
   status?: true
   creatorId?: true
+  vaultItemId?: true
+  acceptorId?: true
+  acceptorVaultItemId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -140,6 +155,9 @@ export type TradeCountAggregateInputType = {
   location?: true
   status?: true
   creatorId?: true
+  vaultItemId?: true
+  acceptorId?: true
+  acceptorVaultItemId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -243,6 +261,9 @@ export type TradeGroupByOutputType = {
   location: string | null
   status: $Enums.TradeStatus
   creatorId: string
+  vaultItemId: string | null
+  acceptorId: string | null
+  acceptorVaultItemId: string | null
   createdAt: Date
   updatedAt: Date
   _count: TradeCountAggregateOutputType | null
@@ -282,9 +303,15 @@ export type TradeWhereInput = {
   location?: Prisma.StringNullableFilter<"Trade"> | string | null
   status?: Prisma.EnumTradeStatusFilter<"Trade"> | $Enums.TradeStatus
   creatorId?: Prisma.StringFilter<"Trade"> | string
+  vaultItemId?: Prisma.StringNullableFilter<"Trade"> | string | null
+  acceptorId?: Prisma.StringNullableFilter<"Trade"> | string | null
+  acceptorVaultItemId?: Prisma.StringNullableFilter<"Trade"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Trade"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Trade"> | Date | string
   creator?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  vaultItem?: Prisma.XOR<Prisma.VaultItemNullableScalarRelationFilter, Prisma.VaultItemWhereInput> | null
+  acceptor?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  acceptorVaultItem?: Prisma.XOR<Prisma.VaultItemNullableScalarRelationFilter, Prisma.VaultItemWhereInput> | null
 }
 
 export type TradeOrderByWithRelationInput = {
@@ -299,9 +326,15 @@ export type TradeOrderByWithRelationInput = {
   location?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
+  vaultItemId?: Prisma.SortOrderInput | Prisma.SortOrder
+  acceptorId?: Prisma.SortOrderInput | Prisma.SortOrder
+  acceptorVaultItemId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   creator?: Prisma.UserOrderByWithRelationInput
+  vaultItem?: Prisma.VaultItemOrderByWithRelationInput
+  acceptor?: Prisma.UserOrderByWithRelationInput
+  acceptorVaultItem?: Prisma.VaultItemOrderByWithRelationInput
 }
 
 export type TradeWhereUniqueInput = Prisma.AtLeast<{
@@ -319,9 +352,15 @@ export type TradeWhereUniqueInput = Prisma.AtLeast<{
   location?: Prisma.StringNullableFilter<"Trade"> | string | null
   status?: Prisma.EnumTradeStatusFilter<"Trade"> | $Enums.TradeStatus
   creatorId?: Prisma.StringFilter<"Trade"> | string
+  vaultItemId?: Prisma.StringNullableFilter<"Trade"> | string | null
+  acceptorId?: Prisma.StringNullableFilter<"Trade"> | string | null
+  acceptorVaultItemId?: Prisma.StringNullableFilter<"Trade"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Trade"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Trade"> | Date | string
   creator?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  vaultItem?: Prisma.XOR<Prisma.VaultItemNullableScalarRelationFilter, Prisma.VaultItemWhereInput> | null
+  acceptor?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  acceptorVaultItem?: Prisma.XOR<Prisma.VaultItemNullableScalarRelationFilter, Prisma.VaultItemWhereInput> | null
 }, "id">
 
 export type TradeOrderByWithAggregationInput = {
@@ -336,6 +375,9 @@ export type TradeOrderByWithAggregationInput = {
   location?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
+  vaultItemId?: Prisma.SortOrderInput | Prisma.SortOrder
+  acceptorId?: Prisma.SortOrderInput | Prisma.SortOrder
+  acceptorVaultItemId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.TradeCountOrderByAggregateInput
@@ -360,6 +402,9 @@ export type TradeScalarWhereWithAggregatesInput = {
   location?: Prisma.StringNullableWithAggregatesFilter<"Trade"> | string | null
   status?: Prisma.EnumTradeStatusWithAggregatesFilter<"Trade"> | $Enums.TradeStatus
   creatorId?: Prisma.StringWithAggregatesFilter<"Trade"> | string
+  vaultItemId?: Prisma.StringNullableWithAggregatesFilter<"Trade"> | string | null
+  acceptorId?: Prisma.StringNullableWithAggregatesFilter<"Trade"> | string | null
+  acceptorVaultItemId?: Prisma.StringNullableWithAggregatesFilter<"Trade"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Trade"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Trade"> | Date | string
 }
@@ -378,6 +423,9 @@ export type TradeCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   creator: Prisma.UserCreateNestedOneWithoutTradesInput
+  vaultItem?: Prisma.VaultItemCreateNestedOneWithoutTradesInput
+  acceptor?: Prisma.UserCreateNestedOneWithoutAcceptedTradesInput
+  acceptorVaultItem?: Prisma.VaultItemCreateNestedOneWithoutAcceptorTradesInput
 }
 
 export type TradeUncheckedCreateInput = {
@@ -392,6 +440,9 @@ export type TradeUncheckedCreateInput = {
   location?: string | null
   status?: $Enums.TradeStatus
   creatorId: string
+  vaultItemId?: string | null
+  acceptorId?: string | null
+  acceptorVaultItemId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -410,6 +461,9 @@ export type TradeUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutTradesNestedInput
+  vaultItem?: Prisma.VaultItemUpdateOneWithoutTradesNestedInput
+  acceptor?: Prisma.UserUpdateOneWithoutAcceptedTradesNestedInput
+  acceptorVaultItem?: Prisma.VaultItemUpdateOneWithoutAcceptorTradesNestedInput
 }
 
 export type TradeUncheckedUpdateInput = {
@@ -424,6 +478,9 @@ export type TradeUncheckedUpdateInput = {
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTradeStatusFieldUpdateOperationsInput | $Enums.TradeStatus
   creatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  vaultItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  acceptorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  acceptorVaultItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -440,6 +497,9 @@ export type TradeCreateManyInput = {
   location?: string | null
   status?: $Enums.TradeStatus
   creatorId: string
+  vaultItemId?: string | null
+  acceptorId?: string | null
+  acceptorVaultItemId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -471,6 +531,9 @@ export type TradeUncheckedUpdateManyInput = {
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTradeStatusFieldUpdateOperationsInput | $Enums.TradeStatus
   creatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  vaultItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  acceptorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  acceptorVaultItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -497,6 +560,9 @@ export type TradeCountOrderByAggregateInput = {
   location?: Prisma.SortOrder
   status?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
+  vaultItemId?: Prisma.SortOrder
+  acceptorId?: Prisma.SortOrder
+  acceptorVaultItemId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -518,6 +584,9 @@ export type TradeMaxOrderByAggregateInput = {
   location?: Prisma.SortOrder
   status?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
+  vaultItemId?: Prisma.SortOrder
+  acceptorId?: Prisma.SortOrder
+  acceptorVaultItemId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -534,6 +603,9 @@ export type TradeMinOrderByAggregateInput = {
   location?: Prisma.SortOrder
   status?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
+  vaultItemId?: Prisma.SortOrder
+  acceptorId?: Prisma.SortOrder
+  acceptorVaultItemId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -550,10 +622,24 @@ export type TradeCreateNestedManyWithoutCreatorInput = {
   connect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
 }
 
+export type TradeCreateNestedManyWithoutAcceptorInput = {
+  create?: Prisma.XOR<Prisma.TradeCreateWithoutAcceptorInput, Prisma.TradeUncheckedCreateWithoutAcceptorInput> | Prisma.TradeCreateWithoutAcceptorInput[] | Prisma.TradeUncheckedCreateWithoutAcceptorInput[]
+  connectOrCreate?: Prisma.TradeCreateOrConnectWithoutAcceptorInput | Prisma.TradeCreateOrConnectWithoutAcceptorInput[]
+  createMany?: Prisma.TradeCreateManyAcceptorInputEnvelope
+  connect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+}
+
 export type TradeUncheckedCreateNestedManyWithoutCreatorInput = {
   create?: Prisma.XOR<Prisma.TradeCreateWithoutCreatorInput, Prisma.TradeUncheckedCreateWithoutCreatorInput> | Prisma.TradeCreateWithoutCreatorInput[] | Prisma.TradeUncheckedCreateWithoutCreatorInput[]
   connectOrCreate?: Prisma.TradeCreateOrConnectWithoutCreatorInput | Prisma.TradeCreateOrConnectWithoutCreatorInput[]
   createMany?: Prisma.TradeCreateManyCreatorInputEnvelope
+  connect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+}
+
+export type TradeUncheckedCreateNestedManyWithoutAcceptorInput = {
+  create?: Prisma.XOR<Prisma.TradeCreateWithoutAcceptorInput, Prisma.TradeUncheckedCreateWithoutAcceptorInput> | Prisma.TradeCreateWithoutAcceptorInput[] | Prisma.TradeUncheckedCreateWithoutAcceptorInput[]
+  connectOrCreate?: Prisma.TradeCreateOrConnectWithoutAcceptorInput | Prisma.TradeCreateOrConnectWithoutAcceptorInput[]
+  createMany?: Prisma.TradeCreateManyAcceptorInputEnvelope
   connect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
 }
 
@@ -571,6 +657,20 @@ export type TradeUpdateManyWithoutCreatorNestedInput = {
   deleteMany?: Prisma.TradeScalarWhereInput | Prisma.TradeScalarWhereInput[]
 }
 
+export type TradeUpdateManyWithoutAcceptorNestedInput = {
+  create?: Prisma.XOR<Prisma.TradeCreateWithoutAcceptorInput, Prisma.TradeUncheckedCreateWithoutAcceptorInput> | Prisma.TradeCreateWithoutAcceptorInput[] | Prisma.TradeUncheckedCreateWithoutAcceptorInput[]
+  connectOrCreate?: Prisma.TradeCreateOrConnectWithoutAcceptorInput | Prisma.TradeCreateOrConnectWithoutAcceptorInput[]
+  upsert?: Prisma.TradeUpsertWithWhereUniqueWithoutAcceptorInput | Prisma.TradeUpsertWithWhereUniqueWithoutAcceptorInput[]
+  createMany?: Prisma.TradeCreateManyAcceptorInputEnvelope
+  set?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  disconnect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  delete?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  connect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  update?: Prisma.TradeUpdateWithWhereUniqueWithoutAcceptorInput | Prisma.TradeUpdateWithWhereUniqueWithoutAcceptorInput[]
+  updateMany?: Prisma.TradeUpdateManyWithWhereWithoutAcceptorInput | Prisma.TradeUpdateManyWithWhereWithoutAcceptorInput[]
+  deleteMany?: Prisma.TradeScalarWhereInput | Prisma.TradeScalarWhereInput[]
+}
+
 export type TradeUncheckedUpdateManyWithoutCreatorNestedInput = {
   create?: Prisma.XOR<Prisma.TradeCreateWithoutCreatorInput, Prisma.TradeUncheckedCreateWithoutCreatorInput> | Prisma.TradeCreateWithoutCreatorInput[] | Prisma.TradeUncheckedCreateWithoutCreatorInput[]
   connectOrCreate?: Prisma.TradeCreateOrConnectWithoutCreatorInput | Prisma.TradeCreateOrConnectWithoutCreatorInput[]
@@ -582,6 +682,20 @@ export type TradeUncheckedUpdateManyWithoutCreatorNestedInput = {
   connect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
   update?: Prisma.TradeUpdateWithWhereUniqueWithoutCreatorInput | Prisma.TradeUpdateWithWhereUniqueWithoutCreatorInput[]
   updateMany?: Prisma.TradeUpdateManyWithWhereWithoutCreatorInput | Prisma.TradeUpdateManyWithWhereWithoutCreatorInput[]
+  deleteMany?: Prisma.TradeScalarWhereInput | Prisma.TradeScalarWhereInput[]
+}
+
+export type TradeUncheckedUpdateManyWithoutAcceptorNestedInput = {
+  create?: Prisma.XOR<Prisma.TradeCreateWithoutAcceptorInput, Prisma.TradeUncheckedCreateWithoutAcceptorInput> | Prisma.TradeCreateWithoutAcceptorInput[] | Prisma.TradeUncheckedCreateWithoutAcceptorInput[]
+  connectOrCreate?: Prisma.TradeCreateOrConnectWithoutAcceptorInput | Prisma.TradeCreateOrConnectWithoutAcceptorInput[]
+  upsert?: Prisma.TradeUpsertWithWhereUniqueWithoutAcceptorInput | Prisma.TradeUpsertWithWhereUniqueWithoutAcceptorInput[]
+  createMany?: Prisma.TradeCreateManyAcceptorInputEnvelope
+  set?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  disconnect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  delete?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  connect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  update?: Prisma.TradeUpdateWithWhereUniqueWithoutAcceptorInput | Prisma.TradeUpdateWithWhereUniqueWithoutAcceptorInput[]
+  updateMany?: Prisma.TradeUpdateManyWithWhereWithoutAcceptorInput | Prisma.TradeUpdateManyWithWhereWithoutAcceptorInput[]
   deleteMany?: Prisma.TradeScalarWhereInput | Prisma.TradeScalarWhereInput[]
 }
 
@@ -601,6 +715,90 @@ export type EnumTradeStatusFieldUpdateOperationsInput = {
   set?: $Enums.TradeStatus
 }
 
+export type TradeCreateNestedManyWithoutVaultItemInput = {
+  create?: Prisma.XOR<Prisma.TradeCreateWithoutVaultItemInput, Prisma.TradeUncheckedCreateWithoutVaultItemInput> | Prisma.TradeCreateWithoutVaultItemInput[] | Prisma.TradeUncheckedCreateWithoutVaultItemInput[]
+  connectOrCreate?: Prisma.TradeCreateOrConnectWithoutVaultItemInput | Prisma.TradeCreateOrConnectWithoutVaultItemInput[]
+  createMany?: Prisma.TradeCreateManyVaultItemInputEnvelope
+  connect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+}
+
+export type TradeCreateNestedManyWithoutAcceptorVaultItemInput = {
+  create?: Prisma.XOR<Prisma.TradeCreateWithoutAcceptorVaultItemInput, Prisma.TradeUncheckedCreateWithoutAcceptorVaultItemInput> | Prisma.TradeCreateWithoutAcceptorVaultItemInput[] | Prisma.TradeUncheckedCreateWithoutAcceptorVaultItemInput[]
+  connectOrCreate?: Prisma.TradeCreateOrConnectWithoutAcceptorVaultItemInput | Prisma.TradeCreateOrConnectWithoutAcceptorVaultItemInput[]
+  createMany?: Prisma.TradeCreateManyAcceptorVaultItemInputEnvelope
+  connect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+}
+
+export type TradeUncheckedCreateNestedManyWithoutVaultItemInput = {
+  create?: Prisma.XOR<Prisma.TradeCreateWithoutVaultItemInput, Prisma.TradeUncheckedCreateWithoutVaultItemInput> | Prisma.TradeCreateWithoutVaultItemInput[] | Prisma.TradeUncheckedCreateWithoutVaultItemInput[]
+  connectOrCreate?: Prisma.TradeCreateOrConnectWithoutVaultItemInput | Prisma.TradeCreateOrConnectWithoutVaultItemInput[]
+  createMany?: Prisma.TradeCreateManyVaultItemInputEnvelope
+  connect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+}
+
+export type TradeUncheckedCreateNestedManyWithoutAcceptorVaultItemInput = {
+  create?: Prisma.XOR<Prisma.TradeCreateWithoutAcceptorVaultItemInput, Prisma.TradeUncheckedCreateWithoutAcceptorVaultItemInput> | Prisma.TradeCreateWithoutAcceptorVaultItemInput[] | Prisma.TradeUncheckedCreateWithoutAcceptorVaultItemInput[]
+  connectOrCreate?: Prisma.TradeCreateOrConnectWithoutAcceptorVaultItemInput | Prisma.TradeCreateOrConnectWithoutAcceptorVaultItemInput[]
+  createMany?: Prisma.TradeCreateManyAcceptorVaultItemInputEnvelope
+  connect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+}
+
+export type TradeUpdateManyWithoutVaultItemNestedInput = {
+  create?: Prisma.XOR<Prisma.TradeCreateWithoutVaultItemInput, Prisma.TradeUncheckedCreateWithoutVaultItemInput> | Prisma.TradeCreateWithoutVaultItemInput[] | Prisma.TradeUncheckedCreateWithoutVaultItemInput[]
+  connectOrCreate?: Prisma.TradeCreateOrConnectWithoutVaultItemInput | Prisma.TradeCreateOrConnectWithoutVaultItemInput[]
+  upsert?: Prisma.TradeUpsertWithWhereUniqueWithoutVaultItemInput | Prisma.TradeUpsertWithWhereUniqueWithoutVaultItemInput[]
+  createMany?: Prisma.TradeCreateManyVaultItemInputEnvelope
+  set?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  disconnect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  delete?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  connect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  update?: Prisma.TradeUpdateWithWhereUniqueWithoutVaultItemInput | Prisma.TradeUpdateWithWhereUniqueWithoutVaultItemInput[]
+  updateMany?: Prisma.TradeUpdateManyWithWhereWithoutVaultItemInput | Prisma.TradeUpdateManyWithWhereWithoutVaultItemInput[]
+  deleteMany?: Prisma.TradeScalarWhereInput | Prisma.TradeScalarWhereInput[]
+}
+
+export type TradeUpdateManyWithoutAcceptorVaultItemNestedInput = {
+  create?: Prisma.XOR<Prisma.TradeCreateWithoutAcceptorVaultItemInput, Prisma.TradeUncheckedCreateWithoutAcceptorVaultItemInput> | Prisma.TradeCreateWithoutAcceptorVaultItemInput[] | Prisma.TradeUncheckedCreateWithoutAcceptorVaultItemInput[]
+  connectOrCreate?: Prisma.TradeCreateOrConnectWithoutAcceptorVaultItemInput | Prisma.TradeCreateOrConnectWithoutAcceptorVaultItemInput[]
+  upsert?: Prisma.TradeUpsertWithWhereUniqueWithoutAcceptorVaultItemInput | Prisma.TradeUpsertWithWhereUniqueWithoutAcceptorVaultItemInput[]
+  createMany?: Prisma.TradeCreateManyAcceptorVaultItemInputEnvelope
+  set?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  disconnect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  delete?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  connect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  update?: Prisma.TradeUpdateWithWhereUniqueWithoutAcceptorVaultItemInput | Prisma.TradeUpdateWithWhereUniqueWithoutAcceptorVaultItemInput[]
+  updateMany?: Prisma.TradeUpdateManyWithWhereWithoutAcceptorVaultItemInput | Prisma.TradeUpdateManyWithWhereWithoutAcceptorVaultItemInput[]
+  deleteMany?: Prisma.TradeScalarWhereInput | Prisma.TradeScalarWhereInput[]
+}
+
+export type TradeUncheckedUpdateManyWithoutVaultItemNestedInput = {
+  create?: Prisma.XOR<Prisma.TradeCreateWithoutVaultItemInput, Prisma.TradeUncheckedCreateWithoutVaultItemInput> | Prisma.TradeCreateWithoutVaultItemInput[] | Prisma.TradeUncheckedCreateWithoutVaultItemInput[]
+  connectOrCreate?: Prisma.TradeCreateOrConnectWithoutVaultItemInput | Prisma.TradeCreateOrConnectWithoutVaultItemInput[]
+  upsert?: Prisma.TradeUpsertWithWhereUniqueWithoutVaultItemInput | Prisma.TradeUpsertWithWhereUniqueWithoutVaultItemInput[]
+  createMany?: Prisma.TradeCreateManyVaultItemInputEnvelope
+  set?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  disconnect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  delete?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  connect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  update?: Prisma.TradeUpdateWithWhereUniqueWithoutVaultItemInput | Prisma.TradeUpdateWithWhereUniqueWithoutVaultItemInput[]
+  updateMany?: Prisma.TradeUpdateManyWithWhereWithoutVaultItemInput | Prisma.TradeUpdateManyWithWhereWithoutVaultItemInput[]
+  deleteMany?: Prisma.TradeScalarWhereInput | Prisma.TradeScalarWhereInput[]
+}
+
+export type TradeUncheckedUpdateManyWithoutAcceptorVaultItemNestedInput = {
+  create?: Prisma.XOR<Prisma.TradeCreateWithoutAcceptorVaultItemInput, Prisma.TradeUncheckedCreateWithoutAcceptorVaultItemInput> | Prisma.TradeCreateWithoutAcceptorVaultItemInput[] | Prisma.TradeUncheckedCreateWithoutAcceptorVaultItemInput[]
+  connectOrCreate?: Prisma.TradeCreateOrConnectWithoutAcceptorVaultItemInput | Prisma.TradeCreateOrConnectWithoutAcceptorVaultItemInput[]
+  upsert?: Prisma.TradeUpsertWithWhereUniqueWithoutAcceptorVaultItemInput | Prisma.TradeUpsertWithWhereUniqueWithoutAcceptorVaultItemInput[]
+  createMany?: Prisma.TradeCreateManyAcceptorVaultItemInputEnvelope
+  set?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  disconnect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  delete?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  connect?: Prisma.TradeWhereUniqueInput | Prisma.TradeWhereUniqueInput[]
+  update?: Prisma.TradeUpdateWithWhereUniqueWithoutAcceptorVaultItemInput | Prisma.TradeUpdateWithWhereUniqueWithoutAcceptorVaultItemInput[]
+  updateMany?: Prisma.TradeUpdateManyWithWhereWithoutAcceptorVaultItemInput | Prisma.TradeUpdateManyWithWhereWithoutAcceptorVaultItemInput[]
+  deleteMany?: Prisma.TradeScalarWhereInput | Prisma.TradeScalarWhereInput[]
+}
+
 export type TradeCreateWithoutCreatorInput = {
   id?: string
   resourceName: string
@@ -614,6 +812,9 @@ export type TradeCreateWithoutCreatorInput = {
   status?: $Enums.TradeStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  vaultItem?: Prisma.VaultItemCreateNestedOneWithoutTradesInput
+  acceptor?: Prisma.UserCreateNestedOneWithoutAcceptedTradesInput
+  acceptorVaultItem?: Prisma.VaultItemCreateNestedOneWithoutAcceptorTradesInput
 }
 
 export type TradeUncheckedCreateWithoutCreatorInput = {
@@ -627,6 +828,9 @@ export type TradeUncheckedCreateWithoutCreatorInput = {
   category: $Enums.ResourceCategory
   location?: string | null
   status?: $Enums.TradeStatus
+  vaultItemId?: string | null
+  acceptorId?: string | null
+  acceptorVaultItemId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -638,6 +842,51 @@ export type TradeCreateOrConnectWithoutCreatorInput = {
 
 export type TradeCreateManyCreatorInputEnvelope = {
   data: Prisma.TradeCreateManyCreatorInput | Prisma.TradeCreateManyCreatorInput[]
+}
+
+export type TradeCreateWithoutAcceptorInput = {
+  id?: string
+  resourceName: string
+  quantity: number
+  condition: $Enums.ItemCondition
+  requestedItem: string
+  requestedQuantity: number
+  traderName: string
+  category: $Enums.ResourceCategory
+  location?: string | null
+  status?: $Enums.TradeStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  creator: Prisma.UserCreateNestedOneWithoutTradesInput
+  vaultItem?: Prisma.VaultItemCreateNestedOneWithoutTradesInput
+  acceptorVaultItem?: Prisma.VaultItemCreateNestedOneWithoutAcceptorTradesInput
+}
+
+export type TradeUncheckedCreateWithoutAcceptorInput = {
+  id?: string
+  resourceName: string
+  quantity: number
+  condition: $Enums.ItemCondition
+  requestedItem: string
+  requestedQuantity: number
+  traderName: string
+  category: $Enums.ResourceCategory
+  location?: string | null
+  status?: $Enums.TradeStatus
+  creatorId: string
+  vaultItemId?: string | null
+  acceptorVaultItemId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TradeCreateOrConnectWithoutAcceptorInput = {
+  where: Prisma.TradeWhereUniqueInput
+  create: Prisma.XOR<Prisma.TradeCreateWithoutAcceptorInput, Prisma.TradeUncheckedCreateWithoutAcceptorInput>
+}
+
+export type TradeCreateManyAcceptorInputEnvelope = {
+  data: Prisma.TradeCreateManyAcceptorInput | Prisma.TradeCreateManyAcceptorInput[]
 }
 
 export type TradeUpsertWithWhereUniqueWithoutCreatorInput = {
@@ -671,8 +920,149 @@ export type TradeScalarWhereInput = {
   location?: Prisma.StringNullableFilter<"Trade"> | string | null
   status?: Prisma.EnumTradeStatusFilter<"Trade"> | $Enums.TradeStatus
   creatorId?: Prisma.StringFilter<"Trade"> | string
+  vaultItemId?: Prisma.StringNullableFilter<"Trade"> | string | null
+  acceptorId?: Prisma.StringNullableFilter<"Trade"> | string | null
+  acceptorVaultItemId?: Prisma.StringNullableFilter<"Trade"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Trade"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Trade"> | Date | string
+}
+
+export type TradeUpsertWithWhereUniqueWithoutAcceptorInput = {
+  where: Prisma.TradeWhereUniqueInput
+  update: Prisma.XOR<Prisma.TradeUpdateWithoutAcceptorInput, Prisma.TradeUncheckedUpdateWithoutAcceptorInput>
+  create: Prisma.XOR<Prisma.TradeCreateWithoutAcceptorInput, Prisma.TradeUncheckedCreateWithoutAcceptorInput>
+}
+
+export type TradeUpdateWithWhereUniqueWithoutAcceptorInput = {
+  where: Prisma.TradeWhereUniqueInput
+  data: Prisma.XOR<Prisma.TradeUpdateWithoutAcceptorInput, Prisma.TradeUncheckedUpdateWithoutAcceptorInput>
+}
+
+export type TradeUpdateManyWithWhereWithoutAcceptorInput = {
+  where: Prisma.TradeScalarWhereInput
+  data: Prisma.XOR<Prisma.TradeUpdateManyMutationInput, Prisma.TradeUncheckedUpdateManyWithoutAcceptorInput>
+}
+
+export type TradeCreateWithoutVaultItemInput = {
+  id?: string
+  resourceName: string
+  quantity: number
+  condition: $Enums.ItemCondition
+  requestedItem: string
+  requestedQuantity: number
+  traderName: string
+  category: $Enums.ResourceCategory
+  location?: string | null
+  status?: $Enums.TradeStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  creator: Prisma.UserCreateNestedOneWithoutTradesInput
+  acceptor?: Prisma.UserCreateNestedOneWithoutAcceptedTradesInput
+  acceptorVaultItem?: Prisma.VaultItemCreateNestedOneWithoutAcceptorTradesInput
+}
+
+export type TradeUncheckedCreateWithoutVaultItemInput = {
+  id?: string
+  resourceName: string
+  quantity: number
+  condition: $Enums.ItemCondition
+  requestedItem: string
+  requestedQuantity: number
+  traderName: string
+  category: $Enums.ResourceCategory
+  location?: string | null
+  status?: $Enums.TradeStatus
+  creatorId: string
+  acceptorId?: string | null
+  acceptorVaultItemId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TradeCreateOrConnectWithoutVaultItemInput = {
+  where: Prisma.TradeWhereUniqueInput
+  create: Prisma.XOR<Prisma.TradeCreateWithoutVaultItemInput, Prisma.TradeUncheckedCreateWithoutVaultItemInput>
+}
+
+export type TradeCreateManyVaultItemInputEnvelope = {
+  data: Prisma.TradeCreateManyVaultItemInput | Prisma.TradeCreateManyVaultItemInput[]
+}
+
+export type TradeCreateWithoutAcceptorVaultItemInput = {
+  id?: string
+  resourceName: string
+  quantity: number
+  condition: $Enums.ItemCondition
+  requestedItem: string
+  requestedQuantity: number
+  traderName: string
+  category: $Enums.ResourceCategory
+  location?: string | null
+  status?: $Enums.TradeStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  creator: Prisma.UserCreateNestedOneWithoutTradesInput
+  vaultItem?: Prisma.VaultItemCreateNestedOneWithoutTradesInput
+  acceptor?: Prisma.UserCreateNestedOneWithoutAcceptedTradesInput
+}
+
+export type TradeUncheckedCreateWithoutAcceptorVaultItemInput = {
+  id?: string
+  resourceName: string
+  quantity: number
+  condition: $Enums.ItemCondition
+  requestedItem: string
+  requestedQuantity: number
+  traderName: string
+  category: $Enums.ResourceCategory
+  location?: string | null
+  status?: $Enums.TradeStatus
+  creatorId: string
+  vaultItemId?: string | null
+  acceptorId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TradeCreateOrConnectWithoutAcceptorVaultItemInput = {
+  where: Prisma.TradeWhereUniqueInput
+  create: Prisma.XOR<Prisma.TradeCreateWithoutAcceptorVaultItemInput, Prisma.TradeUncheckedCreateWithoutAcceptorVaultItemInput>
+}
+
+export type TradeCreateManyAcceptorVaultItemInputEnvelope = {
+  data: Prisma.TradeCreateManyAcceptorVaultItemInput | Prisma.TradeCreateManyAcceptorVaultItemInput[]
+}
+
+export type TradeUpsertWithWhereUniqueWithoutVaultItemInput = {
+  where: Prisma.TradeWhereUniqueInput
+  update: Prisma.XOR<Prisma.TradeUpdateWithoutVaultItemInput, Prisma.TradeUncheckedUpdateWithoutVaultItemInput>
+  create: Prisma.XOR<Prisma.TradeCreateWithoutVaultItemInput, Prisma.TradeUncheckedCreateWithoutVaultItemInput>
+}
+
+export type TradeUpdateWithWhereUniqueWithoutVaultItemInput = {
+  where: Prisma.TradeWhereUniqueInput
+  data: Prisma.XOR<Prisma.TradeUpdateWithoutVaultItemInput, Prisma.TradeUncheckedUpdateWithoutVaultItemInput>
+}
+
+export type TradeUpdateManyWithWhereWithoutVaultItemInput = {
+  where: Prisma.TradeScalarWhereInput
+  data: Prisma.XOR<Prisma.TradeUpdateManyMutationInput, Prisma.TradeUncheckedUpdateManyWithoutVaultItemInput>
+}
+
+export type TradeUpsertWithWhereUniqueWithoutAcceptorVaultItemInput = {
+  where: Prisma.TradeWhereUniqueInput
+  update: Prisma.XOR<Prisma.TradeUpdateWithoutAcceptorVaultItemInput, Prisma.TradeUncheckedUpdateWithoutAcceptorVaultItemInput>
+  create: Prisma.XOR<Prisma.TradeCreateWithoutAcceptorVaultItemInput, Prisma.TradeUncheckedCreateWithoutAcceptorVaultItemInput>
+}
+
+export type TradeUpdateWithWhereUniqueWithoutAcceptorVaultItemInput = {
+  where: Prisma.TradeWhereUniqueInput
+  data: Prisma.XOR<Prisma.TradeUpdateWithoutAcceptorVaultItemInput, Prisma.TradeUncheckedUpdateWithoutAcceptorVaultItemInput>
+}
+
+export type TradeUpdateManyWithWhereWithoutAcceptorVaultItemInput = {
+  where: Prisma.TradeScalarWhereInput
+  data: Prisma.XOR<Prisma.TradeUpdateManyMutationInput, Prisma.TradeUncheckedUpdateManyWithoutAcceptorVaultItemInput>
 }
 
 export type TradeCreateManyCreatorInput = {
@@ -686,6 +1076,27 @@ export type TradeCreateManyCreatorInput = {
   category: $Enums.ResourceCategory
   location?: string | null
   status?: $Enums.TradeStatus
+  vaultItemId?: string | null
+  acceptorId?: string | null
+  acceptorVaultItemId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TradeCreateManyAcceptorInput = {
+  id?: string
+  resourceName: string
+  quantity: number
+  condition: $Enums.ItemCondition
+  requestedItem: string
+  requestedQuantity: number
+  traderName: string
+  category: $Enums.ResourceCategory
+  location?: string | null
+  status?: $Enums.TradeStatus
+  creatorId: string
+  vaultItemId?: string | null
+  acceptorVaultItemId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -703,6 +1114,9 @@ export type TradeUpdateWithoutCreatorInput = {
   status?: Prisma.EnumTradeStatusFieldUpdateOperationsInput | $Enums.TradeStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  vaultItem?: Prisma.VaultItemUpdateOneWithoutTradesNestedInput
+  acceptor?: Prisma.UserUpdateOneWithoutAcceptedTradesNestedInput
+  acceptorVaultItem?: Prisma.VaultItemUpdateOneWithoutAcceptorTradesNestedInput
 }
 
 export type TradeUncheckedUpdateWithoutCreatorInput = {
@@ -716,6 +1130,9 @@ export type TradeUncheckedUpdateWithoutCreatorInput = {
   category?: Prisma.EnumResourceCategoryFieldUpdateOperationsInput | $Enums.ResourceCategory
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTradeStatusFieldUpdateOperationsInput | $Enums.TradeStatus
+  vaultItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  acceptorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  acceptorVaultItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -731,6 +1148,207 @@ export type TradeUncheckedUpdateManyWithoutCreatorInput = {
   category?: Prisma.EnumResourceCategoryFieldUpdateOperationsInput | $Enums.ResourceCategory
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTradeStatusFieldUpdateOperationsInput | $Enums.TradeStatus
+  vaultItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  acceptorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  acceptorVaultItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TradeUpdateWithoutAcceptorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  resourceName?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  condition?: Prisma.EnumItemConditionFieldUpdateOperationsInput | $Enums.ItemCondition
+  requestedItem?: Prisma.StringFieldUpdateOperationsInput | string
+  requestedQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  traderName?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumResourceCategoryFieldUpdateOperationsInput | $Enums.ResourceCategory
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTradeStatusFieldUpdateOperationsInput | $Enums.TradeStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  creator?: Prisma.UserUpdateOneRequiredWithoutTradesNestedInput
+  vaultItem?: Prisma.VaultItemUpdateOneWithoutTradesNestedInput
+  acceptorVaultItem?: Prisma.VaultItemUpdateOneWithoutAcceptorTradesNestedInput
+}
+
+export type TradeUncheckedUpdateWithoutAcceptorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  resourceName?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  condition?: Prisma.EnumItemConditionFieldUpdateOperationsInput | $Enums.ItemCondition
+  requestedItem?: Prisma.StringFieldUpdateOperationsInput | string
+  requestedQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  traderName?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumResourceCategoryFieldUpdateOperationsInput | $Enums.ResourceCategory
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTradeStatusFieldUpdateOperationsInput | $Enums.TradeStatus
+  creatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  vaultItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  acceptorVaultItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TradeUncheckedUpdateManyWithoutAcceptorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  resourceName?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  condition?: Prisma.EnumItemConditionFieldUpdateOperationsInput | $Enums.ItemCondition
+  requestedItem?: Prisma.StringFieldUpdateOperationsInput | string
+  requestedQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  traderName?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumResourceCategoryFieldUpdateOperationsInput | $Enums.ResourceCategory
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTradeStatusFieldUpdateOperationsInput | $Enums.TradeStatus
+  creatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  vaultItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  acceptorVaultItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TradeCreateManyVaultItemInput = {
+  id?: string
+  resourceName: string
+  quantity: number
+  condition: $Enums.ItemCondition
+  requestedItem: string
+  requestedQuantity: number
+  traderName: string
+  category: $Enums.ResourceCategory
+  location?: string | null
+  status?: $Enums.TradeStatus
+  creatorId: string
+  acceptorId?: string | null
+  acceptorVaultItemId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TradeCreateManyAcceptorVaultItemInput = {
+  id?: string
+  resourceName: string
+  quantity: number
+  condition: $Enums.ItemCondition
+  requestedItem: string
+  requestedQuantity: number
+  traderName: string
+  category: $Enums.ResourceCategory
+  location?: string | null
+  status?: $Enums.TradeStatus
+  creatorId: string
+  vaultItemId?: string | null
+  acceptorId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TradeUpdateWithoutVaultItemInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  resourceName?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  condition?: Prisma.EnumItemConditionFieldUpdateOperationsInput | $Enums.ItemCondition
+  requestedItem?: Prisma.StringFieldUpdateOperationsInput | string
+  requestedQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  traderName?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumResourceCategoryFieldUpdateOperationsInput | $Enums.ResourceCategory
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTradeStatusFieldUpdateOperationsInput | $Enums.TradeStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  creator?: Prisma.UserUpdateOneRequiredWithoutTradesNestedInput
+  acceptor?: Prisma.UserUpdateOneWithoutAcceptedTradesNestedInput
+  acceptorVaultItem?: Prisma.VaultItemUpdateOneWithoutAcceptorTradesNestedInput
+}
+
+export type TradeUncheckedUpdateWithoutVaultItemInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  resourceName?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  condition?: Prisma.EnumItemConditionFieldUpdateOperationsInput | $Enums.ItemCondition
+  requestedItem?: Prisma.StringFieldUpdateOperationsInput | string
+  requestedQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  traderName?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumResourceCategoryFieldUpdateOperationsInput | $Enums.ResourceCategory
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTradeStatusFieldUpdateOperationsInput | $Enums.TradeStatus
+  creatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  acceptorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  acceptorVaultItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TradeUncheckedUpdateManyWithoutVaultItemInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  resourceName?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  condition?: Prisma.EnumItemConditionFieldUpdateOperationsInput | $Enums.ItemCondition
+  requestedItem?: Prisma.StringFieldUpdateOperationsInput | string
+  requestedQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  traderName?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumResourceCategoryFieldUpdateOperationsInput | $Enums.ResourceCategory
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTradeStatusFieldUpdateOperationsInput | $Enums.TradeStatus
+  creatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  acceptorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  acceptorVaultItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TradeUpdateWithoutAcceptorVaultItemInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  resourceName?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  condition?: Prisma.EnumItemConditionFieldUpdateOperationsInput | $Enums.ItemCondition
+  requestedItem?: Prisma.StringFieldUpdateOperationsInput | string
+  requestedQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  traderName?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumResourceCategoryFieldUpdateOperationsInput | $Enums.ResourceCategory
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTradeStatusFieldUpdateOperationsInput | $Enums.TradeStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  creator?: Prisma.UserUpdateOneRequiredWithoutTradesNestedInput
+  vaultItem?: Prisma.VaultItemUpdateOneWithoutTradesNestedInput
+  acceptor?: Prisma.UserUpdateOneWithoutAcceptedTradesNestedInput
+}
+
+export type TradeUncheckedUpdateWithoutAcceptorVaultItemInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  resourceName?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  condition?: Prisma.EnumItemConditionFieldUpdateOperationsInput | $Enums.ItemCondition
+  requestedItem?: Prisma.StringFieldUpdateOperationsInput | string
+  requestedQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  traderName?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumResourceCategoryFieldUpdateOperationsInput | $Enums.ResourceCategory
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTradeStatusFieldUpdateOperationsInput | $Enums.TradeStatus
+  creatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  vaultItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  acceptorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TradeUncheckedUpdateManyWithoutAcceptorVaultItemInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  resourceName?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  condition?: Prisma.EnumItemConditionFieldUpdateOperationsInput | $Enums.ItemCondition
+  requestedItem?: Prisma.StringFieldUpdateOperationsInput | string
+  requestedQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  traderName?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumResourceCategoryFieldUpdateOperationsInput | $Enums.ResourceCategory
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTradeStatusFieldUpdateOperationsInput | $Enums.TradeStatus
+  creatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  vaultItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  acceptorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -749,9 +1367,15 @@ export type TradeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   location?: boolean
   status?: boolean
   creatorId?: boolean
+  vaultItemId?: boolean
+  acceptorId?: boolean
+  acceptorVaultItemId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  vaultItem?: boolean | Prisma.Trade$vaultItemArgs<ExtArgs>
+  acceptor?: boolean | Prisma.Trade$acceptorArgs<ExtArgs>
+  acceptorVaultItem?: boolean | Prisma.Trade$acceptorVaultItemArgs<ExtArgs>
 }, ExtArgs["result"]["trade"]>
 
 export type TradeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -766,9 +1390,15 @@ export type TradeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   location?: boolean
   status?: boolean
   creatorId?: boolean
+  vaultItemId?: boolean
+  acceptorId?: boolean
+  acceptorVaultItemId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  vaultItem?: boolean | Prisma.Trade$vaultItemArgs<ExtArgs>
+  acceptor?: boolean | Prisma.Trade$acceptorArgs<ExtArgs>
+  acceptorVaultItem?: boolean | Prisma.Trade$acceptorVaultItemArgs<ExtArgs>
 }, ExtArgs["result"]["trade"]>
 
 export type TradeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -783,9 +1413,15 @@ export type TradeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   location?: boolean
   status?: boolean
   creatorId?: boolean
+  vaultItemId?: boolean
+  acceptorId?: boolean
+  acceptorVaultItemId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  vaultItem?: boolean | Prisma.Trade$vaultItemArgs<ExtArgs>
+  acceptor?: boolean | Prisma.Trade$acceptorArgs<ExtArgs>
+  acceptorVaultItem?: boolean | Prisma.Trade$acceptorVaultItemArgs<ExtArgs>
 }, ExtArgs["result"]["trade"]>
 
 export type TradeSelectScalar = {
@@ -800,25 +1436,40 @@ export type TradeSelectScalar = {
   location?: boolean
   status?: boolean
   creatorId?: boolean
+  vaultItemId?: boolean
+  acceptorId?: boolean
+  acceptorVaultItemId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TradeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "resourceName" | "quantity" | "condition" | "requestedItem" | "requestedQuantity" | "traderName" | "category" | "location" | "status" | "creatorId" | "createdAt" | "updatedAt", ExtArgs["result"]["trade"]>
+export type TradeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "resourceName" | "quantity" | "condition" | "requestedItem" | "requestedQuantity" | "traderName" | "category" | "location" | "status" | "creatorId" | "vaultItemId" | "acceptorId" | "acceptorVaultItemId" | "createdAt" | "updatedAt", ExtArgs["result"]["trade"]>
 export type TradeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  vaultItem?: boolean | Prisma.Trade$vaultItemArgs<ExtArgs>
+  acceptor?: boolean | Prisma.Trade$acceptorArgs<ExtArgs>
+  acceptorVaultItem?: boolean | Prisma.Trade$acceptorVaultItemArgs<ExtArgs>
 }
 export type TradeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  vaultItem?: boolean | Prisma.Trade$vaultItemArgs<ExtArgs>
+  acceptor?: boolean | Prisma.Trade$acceptorArgs<ExtArgs>
+  acceptorVaultItem?: boolean | Prisma.Trade$acceptorVaultItemArgs<ExtArgs>
 }
 export type TradeIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  vaultItem?: boolean | Prisma.Trade$vaultItemArgs<ExtArgs>
+  acceptor?: boolean | Prisma.Trade$acceptorArgs<ExtArgs>
+  acceptorVaultItem?: boolean | Prisma.Trade$acceptorVaultItemArgs<ExtArgs>
 }
 
 export type $TradePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Trade"
   objects: {
     creator: Prisma.$UserPayload<ExtArgs>
+    vaultItem: Prisma.$VaultItemPayload<ExtArgs> | null
+    acceptor: Prisma.$UserPayload<ExtArgs> | null
+    acceptorVaultItem: Prisma.$VaultItemPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -832,6 +1483,9 @@ export type $TradePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     location: string | null
     status: $Enums.TradeStatus
     creatorId: string
+    vaultItemId: string | null
+    acceptorId: string | null
+    acceptorVaultItemId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["trade"]>
@@ -1229,6 +1883,9 @@ readonly fields: TradeFieldRefs;
 export interface Prisma__TradeClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   creator<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  vaultItem<T extends Prisma.Trade$vaultItemArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Trade$vaultItemArgs<ExtArgs>>): Prisma.Prisma__VaultItemClient<runtime.Types.Result.GetResult<Prisma.$VaultItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  acceptor<T extends Prisma.Trade$acceptorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Trade$acceptorArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  acceptorVaultItem<T extends Prisma.Trade$acceptorVaultItemArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Trade$acceptorVaultItemArgs<ExtArgs>>): Prisma.Prisma__VaultItemClient<runtime.Types.Result.GetResult<Prisma.$VaultItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1269,6 +1926,9 @@ export interface TradeFieldRefs {
   readonly location: Prisma.FieldRef<"Trade", 'String'>
   readonly status: Prisma.FieldRef<"Trade", 'TradeStatus'>
   readonly creatorId: Prisma.FieldRef<"Trade", 'String'>
+  readonly vaultItemId: Prisma.FieldRef<"Trade", 'String'>
+  readonly acceptorId: Prisma.FieldRef<"Trade", 'String'>
+  readonly acceptorVaultItemId: Prisma.FieldRef<"Trade", 'String'>
   readonly createdAt: Prisma.FieldRef<"Trade", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Trade", 'DateTime'>
 }
@@ -1667,6 +2327,63 @@ export type TradeDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Limit how many Trades to delete.
    */
   limit?: number
+}
+
+/**
+ * Trade.vaultItem
+ */
+export type Trade$vaultItemArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the VaultItem
+   */
+  select?: Prisma.VaultItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the VaultItem
+   */
+  omit?: Prisma.VaultItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VaultItemInclude<ExtArgs> | null
+  where?: Prisma.VaultItemWhereInput
+}
+
+/**
+ * Trade.acceptor
+ */
+export type Trade$acceptorArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * Trade.acceptorVaultItem
+ */
+export type Trade$acceptorVaultItemArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the VaultItem
+   */
+  select?: Prisma.VaultItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the VaultItem
+   */
+  omit?: Prisma.VaultItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VaultItemInclude<ExtArgs> | null
+  where?: Prisma.VaultItemWhereInput
 }
 
 /**

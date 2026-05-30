@@ -1,8 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -10,7 +8,6 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
 }
 
 model User {
@@ -20,10 +17,11 @@ model User {
 
   reputationScore Int @default(0)
 
-  signals       Signal[]
-  verifications SignalVerification[]
-  trades        Trade[]
-  vaultItems    VaultItem[]
+  signals        Signal[]
+  verifications  SignalVerification[]
+  trades         Trade[]
+  acceptedTrades Trade[]              @relation("TradeAcceptor")
+  vaultItems     VaultItem[]
 
   createdAt DateTime @default(now())
 }
@@ -86,6 +84,15 @@ model Trade {
   creatorId String
   creator   User   @relation(fields: [creatorId], references: [id])
 
+  vaultItemId String?
+  vaultItem   VaultItem? @relation(fields: [vaultItemId], references: [id], onDelete: SetNull)
+
+  acceptorId String?
+  acceptor   User?   @relation("TradeAcceptor", fields: [acceptorId], references: [id])
+
+  acceptorVaultItemId String?
+  acceptorVaultItem   VaultItem? @relation("TradeAcceptor", fields: [acceptorVaultItemId], references: [id], onDelete: SetNull)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -105,8 +112,11 @@ model VaultItem {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  trades Trade[]
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  acceptorTrades Trade[]  @relation("TradeAcceptor")
 
   @@index([userId])
 }

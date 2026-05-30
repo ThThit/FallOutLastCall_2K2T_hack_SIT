@@ -81,7 +81,6 @@ export const getVaultItemsService = async (userId: string, query: any) => {
   if (search) {
     where.resourceName = {
       contains: search,
-      mode: "insensitive",
     };
   }
 

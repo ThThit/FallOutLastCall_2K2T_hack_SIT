@@ -864,6 +864,9 @@ export const TradeScalarFieldEnum = {
   location: 'location',
   status: 'status',
   creatorId: 'creatorId',
+  vaultItemId: 'vaultItemId',
+  acceptorId: 'acceptorId',
+  acceptorVaultItemId: 'acceptorVaultItemId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

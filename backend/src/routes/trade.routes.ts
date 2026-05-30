@@ -4,6 +4,9 @@ import {
   getTrades,
   updateTrade,
   cancelTrade,
+  getAvailableTradeItems,
+  acceptTrade,
+  getTradeHistory,
 } from "../controllers/trade.controller.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -12,22 +15,15 @@ const router = express.Router();
 
 router.get("/", getTrades);
 
-router.post(
-  "/",
-  authMiddleware,
-  createTrade
-);
+router.get("/available/items", authMiddleware, getAvailableTradeItems);
+router.get("/history", authMiddleware, getTradeHistory);
 
-router.patch(
-  "/:id",
-  authMiddleware,
-  updateTrade
-);
+router.post("/", authMiddleware, createTrade);
 
-router.delete(
-  "/:id",
-  authMiddleware,
-  cancelTrade
-);
+router.post("/:id/accept", authMiddleware, acceptTrade);
+
+router.patch("/:id", authMiddleware, updateTrade);
+
+router.delete("/:id", authMiddleware, cancelTrade);
 
 export default router;

@@ -219,6 +219,7 @@ export type UserWhereInput = {
   signals?: Prisma.SignalListRelationFilter
   verifications?: Prisma.SignalVerificationListRelationFilter
   trades?: Prisma.TradeListRelationFilter
+  acceptedTrades?: Prisma.TradeListRelationFilter
   vaultItems?: Prisma.VaultItemListRelationFilter
 }
 
@@ -231,6 +232,7 @@ export type UserOrderByWithRelationInput = {
   signals?: Prisma.SignalOrderByRelationAggregateInput
   verifications?: Prisma.SignalVerificationOrderByRelationAggregateInput
   trades?: Prisma.TradeOrderByRelationAggregateInput
+  acceptedTrades?: Prisma.TradeOrderByRelationAggregateInput
   vaultItems?: Prisma.VaultItemOrderByRelationAggregateInput
 }
 
@@ -246,6 +248,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   signals?: Prisma.SignalListRelationFilter
   verifications?: Prisma.SignalVerificationListRelationFilter
   trades?: Prisma.TradeListRelationFilter
+  acceptedTrades?: Prisma.TradeListRelationFilter
   vaultItems?: Prisma.VaultItemListRelationFilter
 }, "id" | "username">
 
@@ -282,6 +285,7 @@ export type UserCreateInput = {
   signals?: Prisma.SignalCreateNestedManyWithoutUserInput
   verifications?: Prisma.SignalVerificationCreateNestedManyWithoutUserInput
   trades?: Prisma.TradeCreateNestedManyWithoutCreatorInput
+  acceptedTrades?: Prisma.TradeCreateNestedManyWithoutAcceptorInput
   vaultItems?: Prisma.VaultItemCreateNestedManyWithoutUserInput
 }
 
@@ -294,6 +298,7 @@ export type UserUncheckedCreateInput = {
   signals?: Prisma.SignalUncheckedCreateNestedManyWithoutUserInput
   verifications?: Prisma.SignalVerificationUncheckedCreateNestedManyWithoutUserInput
   trades?: Prisma.TradeUncheckedCreateNestedManyWithoutCreatorInput
+  acceptedTrades?: Prisma.TradeUncheckedCreateNestedManyWithoutAcceptorInput
   vaultItems?: Prisma.VaultItemUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -306,6 +311,7 @@ export type UserUpdateInput = {
   signals?: Prisma.SignalUpdateManyWithoutUserNestedInput
   verifications?: Prisma.SignalVerificationUpdateManyWithoutUserNestedInput
   trades?: Prisma.TradeUpdateManyWithoutCreatorNestedInput
+  acceptedTrades?: Prisma.TradeUpdateManyWithoutAcceptorNestedInput
   vaultItems?: Prisma.VaultItemUpdateManyWithoutUserNestedInput
 }
 
@@ -318,6 +324,7 @@ export type UserUncheckedUpdateInput = {
   signals?: Prisma.SignalUncheckedUpdateManyWithoutUserNestedInput
   verifications?: Prisma.SignalVerificationUncheckedUpdateManyWithoutUserNestedInput
   trades?: Prisma.TradeUncheckedUpdateManyWithoutCreatorNestedInput
+  acceptedTrades?: Prisma.TradeUncheckedUpdateManyWithoutAcceptorNestedInput
   vaultItems?: Prisma.VaultItemUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -382,6 +389,11 @@ export type UserScalarRelationFilter = {
   isNot?: Prisma.UserWhereInput
 }
 
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null
+  isNot?: Prisma.UserWhereInput | null
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -432,12 +444,28 @@ export type UserCreateNestedOneWithoutTradesInput = {
   connect?: Prisma.UserWhereUniqueInput
 }
 
+export type UserCreateNestedOneWithoutAcceptedTradesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAcceptedTradesInput, Prisma.UserUncheckedCreateWithoutAcceptedTradesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAcceptedTradesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
 export type UserUpdateOneRequiredWithoutTradesNestedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutTradesInput, Prisma.UserUncheckedCreateWithoutTradesInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutTradesInput
   upsert?: Prisma.UserUpsertWithoutTradesInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTradesInput, Prisma.UserUpdateWithoutTradesInput>, Prisma.UserUncheckedUpdateWithoutTradesInput>
+}
+
+export type UserUpdateOneWithoutAcceptedTradesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAcceptedTradesInput, Prisma.UserUncheckedCreateWithoutAcceptedTradesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAcceptedTradesInput
+  upsert?: Prisma.UserUpsertWithoutAcceptedTradesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAcceptedTradesInput, Prisma.UserUpdateWithoutAcceptedTradesInput>, Prisma.UserUncheckedUpdateWithoutAcceptedTradesInput>
 }
 
 export type UserCreateNestedOneWithoutVaultItemsInput = {
@@ -462,6 +490,7 @@ export type UserCreateWithoutSignalsInput = {
   createdAt?: Date | string
   verifications?: Prisma.SignalVerificationCreateNestedManyWithoutUserInput
   trades?: Prisma.TradeCreateNestedManyWithoutCreatorInput
+  acceptedTrades?: Prisma.TradeCreateNestedManyWithoutAcceptorInput
   vaultItems?: Prisma.VaultItemCreateNestedManyWithoutUserInput
 }
 
@@ -473,6 +502,7 @@ export type UserUncheckedCreateWithoutSignalsInput = {
   createdAt?: Date | string
   verifications?: Prisma.SignalVerificationUncheckedCreateNestedManyWithoutUserInput
   trades?: Prisma.TradeUncheckedCreateNestedManyWithoutCreatorInput
+  acceptedTrades?: Prisma.TradeUncheckedCreateNestedManyWithoutAcceptorInput
   vaultItems?: Prisma.VaultItemUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -500,6 +530,7 @@ export type UserUpdateWithoutSignalsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   verifications?: Prisma.SignalVerificationUpdateManyWithoutUserNestedInput
   trades?: Prisma.TradeUpdateManyWithoutCreatorNestedInput
+  acceptedTrades?: Prisma.TradeUpdateManyWithoutAcceptorNestedInput
   vaultItems?: Prisma.VaultItemUpdateManyWithoutUserNestedInput
 }
 
@@ -511,6 +542,7 @@ export type UserUncheckedUpdateWithoutSignalsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   verifications?: Prisma.SignalVerificationUncheckedUpdateManyWithoutUserNestedInput
   trades?: Prisma.TradeUncheckedUpdateManyWithoutCreatorNestedInput
+  acceptedTrades?: Prisma.TradeUncheckedUpdateManyWithoutAcceptorNestedInput
   vaultItems?: Prisma.VaultItemUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -522,6 +554,7 @@ export type UserCreateWithoutVerificationsInput = {
   createdAt?: Date | string
   signals?: Prisma.SignalCreateNestedManyWithoutUserInput
   trades?: Prisma.TradeCreateNestedManyWithoutCreatorInput
+  acceptedTrades?: Prisma.TradeCreateNestedManyWithoutAcceptorInput
   vaultItems?: Prisma.VaultItemCreateNestedManyWithoutUserInput
 }
 
@@ -533,6 +566,7 @@ export type UserUncheckedCreateWithoutVerificationsInput = {
   createdAt?: Date | string
   signals?: Prisma.SignalUncheckedCreateNestedManyWithoutUserInput
   trades?: Prisma.TradeUncheckedCreateNestedManyWithoutCreatorInput
+  acceptedTrades?: Prisma.TradeUncheckedCreateNestedManyWithoutAcceptorInput
   vaultItems?: Prisma.VaultItemUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -560,6 +594,7 @@ export type UserUpdateWithoutVerificationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   signals?: Prisma.SignalUpdateManyWithoutUserNestedInput
   trades?: Prisma.TradeUpdateManyWithoutCreatorNestedInput
+  acceptedTrades?: Prisma.TradeUpdateManyWithoutAcceptorNestedInput
   vaultItems?: Prisma.VaultItemUpdateManyWithoutUserNestedInput
 }
 
@@ -571,6 +606,7 @@ export type UserUncheckedUpdateWithoutVerificationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   signals?: Prisma.SignalUncheckedUpdateManyWithoutUserNestedInput
   trades?: Prisma.TradeUncheckedUpdateManyWithoutCreatorNestedInput
+  acceptedTrades?: Prisma.TradeUncheckedUpdateManyWithoutAcceptorNestedInput
   vaultItems?: Prisma.VaultItemUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -582,6 +618,7 @@ export type UserCreateWithoutTradesInput = {
   createdAt?: Date | string
   signals?: Prisma.SignalCreateNestedManyWithoutUserInput
   verifications?: Prisma.SignalVerificationCreateNestedManyWithoutUserInput
+  acceptedTrades?: Prisma.TradeCreateNestedManyWithoutAcceptorInput
   vaultItems?: Prisma.VaultItemCreateNestedManyWithoutUserInput
 }
 
@@ -593,12 +630,42 @@ export type UserUncheckedCreateWithoutTradesInput = {
   createdAt?: Date | string
   signals?: Prisma.SignalUncheckedCreateNestedManyWithoutUserInput
   verifications?: Prisma.SignalVerificationUncheckedCreateNestedManyWithoutUserInput
+  acceptedTrades?: Prisma.TradeUncheckedCreateNestedManyWithoutAcceptorInput
   vaultItems?: Prisma.VaultItemUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTradesInput = {
   where: Prisma.UserWhereUniqueInput
   create: Prisma.XOR<Prisma.UserCreateWithoutTradesInput, Prisma.UserUncheckedCreateWithoutTradesInput>
+}
+
+export type UserCreateWithoutAcceptedTradesInput = {
+  id?: string
+  username: string
+  password: string
+  reputationScore?: number
+  createdAt?: Date | string
+  signals?: Prisma.SignalCreateNestedManyWithoutUserInput
+  verifications?: Prisma.SignalVerificationCreateNestedManyWithoutUserInput
+  trades?: Prisma.TradeCreateNestedManyWithoutCreatorInput
+  vaultItems?: Prisma.VaultItemCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutAcceptedTradesInput = {
+  id?: string
+  username: string
+  password: string
+  reputationScore?: number
+  createdAt?: Date | string
+  signals?: Prisma.SignalUncheckedCreateNestedManyWithoutUserInput
+  verifications?: Prisma.SignalVerificationUncheckedCreateNestedManyWithoutUserInput
+  trades?: Prisma.TradeUncheckedCreateNestedManyWithoutCreatorInput
+  vaultItems?: Prisma.VaultItemUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutAcceptedTradesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAcceptedTradesInput, Prisma.UserUncheckedCreateWithoutAcceptedTradesInput>
 }
 
 export type UserUpsertWithoutTradesInput = {
@@ -620,6 +687,7 @@ export type UserUpdateWithoutTradesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   signals?: Prisma.SignalUpdateManyWithoutUserNestedInput
   verifications?: Prisma.SignalVerificationUpdateManyWithoutUserNestedInput
+  acceptedTrades?: Prisma.TradeUpdateManyWithoutAcceptorNestedInput
   vaultItems?: Prisma.VaultItemUpdateManyWithoutUserNestedInput
 }
 
@@ -631,6 +699,42 @@ export type UserUncheckedUpdateWithoutTradesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   signals?: Prisma.SignalUncheckedUpdateManyWithoutUserNestedInput
   verifications?: Prisma.SignalVerificationUncheckedUpdateManyWithoutUserNestedInput
+  acceptedTrades?: Prisma.TradeUncheckedUpdateManyWithoutAcceptorNestedInput
+  vaultItems?: Prisma.VaultItemUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserUpsertWithoutAcceptedTradesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAcceptedTradesInput, Prisma.UserUncheckedUpdateWithoutAcceptedTradesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAcceptedTradesInput, Prisma.UserUncheckedCreateWithoutAcceptedTradesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAcceptedTradesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAcceptedTradesInput, Prisma.UserUncheckedUpdateWithoutAcceptedTradesInput>
+}
+
+export type UserUpdateWithoutAcceptedTradesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  reputationScore?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  signals?: Prisma.SignalUpdateManyWithoutUserNestedInput
+  verifications?: Prisma.SignalVerificationUpdateManyWithoutUserNestedInput
+  trades?: Prisma.TradeUpdateManyWithoutCreatorNestedInput
+  vaultItems?: Prisma.VaultItemUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAcceptedTradesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  reputationScore?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  signals?: Prisma.SignalUncheckedUpdateManyWithoutUserNestedInput
+  verifications?: Prisma.SignalVerificationUncheckedUpdateManyWithoutUserNestedInput
+  trades?: Prisma.TradeUncheckedUpdateManyWithoutCreatorNestedInput
   vaultItems?: Prisma.VaultItemUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -643,6 +747,7 @@ export type UserCreateWithoutVaultItemsInput = {
   signals?: Prisma.SignalCreateNestedManyWithoutUserInput
   verifications?: Prisma.SignalVerificationCreateNestedManyWithoutUserInput
   trades?: Prisma.TradeCreateNestedManyWithoutCreatorInput
+  acceptedTrades?: Prisma.TradeCreateNestedManyWithoutAcceptorInput
 }
 
 export type UserUncheckedCreateWithoutVaultItemsInput = {
@@ -654,6 +759,7 @@ export type UserUncheckedCreateWithoutVaultItemsInput = {
   signals?: Prisma.SignalUncheckedCreateNestedManyWithoutUserInput
   verifications?: Prisma.SignalVerificationUncheckedCreateNestedManyWithoutUserInput
   trades?: Prisma.TradeUncheckedCreateNestedManyWithoutCreatorInput
+  acceptedTrades?: Prisma.TradeUncheckedCreateNestedManyWithoutAcceptorInput
 }
 
 export type UserCreateOrConnectWithoutVaultItemsInput = {
@@ -681,6 +787,7 @@ export type UserUpdateWithoutVaultItemsInput = {
   signals?: Prisma.SignalUpdateManyWithoutUserNestedInput
   verifications?: Prisma.SignalVerificationUpdateManyWithoutUserNestedInput
   trades?: Prisma.TradeUpdateManyWithoutCreatorNestedInput
+  acceptedTrades?: Prisma.TradeUpdateManyWithoutAcceptorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutVaultItemsInput = {
@@ -692,6 +799,7 @@ export type UserUncheckedUpdateWithoutVaultItemsInput = {
   signals?: Prisma.SignalUncheckedUpdateManyWithoutUserNestedInput
   verifications?: Prisma.SignalVerificationUncheckedUpdateManyWithoutUserNestedInput
   trades?: Prisma.TradeUncheckedUpdateManyWithoutCreatorNestedInput
+  acceptedTrades?: Prisma.TradeUncheckedUpdateManyWithoutAcceptorNestedInput
 }
 
 
@@ -703,6 +811,7 @@ export type UserCountOutputType = {
   signals: number
   verifications: number
   trades: number
+  acceptedTrades: number
   vaultItems: number
 }
 
@@ -710,6 +819,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   signals?: boolean | UserCountOutputTypeCountSignalsArgs
   verifications?: boolean | UserCountOutputTypeCountVerificationsArgs
   trades?: boolean | UserCountOutputTypeCountTradesArgs
+  acceptedTrades?: boolean | UserCountOutputTypeCountAcceptedTradesArgs
   vaultItems?: boolean | UserCountOutputTypeCountVaultItemsArgs
 }
 
@@ -747,6 +857,13 @@ export type UserCountOutputTypeCountTradesArgs<ExtArgs extends runtime.Types.Ext
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountAcceptedTradesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TradeWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountVaultItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.VaultItemWhereInput
 }
@@ -761,6 +878,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   signals?: boolean | Prisma.User$signalsArgs<ExtArgs>
   verifications?: boolean | Prisma.User$verificationsArgs<ExtArgs>
   trades?: boolean | Prisma.User$tradesArgs<ExtArgs>
+  acceptedTrades?: boolean | Prisma.User$acceptedTradesArgs<ExtArgs>
   vaultItems?: boolean | Prisma.User$vaultItemsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -794,6 +912,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   signals?: boolean | Prisma.User$signalsArgs<ExtArgs>
   verifications?: boolean | Prisma.User$verificationsArgs<ExtArgs>
   trades?: boolean | Prisma.User$tradesArgs<ExtArgs>
+  acceptedTrades?: boolean | Prisma.User$acceptedTradesArgs<ExtArgs>
   vaultItems?: boolean | Prisma.User$vaultItemsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -806,6 +925,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     signals: Prisma.$SignalPayload<ExtArgs>[]
     verifications: Prisma.$SignalVerificationPayload<ExtArgs>[]
     trades: Prisma.$TradePayload<ExtArgs>[]
+    acceptedTrades: Prisma.$TradePayload<ExtArgs>[]
     vaultItems: Prisma.$VaultItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1211,6 +1331,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   signals<T extends Prisma.User$signalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$signalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SignalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   verifications<T extends Prisma.User$verificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$verificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SignalVerificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   trades<T extends Prisma.User$tradesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tradesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TradePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  acceptedTrades<T extends Prisma.User$acceptedTradesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$acceptedTradesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TradePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   vaultItems<T extends Prisma.User$vaultItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$vaultItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VaultItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1688,6 +1809,30 @@ export type User$verificationsArgs<ExtArgs extends runtime.Types.Extensions.Inte
  * User.trades
  */
 export type User$tradesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Trade
+   */
+  select?: Prisma.TradeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Trade
+   */
+  omit?: Prisma.TradeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TradeInclude<ExtArgs> | null
+  where?: Prisma.TradeWhereInput
+  orderBy?: Prisma.TradeOrderByWithRelationInput | Prisma.TradeOrderByWithRelationInput[]
+  cursor?: Prisma.TradeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TradeScalarFieldEnum | Prisma.TradeScalarFieldEnum[]
+}
+
+/**
+ * User.acceptedTrades
+ */
+export type User$acceptedTradesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Trade
    */

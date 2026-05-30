@@ -5,6 +5,8 @@ import {
   getTradesService,
   updateTradeService,
   cancelTradeService,
+  acceptTradeService,
+  getTradeHistoryService,
 } from "../services/trade.service.js";
 import { getVaultItemsService } from "../services/vault.service.js";
 
@@ -63,11 +65,12 @@ export const createTrade = async (req: AuthenticatedRequest, res: Response) => {
 };
 export const getTrades = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const trades = await getTradesService(req.query);
+    const { trades, demandMap } = await getTradesService(req.query);
     const alerts = await generateAlerts(req.user?.id || "");
 
     res.status(200).json({
       trades,
+      demandMap,
       alerts,
     });
   } catch (error: any) {
@@ -104,6 +107,58 @@ export const cancelTrade = async (req: AuthenticatedRequest, res: Response) => {
 
     res.status(200).json({
       message: "Trade cancelled successfully",
+      trade,
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      message: error.message,
+    });
+  }
+};
+
+export const getAvailableTradeItems = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
+  try {
+    const vaultData = await getVaultItemsService(req.user?.id || "", req.query);
+
+    // Return only items that can be traded (quantity > 0)
+    const tradeableItems = vaultData.items.filter(
+      (item: any) => item.quantity > 0,
+    );
+
+    res.status(200).json({
+      items: tradeableItems,
+      stats: vaultData.stats,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const getTradeHistory = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const history = await getTradeHistoryService(req.user?.id || "");
+    res.status(200).json({ history });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const acceptTrade = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { tradeId, acceptorVaultItemId } = req.body;
+    const trade = await acceptTradeService(
+      tradeId,
+      req.user?.id || "",
+      acceptorVaultItemId,
+    );
+
+    res.status(200).json({
+      message: "Trade accepted successfully",
       trade,
     });
   } catch (error: any) {

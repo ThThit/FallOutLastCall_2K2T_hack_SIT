@@ -1,109 +1,116 @@
 # LAST CALL
-
-## Post-Apocalypse Survivor Communication Platform
-
-LAST CALL is an immersive survival communication platform built for a post-apocalyptic world where internet infrastructure is unstable and information cannot always be trusted.
-
-Survivors use the platform to:
-- Broadcast emergency signals
-- Trade critical survival resources
-- Verify dangerous rumors
-- Preserve memories before data disappears forever
-
-Unlike a normal CRUD application, the apocalypse directly affects the platform itself:
-- Signals decay over time
-- Data becomes corrupted
-- Communication is unstable
-- Trust becomes essential for survival
+**Post-Apocalypse Survivor Resource Trading Network**
 
 ---
 
-# Main Features
+## Stack
 
-## Survivor Signals System
-Emergency broadcasts for:
-- warnings
-- shelter locations
-- evacuation notices
-- supply discoveries
-
-Includes:
-- signal corruption effects
-- emergency alerts
-- danger levels
+| Layer | Tech |
+|---|---|
+| Frontend | React + TypeScript + Tailwind + Framer Motion |
+| Backend | Express + Prisma + SQLite |
+| Auth | JWT (stored in localStorage) |
 
 ---
 
-## Resource Trading System
-A barter marketplace where survivors trade:
-- medicine
-- fuel
-- batteries
-- canned food
-- tools
+## Quick Start
 
-Includes:
-- scarcity warnings
-- demand alerts
-- survival economy mechanics
+```bash
+# Backend
+cd backend
+npm install
+npx prisma migrate deploy
+npm run seed        # seeds 3 users + vault items + active trades
+npm run dev         # http://localhost:3000
 
----
-
-## Trust & Verification System
-Community-driven misinformation prevention system.
-
-Users can mark signals as:
-- VERIFIED
-- SUSPICIOUS
-- OUTDATED
-
-Includes:
-- reputation tracking
-- trust scores
-- reliability indicators
+# Frontend (new terminal)
+cd frontend
+npm install
+npm run dev         # http://localhost:5173
+```
 
 ---
 
-## Memory Archive System
-Preserve humanity’s memories before the network dies.
+## Seed Accounts
 
-Users can store:
-- diary entries
-- final messages
-- survivor stories
-- historical records
-
-Includes:
-- data decay effects
-- corrupted archive visuals
-- emotional storytelling
+| Username | Password | Vault | Active Trades |
+|---|---|---|---|
+| `GHOST#001` | `password123` | Antibiotics, Canned Beans, Diesel, Ammo | 2 |
+| `NOVA#002` | `password123` | AA Batteries, Wrench Set, Engine Parts, MREs, Morphine | 2 |
+| `VIPER#003` | `password123` | Shotgun Shells, Gasoline, Bandages, Flashlight, Batteries | 2 |
 
 ---
 
-# Tech Stack
+## Features & Test Guide
 
-## Frontend
-- React
-- TypeScript
-- Tailwind CSS
-- Framer Motion
+### Auth
+- Register with format `NAME#123` (letters + `#` + digits)
+- Login stores JWT + userId in localStorage
+- Logout clears session
 
-## Backend
-- Node.js
-- Express.js
-- Prisma ORM
-- SQLite
+### Vault
+1. Login → navigate to **PERSONAL VAULT**
+2. Click **ADD ITEM** to add resources (name, qty, category, condition)
+3. Click **LIST FOR TRADE** on any item to post it to the marketplace
+
+### Marketplace — Create Trade
+1. Navigate to **RESOURCE MARKET**
+2. Click **POST TRADE OFFER**
+3. Choose **FROM VAULT** (picks a vault item, deducts inventory on post) or **NEW OFFER** (free-form entry, no inventory deduction)
+4. Fill in requested item, quantity, optional location, urgency level
+5. Listing appears instantly in the grid
+
+### Marketplace — Read
+- Grid sorted by **urgency** (CRITICAL first) by default
+- Filter by category pills, urgency/condition, free-text search
+- **Scarcity banner** pulses when 2+ traders are requesting the same category
+- **HOT** badge animates on high-demand listings
+- **YOUR LISTING** badge on your own trades (amber border)
+
+### Marketplace — Trade Between Users
+1. Log in as `GHOST#001` — post a trade (or use the seeded ones)
+2. Log out → log in as `NOVA#002`
+3. Click **ACCEPT TRADE** on one of Ghost's listings
+4. **SELECT** phase: vault items are listed; matching items show a **MATCH** badge; items with insufficient stock are greyed out
+5. **CONFIRM** phase: shows exact breakdown — what you give vs. what you receive
+6. **SUCCESS** screen confirms the exchange; both vaults update automatically
+
+### Marketplace — Cancel & History
+1. Login as any user who has active listings
+2. Click **CANCEL LISTING** on your own trade card
+3. **Confirmation popup** shows what will be cancelled and confirms vault items are restored
+4. Click **CONFIRM CANCEL** — card animates out, inventory is restored
+5. Scroll to bottom of marketplace — **TRADE HISTORY** accordion shows all completed/cancelled trades with status labels
 
 ---
 
-# Theme & Experience
+## API Endpoints
 
-LAST CALL combines:
-- cinematic apocalypse UI
-- glitch effects
-- CRT overlays
-- unstable network simulation
-- immersive storytelling
+```
+POST   /api/auth/register
+POST   /api/auth/login
+POST   /api/auth/logout
 
-The apocalypse is not just visual —
-it directly changes how the application behaves.
+GET    /api/vault              # user's vault items
+POST   /api/vault              # add item
+DELETE /api/vault/:id          # remove item
+
+GET    /api/trade              # active listings (?sort=urgency|rarity|newest|quantity)
+POST   /api/trade              # create listing (vault-linked or direct)
+DELETE /api/trade/:id          # cancel listing (restores vault inventory)
+POST   /api/trade/:id/accept   # accept trade (atomic vault swap)
+GET    /api/trade/history      # completed + cancelled trades for current user
+```
+
+---
+
+## Trade Flow (atomic)
+
+```
+Creator lists item  →  vault qty decremented
+Acceptor accepts    →  acceptor gives requestedQty of their item
+                    →  acceptor receives trade qty of creator's item
+                    →  creator receives requestedQty of acceptor's item
+                    →  trade marked COMPLETED
+Creator cancels     →  vault qty restored, trade marked CANCELLED
+```

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { Radio, AlertTriangle, Eye, EyeOff } from "lucide-react";
 import { GlitchText } from "./glitch-text";
+import { authAPI } from "../services/auth";
 
 interface LoginScreenProps {
   onLogin: () => void;
@@ -16,29 +17,49 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (callsign.length < 3) {
       setWarningMessage("CALLSIGN TOO SHORT");
       setShowWarning(true);
       return;
     }
-    
+
     if (password.length < 6) {
       setWarningMessage("PASSWORD MUST BE AT LEAST 6 CHARACTERS");
       setShowWarning(true);
       return;
     }
-    
+
     if (isRegisterMode && password !== confirmPassword) {
       setWarningMessage("PASSWORDS DO NOT MATCH");
       setShowWarning(true);
       return;
     }
-    
-    onLogin();
+
+    setIsLoading(true);
+    try {
+      let result;
+      if (isRegisterMode) {
+        result = await authAPI.register(callsign, password);
+      } else {
+        result = await authAPI.login(callsign, password);
+      }
+
+      // Store token and user info
+      authAPI.setAuth(result.token, result.user);
+
+      // Call onLogin to proceed to main app
+      onLogin();
+    } catch (err) {
+      setWarningMessage(err instanceof Error ? err.message : "Authentication failed");
+      setShowWarning(true);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -91,13 +112,14 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
               </label>
               <input
                 type="text"
+                disabled={isLoading}
                 value={callsign}
                 onChange={(e) => {
                   setCallsign(e.target.value.toUpperCase());
                   setShowWarning(false);
                 }}
                 placeholder="SURVIVOR-###"
-                className="w-full bg-charcoal border border-terminal-green/30 px-4 py-3 text-terminal-green font-mono focus:border-terminal-green focus:outline-none transition-colors"
+                className="w-full bg-charcoal border border-terminal-green/30 px-4 py-3 text-terminal-green font-mono focus:border-terminal-green focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 maxLength={20}
               />
             </div>
@@ -109,18 +131,20 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
+                  disabled={isLoading}
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);
                     setShowWarning(false);
                   }}
                   placeholder="••••••••"
-                  className="w-full bg-charcoal border border-terminal-green/30 px-4 py-3 text-terminal-green font-mono focus:border-terminal-green focus:outline-none transition-colors pr-12"
+                  className="w-full bg-charcoal border border-terminal-green/30 px-4 py-3 text-terminal-green font-mono focus:border-terminal-green focus:outline-none transition-colors pr-12 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <button
                   type="button"
+                  disabled={isLoading}
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-terminal-green transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-terminal-green transition-colors disabled:opacity-50"
                 >
                   {showPassword ? (
                     <EyeOff className="w-4 h-4" />
@@ -142,18 +166,20 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                 <div className="relative">
                   <input
                     type={showConfirmPassword ? "text" : "password"}
+                    disabled={isLoading}
                     value={confirmPassword}
                     onChange={(e) => {
                       setConfirmPassword(e.target.value);
                       setShowWarning(false);
                     }}
                     placeholder="••••••••"
-                    className="w-full bg-charcoal border border-terminal-green/30 px-4 py-3 text-terminal-green font-mono focus:border-terminal-green focus:outline-none transition-colors pr-12"
+                    className="w-full bg-charcoal border border-terminal-green/30 px-4 py-3 text-terminal-green font-mono focus:border-terminal-green focus:outline-none transition-colors pr-12 disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                   <button
                     type="button"
+                    disabled={isLoading}
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-terminal-green transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-terminal-green transition-colors disabled:opacity-50"
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="w-4 h-4" />
@@ -177,19 +203,21 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
 
             <button
               type="submit"
-              className="w-full bg-terminal-green/10 hover:bg-terminal-green/20 border border-terminal-green text-terminal-green py-3 font-mono tracking-widest transition-colors"
+              disabled={isLoading}
+              className="w-full bg-terminal-green/10 hover:bg-terminal-green/20 border border-terminal-green text-terminal-green py-3 font-mono tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isRegisterMode ? 'REGISTER & CONNECT' : 'ESTABLISH CONNECTION'}
+              {isLoading ? 'CONNECTING...' : (isRegisterMode ? 'REGISTER & CONNECT' : 'ESTABLISH CONNECTION')}
             </button>
 
             <button
               type="button"
+              disabled={isLoading}
               onClick={() => {
                 setIsRegisterMode(!isRegisterMode);
                 setShowWarning(false);
                 setConfirmPassword("");
               }}
-              className="w-full bg-charcoal border border-terminal-green/30 hover:border-terminal-green/50 text-muted-foreground hover:text-terminal-green py-3 font-mono text-xs tracking-wide transition-colors"
+              className="w-full bg-charcoal border border-terminal-green/30 hover:border-terminal-green/50 text-muted-foreground hover:text-terminal-green py-3 font-mono text-xs tracking-wide transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isRegisterMode ? 'ALREADY REGISTERED? LOG IN' : 'NEW SURVIVOR? REGISTER'}
             </button>
