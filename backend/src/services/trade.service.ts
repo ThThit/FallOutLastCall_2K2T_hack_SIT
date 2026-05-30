@@ -32,7 +32,7 @@ export const createTradeService = async (tradeData: any, userId: string) => {
         data: { quantity: { decrement: quantity } },
       });
 
-      return tx.trade.create({
+      const newTrade = await tx.trade.create({
         data: {
           resourceName: vaultItem.resourceName,
           quantity,
@@ -47,6 +47,13 @@ export const createTradeService = async (tradeData: any, userId: string) => {
         },
         include: { vaultItem: true },
       });
+
+      // Remove the vault item if its quantity dropped to zero
+      await tx.vaultItem.deleteMany({
+        where: { id: vaultItemId, quantity: { lte: 0 } },
+      });
+
+      return newTrade;
     });
   }
 
@@ -289,6 +296,11 @@ export const acceptTradeService = async (
         acceptorId,
         acceptorVaultItemId,
       },
+    });
+
+    // Remove the acceptor's vault item if its quantity dropped to zero
+    await tx.vaultItem.deleteMany({
+      where: { id: acceptorVaultItemId, quantity: { lte: 0 } },
     });
 
     return completedTrade;

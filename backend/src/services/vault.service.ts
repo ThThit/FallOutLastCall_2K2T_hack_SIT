@@ -66,8 +66,14 @@ export const getVaultItemsService = async (userId: string, query: any) => {
       break;
   }
 
+  // Clean up any depleted items so zero-quantity entries never linger
+  await prisma.vaultItem.deleteMany({
+    where: { userId, quantity: { lte: 0 } },
+  });
+
   const where: any = {
     userId,
+    quantity: { gt: 0 }, // never show depleted items
   };
 
   if (category) {
