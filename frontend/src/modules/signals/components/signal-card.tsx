@@ -1,7 +1,8 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { MapPin, Clock, ThumbsUp, ThumbsDown, AlertTriangle, MessageSquare, Send, Pencil } from "lucide-react";
-import { signalApi, type Signal, type Comment } from "../lib/api";
+import { signalApi } from "../apis/signal.api";
+import type { Signal, Comment } from "../types/signal.types";
 import { BroadcastComposer } from "./broadcast-composer";
 
 function timeAgo(dateStr: string): string {

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { X, Send, MapPin, AlertTriangle } from "lucide-react";
-import { signalApi, type Signal } from "../lib/api";
+import { signalApi } from "../apis/signal.api";
+import type { Signal } from "../types/signal.types";
 
 interface BroadcastComposerProps {
   onClose: () => void;
