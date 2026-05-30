@@ -1,12 +1,12 @@
 import { Router } from "express";
 import {
-  createSignal,
-  getSignals,
-  updateSignal,
-  deleteSignal,
-  voteSignal,
-  createComment,
-  getComments,
+    createSignal,
+    getSignals,
+    updateSignal,
+    deleteSignal,
+    voteSignal,
+    createComment,
+    getComments,
 } from "../controllers/signal.controller.js";
 
 const router = Router();

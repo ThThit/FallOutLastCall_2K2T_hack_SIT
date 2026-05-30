@@ -1,4 +1,10 @@
-import prisma from "../lib/prisma.js";
+import prisma from "../../../lib/prisma.js";
+import type {
+    CreateSignalInput,
+    UpdateSignalInput,
+    GetSignalsQuery,
+    CommentInput,
+} from "../types/signal.types.js";
 
 const STANDARD_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000;
 const EMERGENCY_EXPIRY_MS = 3 * 24 * 60 * 60 * 1000;
@@ -11,31 +17,7 @@ export class NotFoundError extends Error {
     }
 }
 
-interface CreateSignalInput {
-    authorName: string;
-    content: string;
-    sector: number;
-    priority: "STANDARD" | "EMERGENCY";
-}
-
-interface UpdateSignalInput {
-    content?: string;
-    sector?: number;
-    priority?: "STANDARD" | "EMERGENCY";
-}
-
-interface GetSignalsQuery {
-    sort?: string;
-    q?: string;
-    sector?: string;
-}
-
-interface CommentInput {
-    authorName: string;
-    content: string;
-}
-
-export class SignalService {
+export class SignalModel {
     /**
      * Only return signals that have not expired based on their priority.
      * STANDARD lasts 7 days, EMERGENCY lasts 3 days.
@@ -204,4 +186,4 @@ export class SignalService {
     }
 }
 
-export default new SignalService();
+export default new SignalModel();

@@ -3,7 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import authRoutes from "./routes/auth.routes.js";
-import signalRoutes from "./routes/signal.routes.js";
+import signalRoutes from "./modules/signals/routers/signal.router.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
