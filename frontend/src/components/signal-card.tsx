@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { motion } from "motion/react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { MapPin, Clock, ThumbsUp, ThumbsDown, AlertTriangle, MessageSquare, Send, Pencil } from "lucide-react";
 import { signalApi, type Signal, type Comment } from "../lib/api";
 import { BroadcastComposer } from "./broadcast-composer";
@@ -60,6 +60,28 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
   );
   const [showEdit, setShowEdit] = useState(false);
   const [tick, setTick] = useState(0);
+
+  // Measured-height accordion for the comment section (smooth, no snap)
+  const commentsContentRef = useRef<HTMLDivElement>(null);
+  const [commentsHeight, setCommentsHeight] = useState(0);
+
+  useLayoutEffect(() => {
+    const el = commentsContentRef.current;
+    if (!showComments || !el) return;
+
+    const measure = () => {
+      // scrollHeight excludes the element's own margins — add them back
+      const style = getComputedStyle(el);
+      const margins = parseFloat(style.marginTop) + parseFloat(style.marginBottom);
+      setCommentsHeight(el.scrollHeight + margins);
+    };
+
+    measure();
+    // Keep height in sync with any content change (load more, new comment, etc.)
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [showComments]);
 
   const corruptionLevel = getCorruptionLevel(signal.createdAt);
   const isCorrupted = corruptionLevel > 0;
@@ -166,7 +188,6 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, height: 0, marginBottom: 0, paddingTop: 0, paddingBottom: 0, overflow: "hidden" }}
         transition={{ duration: 0.35, ease: "easeInOut" }}
-        layout
         style={isEmergency ? { borderColor: '#f97316', borderWidth: '2px' } : undefined}
         className={`border p-4 transition-colors group ${
           isEmergency
@@ -273,12 +294,19 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
           </button>
         </div>
 
+        <AnimatePresence>
         {showComments && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            className="mt-4 pt-4 border-t border-terminal-green/10"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: commentsHeight, opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{
+              height: { duration: 0.28, ease: [0.4, 0, 0.2, 1] },
+              opacity: { duration: 0.2, ease: "easeInOut" },
+            }}
+            style={{ overflow: "hidden" }}
           >
+          <div ref={commentsContentRef} className="mt-4 pt-4 pb-2 border-t border-terminal-green/10">
             {commentsLoading && (
               <p className="text-xs font-mono text-muted-foreground text-center py-4 tracking-widest animate-pulse">
                 RECEIVING TRANSMISSIONS...
@@ -344,8 +372,10 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
                 SEND
               </button>
             </div>
+          </div>
           </motion.div>
         )}
+        </AnimatePresence>
       </motion.div>
 
       {showEdit && (
