@@ -4,7 +4,7 @@ import { Radio, AlertTriangle, Eye, EyeOff } from "lucide-react";
 import { GlitchText } from "./glitch-text";
 
 interface LoginScreenProps {
-  onLogin: () => void;
+  onLogin: (callsign: string) => void;
 }
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
@@ -19,26 +19,26 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (callsign.length < 3) {
       setWarningMessage("CALLSIGN TOO SHORT");
       setShowWarning(true);
       return;
     }
-    
+
     if (password.length < 6) {
       setWarningMessage("PASSWORD MUST BE AT LEAST 6 CHARACTERS");
       setShowWarning(true);
       return;
     }
-    
+
     if (isRegisterMode && password !== confirmPassword) {
       setWarningMessage("PASSWORDS DO NOT MATCH");
       setShowWarning(true);
       return;
     }
-    
-    onLogin();
+
+    onLogin(callsign);
   };
 
   return (
@@ -79,7 +79,10 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
               <AlertTriangle className="w-4 h-4 text-emergency-red mt-0.5" />
               <div className="text-xs text-muted-foreground font-mono leading-relaxed">
                 <p className="text-emergency-red mb-2">SYSTEM WARNING</p>
-                <p>Network unstable. Signal interference detected. Connection may be monitored.</p>
+                <p>
+                  Network unstable. Signal interference detected. Connection may
+                  be monitored.
+                </p>
               </div>
             </div>
           </div>
@@ -87,7 +90,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-mono text-terminal-green tracking-wide mb-2">
-                {isRegisterMode ? 'CREATE CALLSIGN' : 'ENTER CALLSIGN'}
+                {isRegisterMode ? "CREATE CALLSIGN" : "ENTER CALLSIGN"}
               </label>
               <input
                 type="text"
@@ -104,7 +107,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
 
             <div>
               <label className="block text-xs font-mono text-terminal-green tracking-wide mb-2">
-                {isRegisterMode ? 'CREATE PASSWORD' : 'ENTER PASSWORD'}
+                {isRegisterMode ? "CREATE PASSWORD" : "ENTER PASSWORD"}
               </label>
               <div className="relative">
                 <input
@@ -179,7 +182,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
               type="submit"
               className="w-full bg-terminal-green/10 hover:bg-terminal-green/20 border border-terminal-green text-terminal-green py-3 font-mono tracking-widest transition-colors"
             >
-              {isRegisterMode ? 'REGISTER & CONNECT' : 'ESTABLISH CONNECTION'}
+              {isRegisterMode ? "REGISTER & CONNECT" : "ESTABLISH CONNECTION"}
             </button>
 
             <button
@@ -191,7 +194,9 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
               }}
               className="w-full bg-charcoal border border-terminal-green/30 hover:border-terminal-green/50 text-muted-foreground hover:text-terminal-green py-3 font-mono text-xs tracking-wide transition-colors"
             >
-              {isRegisterMode ? 'ALREADY REGISTERED? LOG IN' : 'NEW SURVIVOR? REGISTER'}
+              {isRegisterMode
+                ? "ALREADY REGISTERED? LOG IN"
+                : "NEW SURVIVOR? REGISTER"}
             </button>
           </form>
 

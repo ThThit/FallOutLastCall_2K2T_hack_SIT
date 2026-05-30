@@ -1,4 +1,4 @@
-import { Radio, Package, Map, Users, UserCircle, Vault } from "lucide-react";
+import { Radio, Package, Map, UserCircle, Vault } from "lucide-react";
 import { motion } from "motion/react";
 
 interface MobileNavProps {
@@ -8,11 +8,11 @@ interface MobileNavProps {
 
 export function MobileNav({ activeSection, onSectionChange }: MobileNavProps) {
   const navItems = [
-    { id: 'signals', icon: Radio, label: 'FEED' },
-    { id: 'vault', icon: Vault, label: 'VAULT' },
-    { id: 'market', icon: Package, label: 'MARKET' },
-    { id: 'sectors', icon: Map, label: 'MAP' },
-    { id: 'settings', icon: UserCircle, label: 'ABOUT' },
+    { id: "signals", icon: Radio, label: "FEED" },
+    { id: "vault", icon: Vault, label: "VAULT" },
+    { id: "market", icon: Package, label: "MARKET" },
+    { id: "sectors", icon: Map, label: "MAP" },
+    { id: "settings", icon: UserCircle, label: "ABOUT" },
   ];
 
   return (
@@ -27,7 +27,7 @@ export function MobileNav({ activeSection, onSectionChange }: MobileNavProps) {
               key={item.id}
               onClick={() => onSectionChange(item.id)}
               className={`flex-1 flex flex-col items-center gap-1 py-3 relative transition-colors ${
-                isActive ? 'text-terminal-green' : 'text-muted-foreground'
+                isActive ? "text-terminal-green" : "text-muted-foreground"
               }`}
             >
               {isActive && (

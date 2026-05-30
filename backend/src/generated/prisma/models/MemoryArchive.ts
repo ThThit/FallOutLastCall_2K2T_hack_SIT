@@ -41,6 +41,7 @@ export type MemoryArchiveMinAggregateOutputType = {
   category: string | null
   content: string | null
   emotionalTag: string | null
+  date: Date | null
   decayLevel: number | null
   isRestored: boolean | null
   createdAt: Date | null
@@ -54,6 +55,7 @@ export type MemoryArchiveMaxAggregateOutputType = {
   category: string | null
   content: string | null
   emotionalTag: string | null
+  date: Date | null
   decayLevel: number | null
   isRestored: boolean | null
   createdAt: Date | null
@@ -67,6 +69,7 @@ export type MemoryArchiveCountAggregateOutputType = {
   category: number
   content: number
   emotionalTag: number
+  date: number
   decayLevel: number
   isRestored: number
   createdAt: number
@@ -90,6 +93,7 @@ export type MemoryArchiveMinAggregateInputType = {
   category?: true
   content?: true
   emotionalTag?: true
+  date?: true
   decayLevel?: true
   isRestored?: true
   createdAt?: true
@@ -103,6 +107,7 @@ export type MemoryArchiveMaxAggregateInputType = {
   category?: true
   content?: true
   emotionalTag?: true
+  date?: true
   decayLevel?: true
   isRestored?: true
   createdAt?: true
@@ -116,6 +121,7 @@ export type MemoryArchiveCountAggregateInputType = {
   category?: true
   content?: true
   emotionalTag?: true
+  date?: true
   decayLevel?: true
   isRestored?: true
   createdAt?: true
@@ -216,6 +222,7 @@ export type MemoryArchiveGroupByOutputType = {
   category: string
   content: string
   emotionalTag: string
+  date: Date
   decayLevel: number
   isRestored: boolean
   createdAt: Date
@@ -252,6 +259,7 @@ export type MemoryArchiveWhereInput = {
   category?: Prisma.StringFilter<"MemoryArchive"> | string
   content?: Prisma.StringFilter<"MemoryArchive"> | string
   emotionalTag?: Prisma.StringFilter<"MemoryArchive"> | string
+  date?: Prisma.DateTimeFilter<"MemoryArchive"> | Date | string
   decayLevel?: Prisma.IntFilter<"MemoryArchive"> | number
   isRestored?: Prisma.BoolFilter<"MemoryArchive"> | boolean
   createdAt?: Prisma.DateTimeFilter<"MemoryArchive"> | Date | string
@@ -265,6 +273,7 @@ export type MemoryArchiveOrderByWithRelationInput = {
   category?: Prisma.SortOrder
   content?: Prisma.SortOrder
   emotionalTag?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   decayLevel?: Prisma.SortOrder
   isRestored?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -281,6 +290,7 @@ export type MemoryArchiveWhereUniqueInput = Prisma.AtLeast<{
   category?: Prisma.StringFilter<"MemoryArchive"> | string
   content?: Prisma.StringFilter<"MemoryArchive"> | string
   emotionalTag?: Prisma.StringFilter<"MemoryArchive"> | string
+  date?: Prisma.DateTimeFilter<"MemoryArchive"> | Date | string
   decayLevel?: Prisma.IntFilter<"MemoryArchive"> | number
   isRestored?: Prisma.BoolFilter<"MemoryArchive"> | boolean
   createdAt?: Prisma.DateTimeFilter<"MemoryArchive"> | Date | string
@@ -294,6 +304,7 @@ export type MemoryArchiveOrderByWithAggregationInput = {
   category?: Prisma.SortOrder
   content?: Prisma.SortOrder
   emotionalTag?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   decayLevel?: Prisma.SortOrder
   isRestored?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -315,6 +326,7 @@ export type MemoryArchiveScalarWhereWithAggregatesInput = {
   category?: Prisma.StringWithAggregatesFilter<"MemoryArchive"> | string
   content?: Prisma.StringWithAggregatesFilter<"MemoryArchive"> | string
   emotionalTag?: Prisma.StringWithAggregatesFilter<"MemoryArchive"> | string
+  date?: Prisma.DateTimeWithAggregatesFilter<"MemoryArchive"> | Date | string
   decayLevel?: Prisma.IntWithAggregatesFilter<"MemoryArchive"> | number
   isRestored?: Prisma.BoolWithAggregatesFilter<"MemoryArchive"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"MemoryArchive"> | Date | string
@@ -328,6 +340,7 @@ export type MemoryArchiveCreateInput = {
   category: string
   content: string
   emotionalTag: string
+  date?: Date | string
   decayLevel?: number
   isRestored?: boolean
   createdAt?: Date | string
@@ -341,6 +354,7 @@ export type MemoryArchiveUncheckedCreateInput = {
   category: string
   content: string
   emotionalTag: string
+  date?: Date | string
   decayLevel?: number
   isRestored?: boolean
   createdAt?: Date | string
@@ -354,6 +368,7 @@ export type MemoryArchiveUpdateInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   emotionalTag?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   decayLevel?: Prisma.IntFieldUpdateOperationsInput | number
   isRestored?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -367,6 +382,7 @@ export type MemoryArchiveUncheckedUpdateInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   emotionalTag?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   decayLevel?: Prisma.IntFieldUpdateOperationsInput | number
   isRestored?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -380,6 +396,7 @@ export type MemoryArchiveCreateManyInput = {
   category: string
   content: string
   emotionalTag: string
+  date?: Date | string
   decayLevel?: number
   isRestored?: boolean
   createdAt?: Date | string
@@ -393,6 +410,7 @@ export type MemoryArchiveUpdateManyMutationInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   emotionalTag?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   decayLevel?: Prisma.IntFieldUpdateOperationsInput | number
   isRestored?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -406,6 +424,7 @@ export type MemoryArchiveUncheckedUpdateManyInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   emotionalTag?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   decayLevel?: Prisma.IntFieldUpdateOperationsInput | number
   isRestored?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -419,6 +438,7 @@ export type MemoryArchiveCountOrderByAggregateInput = {
   category?: Prisma.SortOrder
   content?: Prisma.SortOrder
   emotionalTag?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   decayLevel?: Prisma.SortOrder
   isRestored?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -436,6 +456,7 @@ export type MemoryArchiveMaxOrderByAggregateInput = {
   category?: Prisma.SortOrder
   content?: Prisma.SortOrder
   emotionalTag?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   decayLevel?: Prisma.SortOrder
   isRestored?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -449,6 +470,7 @@ export type MemoryArchiveMinOrderByAggregateInput = {
   category?: Prisma.SortOrder
   content?: Prisma.SortOrder
   emotionalTag?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   decayLevel?: Prisma.SortOrder
   isRestored?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -472,6 +494,7 @@ export type MemoryArchiveSelect<ExtArgs extends runtime.Types.Extensions.Interna
   category?: boolean
   content?: boolean
   emotionalTag?: boolean
+  date?: boolean
   decayLevel?: boolean
   isRestored?: boolean
   createdAt?: boolean
@@ -485,6 +508,7 @@ export type MemoryArchiveSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   category?: boolean
   content?: boolean
   emotionalTag?: boolean
+  date?: boolean
   decayLevel?: boolean
   isRestored?: boolean
   createdAt?: boolean
@@ -498,6 +522,7 @@ export type MemoryArchiveSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   category?: boolean
   content?: boolean
   emotionalTag?: boolean
+  date?: boolean
   decayLevel?: boolean
   isRestored?: boolean
   createdAt?: boolean
@@ -511,13 +536,14 @@ export type MemoryArchiveSelectScalar = {
   category?: boolean
   content?: boolean
   emotionalTag?: boolean
+  date?: boolean
   decayLevel?: boolean
   isRestored?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type MemoryArchiveOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "survivorAlias" | "category" | "content" | "emotionalTag" | "decayLevel" | "isRestored" | "createdAt" | "updatedAt", ExtArgs["result"]["memoryArchive"]>
+export type MemoryArchiveOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "survivorAlias" | "category" | "content" | "emotionalTag" | "date" | "decayLevel" | "isRestored" | "createdAt" | "updatedAt", ExtArgs["result"]["memoryArchive"]>
 
 export type $MemoryArchivePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "MemoryArchive"
@@ -529,6 +555,7 @@ export type $MemoryArchivePayload<ExtArgs extends runtime.Types.Extensions.Inter
     category: string
     content: string
     emotionalTag: string
+    date: Date
     decayLevel: number
     isRestored: boolean
     createdAt: Date
@@ -962,6 +989,7 @@ export interface MemoryArchiveFieldRefs {
   readonly category: Prisma.FieldRef<"MemoryArchive", 'String'>
   readonly content: Prisma.FieldRef<"MemoryArchive", 'String'>
   readonly emotionalTag: Prisma.FieldRef<"MemoryArchive", 'String'>
+  readonly date: Prisma.FieldRef<"MemoryArchive", 'DateTime'>
   readonly decayLevel: Prisma.FieldRef<"MemoryArchive", 'Int'>
   readonly isRestored: Prisma.FieldRef<"MemoryArchive", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"MemoryArchive", 'DateTime'>

@@ -115,6 +115,7 @@ export const MemoryArchiveScalarFieldEnum = {
   category: 'category',
   content: 'content',
   emotionalTag: 'emotionalTag',
+  date: 'date',
   decayLevel: 'decayLevel',
   isRestored: 'isRestored',
   createdAt: 'createdAt',

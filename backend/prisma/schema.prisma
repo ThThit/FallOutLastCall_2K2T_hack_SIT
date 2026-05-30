@@ -70,6 +70,8 @@ model MemoryArchive {
   content         String
   emotionalTag    String
 
+  date            DateTime @default(now())
+
   decayLevel      Int      @default(0)
   isRestored      Boolean  @default(false)
 
