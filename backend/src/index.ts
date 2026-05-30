@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
-import authRoutes from "./routes/auth.routes.js"
+import authRoutes from "./routes/auth.routes.js";
+import signalRoutes from "./routes/signal.routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -10,9 +11,9 @@ const PORT = process.env.PORT || 3000;
 // CORS must be first!
 app.use(
     cors({
-        origin: process.env.FRONTEND_URL || "http://localhost:5173",
+        origin: (origin, callback) => callback(null, origin || true),
         credentials: true,
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
     }),
 );
@@ -22,6 +23,7 @@ app.use(cookieParser());
 
 app.use(express.json({ limit: "10mb" }));
 app.use("/api/auth", authRoutes);
+app.use("/api/signals", signalRoutes);
 
 // Health check
 app.get("/health", (req, res) => {
