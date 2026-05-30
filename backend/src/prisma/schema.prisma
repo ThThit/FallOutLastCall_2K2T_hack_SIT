@@ -10,7 +10,6 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -23,6 +22,7 @@ model User {
   signals       Signal[]
   verifications SignalVerification[]
   trades        Trade[]
+  vaultItems    VaultItem[]
 
   createdAt DateTime @default(now())
 }
@@ -89,6 +89,27 @@ model Trade {
   updatedAt DateTime @updatedAt
 }
 
+model VaultItem {
+  id String @id @default(cuid())
+
+  resourceName String
+  quantity     Int
+
+  condition ItemCondition
+
+  category ResourceCategory
+
+  acquiredDate DateTime
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
 enum VerificationStatus {
   VERIFIED
   SUSPICIOUS
@@ -131,4 +152,11 @@ enum ResourceCategory {
   TOOLS
   PARTS
   AMMO
+}
+
+enum RarityLevel {
+  COMMON
+  UNCOMMON
+  RARE
+  CRITICAL
 }
