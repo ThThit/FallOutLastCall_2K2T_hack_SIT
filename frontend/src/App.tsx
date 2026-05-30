@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Scanlines } from "./components/scanlines";
 import { StatusBar } from "./components/status-bar";
 import { Sidebar } from "./components/sidebar";
@@ -19,6 +19,7 @@ import { SettingsView } from "./components/settings-view";
 import { VaultView } from "./components/vault-view";
 import { TradeModal } from "./components/trade-modal";
 import { Plus } from "lucide-react";
+import { signalApi, type Signal } from "./lib/api";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -31,69 +32,39 @@ export default function App() {
   const [marketSort, setMarketSort] = useState<'rarity' | 'condition'>('rarity');
   const [memorySort, setMemorySort] = useState<'date' | 'decay'>('date');
 
+  const [signals, setSignals] = useState<Signal[]>([]);
+  const [signalsLoading, setSignalsLoading] = useState(false);
+  const [callsign, setCallsign] = useState(() => localStorage.getItem('callsign') ?? '');
+  const [showCallsignPrompt, setShowCallsignPrompt] = useState(false);
+  const [callsignInput, setCallsignInput] = useState('');
+
+  useEffect(() => {
+    if (isLoggedIn && activeSection === 'signals') {
+      setSignalsLoading(true);
+      signalApi.getAll({ sort: signalSort })
+        .then(setSignals)
+        .finally(() => setSignalsLoading(false));
+    }
+  }, [isLoggedIn, activeSection, signalSort]);
+
+  useEffect(() => {
+    if (isLoggedIn && activeSection === 'signals' && !callsign) {
+      setShowCallsignPrompt(true);
+    }
+  }, [isLoggedIn, activeSection, callsign]);
+
+  const handleSaveCallsign = () => {
+    const trimmed = callsignInput.trim().toUpperCase();
+    if (!trimmed) return;
+    localStorage.setItem('callsign', trimmed);
+    setCallsign(trimmed);
+    setShowCallsignPrompt(false);
+  };
+
   if (!isLoggedIn) {
     return <LoginScreen onLogin={() => setIsLoggedIn(true)} />;
   }
 
-  const signals = [
-    {
-      id: '1',
-      callsign: 'OUTPOST-47',
-      message: 'Safe shelter under metro station. Clean water source confirmed. Room for 8 more.',
-      timestamp: '2h ago',
-      sector: 'SECTOR 3',
-      trustScore: 78,
-      isEmergency: false,
-      verifiedCount: 23,
-      unverifiedCount: 5,
-      comments: [
-        { id: 'c1', author: 'GUARDIAN-21', message: 'Confirmed. Water tested clean. Good location.', timestamp: '1h ago' },
-        { id: 'c2', author: 'NOMAD-45', message: 'How\'s the security situation?', timestamp: '45m ago' },
-      ],
-    },
-    {
-      id: '2',
-      callsign: 'NOMAD-12',
-      message: 'Water supply contaminated. Avoid River District. Multiple casualties reported.',
-      timestamp: '4h ago',
-      sector: 'SECTOR 7',
-      trustScore: 45,
-      isEmergency: true,
-      verifiedCount: 12,
-      unverifiedCount: 15,
-      comments: [
-        { id: 'c3', author: 'MEDIC-77', message: 'Can confirm casualties. Do NOT drink from that source.', timestamp: '3h ago' },
-      ],
-    },
-    {
-      id: '3',
-      callsign: 'SENTINEL-9',
-      message: 'Sa_e shelt_r und_r metr_ stati_n. Cle_n wat_r s_urce c_nfirm_d.',
-      timestamp: '6h ago',
-      sector: 'SECTOR 1',
-      trustScore: 62,
-      isCorrupted: true,
-      verifiedCount: 18,
-      unverifiedCount: 11,
-      comments: [],
-    },
-    {
-      id: '4',
-      callsign: 'PHOENIX-03',
-      message: 'Need medical assistance urgently. Wounded survivor. Low on supplies.',
-      timestamp: '8h ago',
-      sector: 'SECTOR 5',
-      trustScore: 85,
-      isEmergency: true,
-      verifiedCount: 34,
-      unverifiedCount: 6,
-      comments: [
-        { id: 'c4', author: 'RAVEN-47', message: 'What\'s your exact location? I have medical supplies.', timestamp: '7h ago' },
-        { id: 'c5', author: 'PHOENIX-03', message: 'Abandoned warehouse, north side. Hurry.', timestamp: '7h ago' },
-        { id: 'c6', author: 'MEDIC-77', message: 'En route. ETA 20 minutes.', timestamp: '6h ago' },
-      ],
-    },
-  ];
 
   const resources = [
     {
@@ -302,7 +273,6 @@ export default function App() {
 
             {activeSection === 'signals' && (
               <div className="space-y-4">
-                {/* Sorting Controls */}
                 <div className="flex items-center gap-2 bg-charcoal border border-terminal-green/20 p-3">
                   <span className="text-xs text-muted-foreground font-mono">SORT BY:</span>
                   <button
@@ -332,16 +302,25 @@ export default function App() {
                   <Plus className="w-4 h-4" />
                   BROADCAST NEW SIGNAL
                 </button>
-                {signals
-                  .sort((a, b) => {
-                    if (signalSort === 'trust') {
-                      return b.trustScore - a.trustScore;
-                    }
-                    return 0; // Keep original order for date
-                  })
-                  .map((signal) => (
-                    <SignalCard key={signal.id} signal={signal} />
-                  ))}
+
+                {signalsLoading && (
+                  <p className="text-xs font-mono text-muted-foreground text-center py-8 tracking-widest animate-pulse">
+                    SCANNING FREQUENCIES...
+                  </p>
+                )}
+                {!signalsLoading && signals.length === 0 && (
+                  <p className="text-xs font-mono text-muted-foreground text-center py-8">
+                    NO SIGNALS DETECTED
+                  </p>
+                )}
+                {!signalsLoading && signals.map((signal) => (
+                  <SignalCard
+                    key={signal.id}
+                    signal={signal}
+                    callsign={callsign}
+                    onDelete={(id) => setSignals((prev) => prev.filter((s) => s.id !== id))}
+                  />
+                ))}
               </div>
             )}
 
@@ -454,7 +433,43 @@ export default function App() {
       </div>
 
       {showEmergency && <EmergencyAlert onClose={() => setShowEmergency(false)} />}
-      {showBroadcast && <BroadcastComposer onClose={() => setShowBroadcast(false)} />}
+      {showBroadcast && (
+        <BroadcastComposer
+          onClose={() => setShowBroadcast(false)}
+          callsign={callsign}
+          onCreated={(signal) => setSignals((prev) => [signal, ...prev])}
+        />
+      )}
+
+      {showCallsignPrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4">
+          <div className="max-w-sm w-full bg-dark-gray border-2 border-terminal-green/40 p-6">
+            <h2 className="text-terminal-green font-mono text-sm tracking-widest mb-2">
+              IDENTIFY YOURSELF
+            </h2>
+            <p className="text-xs text-muted-foreground font-mono mb-4">
+              Enter your survivor callsign to broadcast on the network.
+            </p>
+            <input
+              type="text"
+              value={callsignInput}
+              onChange={(e) => setCallsignInput(e.target.value.toUpperCase())}
+              onKeyDown={(e) => e.key === 'Enter' && handleSaveCallsign()}
+              placeholder="e.g. OUTPOST-47"
+              maxLength={20}
+              className="w-full bg-charcoal border border-terminal-green/30 px-4 py-3 text-terminal-green font-mono text-sm focus:border-terminal-green focus:outline-none mb-4 tracking-widest"
+              autoFocus
+            />
+            <button
+              onClick={handleSaveCallsign}
+              disabled={!callsignInput.trim()}
+              className="w-full px-4 py-3 bg-terminal-green/10 border border-terminal-green text-terminal-green font-mono text-sm tracking-wide hover:bg-terminal-green/20 transition-colors disabled:opacity-50"
+            >
+              CONNECT TO NETWORK
+            </button>
+          </div>
+        </div>
+      )}
       <TradeModal
         isOpen={showTradeModal}
         onClose={() => {
