@@ -71,11 +71,13 @@ export const createTradeService = async (tradeData: any, userId: string) => {
   });
 };
 export const getTradesService = async (query: any, currentUserId?: string) => {
-  const { sort, category, condition, search } = query;
+  const { sort, category, condition, search, mine } = query;
 
   const where: any = { status: "ACTIVE" };
-  // Only show other survivors' listings in the market (not your own)
-  if (currentUserId) where.creatorId = { not: currentUserId };
+  if (currentUserId) {
+    // mine=true -> only your own listings; otherwise only other survivors' listings
+    where.creatorId = mine === "true" ? currentUserId : { not: currentUserId };
+  }
   if (category) where.category = category;
   if (condition) where.condition = condition;
   if (search) where.resourceName = { contains: search };

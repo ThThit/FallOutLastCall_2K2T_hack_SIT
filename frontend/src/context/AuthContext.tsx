@@ -49,6 +49,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             };
             setUser(userData);
             localStorage.setItem('user', JSON.stringify(userData));
+            // vivi's marketplace reads the id from "userId"
+            localStorage.setItem('userId', userData.id);
         } catch (err: any) {
             setError(err.message || 'Login failed');
             throw err;

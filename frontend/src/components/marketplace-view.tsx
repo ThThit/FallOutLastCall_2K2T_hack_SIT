@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
     Zap, AlertTriangle, TrendingUp, Search, Filter,
     X, Plus, MapPin, Clock, Flame, Activity,
@@ -732,7 +732,7 @@ function TradeHistoryPanel({ history, myUserId }: { history: any[]; myUserId: st
 // ─── Main MarketplaceView ─────────────────────────────────────────────────────
 
 export function MarketplaceView() {
-    const { trades, demandMap, availableItems, tradeHistory, alerts, loading, error, createTrade, acceptTrade, cancelTrade } = useMarketplace();
+    const { trades, demandMap, availableItems, tradeHistory, alerts, loading, error, createTrade, acceptTrade, cancelTrade, fetchTrades } = useMarketplace();
     const { items: vaultItems } = useVault();
 
     const [selectedTrade, setSelectedTrade] = useState<any>(null);
@@ -746,6 +746,11 @@ export function MarketplaceView() {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [selectedCondition, setSelectedCondition] = useState<string | null>(null);
     const [sortBy, setSortBy] = useState<"newest" | "urgency" | "rarity" | "quantity">("urgency");
+    // MARKET = other survivors' listings; MINE = your own listings
+    const [viewMine, setViewMine] = useState(false);
+    useEffect(() => {
+        fetchTrades(viewMine ? { mine: "true" } : undefined);
+    }, [viewMine]);
 
     const myUserId = localStorage.getItem("userId");
 
@@ -838,6 +843,27 @@ export function MarketplaceView() {
 
     return (
         <div className="space-y-5">
+            {/* MARKET / MY LISTINGS toggle */}
+            <div className="flex items-center gap-2 bg-charcoal border border-terminal-green/20 p-2">
+                <span className="text-xs font-mono text-muted-foreground mr-1">VIEW:</span>
+                <button
+                    onClick={() => setViewMine(false)}
+                    className={`px-3 py-1 font-mono text-xs transition-colors border ${!viewMine
+                        ? "bg-terminal-green/20 border-terminal-green text-terminal-green"
+                        : "border-terminal-green/30 text-muted-foreground hover:text-terminal-green"}`}
+                >
+                    MARKET
+                </button>
+                <button
+                    onClick={() => setViewMine(true)}
+                    className={`px-3 py-1 font-mono text-xs transition-colors border ${viewMine
+                        ? "bg-terminal-green/20 border-terminal-green text-terminal-green"
+                        : "border-terminal-green/30 text-muted-foreground hover:text-terminal-green"}`}
+                >
+                    MY LISTINGS
+                </button>
+            </div>
+
             {/* POST TRADE CTA */}
             {myUserId && (
                 <button
