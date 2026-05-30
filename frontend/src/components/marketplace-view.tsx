@@ -745,7 +745,6 @@ export function MarketplaceView() {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [selectedCondition, setSelectedCondition] = useState<string | null>(null);
-    const [sortBy, setSortBy] = useState<"newest" | "urgency" | "rarity" | "quantity">("urgency");
     // MARKET = other survivors' listings; MINE = your own listings
     const [viewMine, setViewMine] = useState(false);
     useEffect(() => {
@@ -785,33 +784,15 @@ export function MarketplaceView() {
             return true;
         });
 
-        switch (sortBy) {
-            case "urgency": {
-                const rank: Record<string, number> = { DAMAGED: 3, WORN: 2, GOOD: 1, PRISTINE: 0 };
-                result = [...result].sort((a, b) =>
-                    (rank[b.vaultItem?.condition ?? b.condition] ?? 0) -
-                    (rank[a.vaultItem?.condition ?? a.condition] ?? 0)
-                );
-                break;
-            }
-            case "rarity":
-                result = [...result].sort((a, b) =>
-                    (RARITY_RANK[b.vaultItem?.category ?? b.category] ?? 0) -
-                    (RARITY_RANK[a.vaultItem?.category ?? a.category] ?? 0)
-                );
-                break;
-            case "quantity":
-                result = [...result].sort((a, b) => b.quantity - a.quantity);
-                break;
-            case "newest":
-                result = [...result].sort((a, b) =>
-                    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-                );
-                break;
-        }
+        // Default ordering: most urgent (worst condition) first
+        const rank: Record<string, number> = { DAMAGED: 3, WORN: 2, GOOD: 1, PRISTINE: 0 };
+        result = [...result].sort((a, b) =>
+            (rank[b.vaultItem?.condition ?? b.condition] ?? 0) -
+            (rank[a.vaultItem?.condition ?? a.condition] ?? 0)
+        );
 
         return result;
-    }, [activeTrades, selectedCategory, selectedCondition, searchQuery, sortBy]);
+    }, [activeTrades, selectedCategory, selectedCondition, searchQuery]);
 
     const handleCancelTrade = async () => {
         if (!tradeToCancel) return;
@@ -998,34 +979,19 @@ export function MarketplaceView() {
                     </div>
                 </div>
 
-                {/* Condition + Sort row */}
-                <div className="grid grid-cols-2 gap-3">
-                    <div>
-                        <div className="text-xs font-mono text-muted-foreground tracking-wide mb-2">URGENCY / CONDITION</div>
-                        <select
-                            value={selectedCondition || ""}
-                            onChange={(e) => setSelectedCondition(e.target.value || null)}
-                            className="w-full bg-dark-gray border border-terminal-green/30 px-3 py-2 text-terminal-green font-mono text-xs focus:border-terminal-green focus:outline-none"
-                        >
-                            <option value="">ALL URGENCY LEVELS</option>
-                            {CONDITIONS.map((c) => (
-                                <option key={c} value={c}>{URGENCY_META[c].label} ({c})</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <div className="text-xs font-mono text-muted-foreground tracking-wide mb-2">SORT BY</div>
-                        <select
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                            className="w-full bg-dark-gray border border-terminal-green/30 px-3 py-2 text-terminal-green font-mono text-xs focus:border-terminal-green focus:outline-none"
-                        >
-                            <option value="urgency">URGENCY (CRITICAL FIRST)</option>
-                            <option value="rarity">RARITY (SCARCE FIRST)</option>
-                            <option value="newest">NEWEST FIRST</option>
-                            <option value="quantity">MOST QUANTITY</option>
-                        </select>
-                    </div>
+                {/* Condition filter */}
+                <div>
+                    <div className="text-xs font-mono text-muted-foreground tracking-wide mb-2">URGENCY / CONDITION</div>
+                    <select
+                        value={selectedCondition || ""}
+                        onChange={(e) => setSelectedCondition(e.target.value || null)}
+                        className="w-full bg-dark-gray border border-terminal-green/30 px-3 py-2 text-terminal-green font-mono text-xs focus:border-terminal-green focus:outline-none"
+                    >
+                        <option value="">ALL URGENCY LEVELS</option>
+                        {CONDITIONS.map((c) => (
+                            <option key={c} value={c}>{URGENCY_META[c].label} ({c})</option>
+                        ))}
+                    </select>
                 </div>
 
                 {/* Active filter summary */}
