@@ -12,7 +12,7 @@ interface BroadcastComposerProps {
   onDelete?: (id: string) => void;
 }
 
-const SECTOR_OPTIONS = [1, 2, 3, 4, 5, 6, 8];
+const SECTOR_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8];
 const MAX_CHARS = 288;
 
 export function BroadcastComposer({ onClose, onCreated, callsign, editSignal, onDelete }: BroadcastComposerProps) {
