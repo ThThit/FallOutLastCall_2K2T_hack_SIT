@@ -7,7 +7,6 @@ import { SignalStrength } from "./components/signal-strength";
 import { SignalCard } from "./components/signal-card";
 import { ResourceCard } from "./components/resource-card";
 import { MemoryCard } from "./components/memory-card";
-import { EmergencyAlert } from "./components/emergency-alert";
 import { LoginScreen } from "./components/login-screen";
 import { SurvivorProfile } from "./components/survivor-profile";
 import { MobileNav } from "./components/mobile-nav";
@@ -25,7 +24,6 @@ import { signalApi, type Signal } from "./lib/api";
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [activeSection, setActiveSection] = useState('signals');
-  const [showEmergency, setShowEmergency] = useState(false);
   const [showBroadcast, setShowBroadcast] = useState(false);
   const [showTradeModal, setShowTradeModal] = useState(false);
   const [selectedMarketItem, setSelectedMarketItem] = useState<any>(null);
@@ -261,14 +259,6 @@ export default function App() {
 
               <div className="flex items-center gap-3">
                 <SignalStrength />
-                {activeSection === 'signals' && (
-                  <button
-                    onClick={() => setShowEmergency(true)}
-                    className="px-4 py-2 bg-emergency-red/10 hover:bg-emergency-red/20 text-emergency-red font-mono text-xs tracking-wide transition-colors border border-emergency-red/30"
-                  >
-                    TEST ALERT
-                  </button>
-                )}
               </div>
             </div>
 
@@ -455,7 +445,6 @@ export default function App() {
         </main>
       </div>
 
-      {showEmergency && <EmergencyAlert onClose={() => setShowEmergency(false)} />}
       {showBroadcast && (
         <BroadcastComposer
           onClose={() => setShowBroadcast(false)}
