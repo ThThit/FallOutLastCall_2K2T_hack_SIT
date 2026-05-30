@@ -57,7 +57,9 @@ export const marketplaceAPI = {
   // Get all trades
   getTrades: async (filters?: any) => {
     const params = new URLSearchParams(filters || {});
-    const response = await fetch(`${API_BASE_URL}/trade?${params}`);
+    const response = await fetch(`${API_BASE_URL}/trade?${params}`, {
+      headers: { Authorization: `Bearer ${getAuthToken()}` },
+    });
     if (!response.ok) throw new Error("Failed to fetch trades");
     return response.json();
   },
