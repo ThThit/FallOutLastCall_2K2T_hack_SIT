@@ -77,7 +77,7 @@ async function handleResponse(res: Response) {
 }
 
 export const fetchMemories = async (): Promise<MemoryArchive[]> => {
-  const res = await fetch(BASE_URL, { credentials: "include" });
+  const res = await fetch(`${BASE_URL}?t=${Date.now()}`, { credentials: "include" });
   return handleResponse(res) as Promise<MemoryArchive[]>;
 };
 
@@ -121,7 +121,7 @@ export const updateMemoryData = async (
 export const patchMemoryData = updateMemoryData;
 // Add this to api.ts
 export const restoreMemoryData = async (id: string) => {
-  const response = await fetch(`http://localhost:3000/api/archive/${id}`, {
+  const response = await fetch(`${BASE_URL}/${encodeURIComponent(id)}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     // We send a payload to reset the decay and mark it as restored

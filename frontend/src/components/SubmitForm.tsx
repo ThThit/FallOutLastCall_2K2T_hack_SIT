@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { createMemory } from "../services/api";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 
 type Props = {
   onSuccess?: () => void;
@@ -36,13 +38,25 @@ export function SubmitForm({ onSuccess, currentUser }: Props) {
     setErrors(null);
 
     try {
-      await createMemory({
+      const newMemory = await createMemory({
         title,
         survivorAlias: survivorAlias.trim() || currentUser || "Anonymous",
         category,
         content,
         emotionalTag,
       });
+
+      if (newMemory && newMemory.id) {
+        try {
+          const myMemories = JSON.parse(localStorage.getItem("myCreatedMemories") || "[]");
+          if (Array.isArray(myMemories)) {
+            myMemories.push(newMemory.id);
+            localStorage.setItem("myCreatedMemories", JSON.stringify(myMemories));
+          }
+        } catch (e) {
+          console.error("Failed to save created memory ownership local", e);
+        }
+      }
       setTitle("");
       setSurvivorAlias("");
       setCategory("Diary");
@@ -70,10 +84,11 @@ export function SubmitForm({ onSuccess, currentUser }: Props) {
         <label className="block text-xs font-mono text-muted-foreground">
           Title
         </label>
-        <input
+        <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full mt-1 input"
+          placeholder="Enter transmission title..."
+          className="w-full mt-1 bg-black border border-terminal-green/30 px-3 py-2 text-terminal-green font-mono focus:outline-none focus:border-terminal-green/60 placeholder:text-muted-foreground/60"
         />
       </div>
 
@@ -81,11 +96,11 @@ export function SubmitForm({ onSuccess, currentUser }: Props) {
         <label className="block text-xs font-mono text-muted-foreground">
           Alias
         </label>
-        <input
+        <Input
           value={survivorAlias}
           onChange={(e) => setSurvivorAlias(e.target.value)}
           placeholder="Anonymous"
-          className="w-full mt-1 input"
+          className="w-full mt-1 bg-black border border-terminal-green/30 px-3 py-2 text-terminal-green font-mono focus:outline-none focus:border-terminal-green/60 placeholder:text-muted-foreground/60"
         />
       </div>
 
@@ -102,7 +117,8 @@ export function SubmitForm({ onSuccess, currentUser }: Props) {
             <option>Diary</option>
             <option>Final Message</option>
             <option>Survival Story</option>
-            <option>Historical Record</option>
+            <option>Historical Knowledge</option>
+            <option>Audio Log</option>
           </select>
           <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-terminal-green/70" />
         </div>
@@ -131,16 +147,21 @@ export function SubmitForm({ onSuccess, currentUser }: Props) {
         <label className="block text-xs font-mono text-muted-foreground">
           Content
         </label>
-        <textarea
+        <Textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          placeholder="Type memory log or message transmission content..."
           rows={6}
-          className="w-full mt-1 textarea"
+          className="w-full mt-1 bg-black border border-terminal-green/30 px-3 py-2 text-terminal-green font-mono focus:outline-none focus:border-terminal-green/60 placeholder:text-muted-foreground/60"
         />
       </div>
 
       <div className="flex items-center gap-2">
-        <button type="submit" disabled={loading} className="btn">
+        <button
+          type="submit"
+          disabled={loading}
+          className="px-4 py-2 bg-terminal-green/10 border border-terminal-green/30 text-terminal-green font-mono text-xs hover:bg-terminal-green/20 transition-colors uppercase cursor-pointer"
+        >
           {loading ? "Uploading…" : "Upload Memory"}
         </button>
         {success && (

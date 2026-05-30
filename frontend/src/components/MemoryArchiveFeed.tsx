@@ -14,7 +14,7 @@ export function MemoryArchiveFeed({
 }) {
   const decayGracePeriodDays = 7;
   const [memories, setMemories] = useState<any[]>([]);
-  const [memorySort, setMemorySort] = useState<"date" | "decay">("date");
+  const [showOnlyRestored, setShowOnlyRestored] = useState(false);
   const [showSubmitForm, setShowSubmitForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedEmotion, setSelectedEmotion] = useState("All");
@@ -61,20 +61,24 @@ export function MemoryArchiveFeed({
             (1000 * 60 * 60 * 24),
         ),
       ),
-      decayLevel: Math.max(
-        m.decayLevel || 0,
-        Math.min(
-          85,
-          Math.max(
-            0,
-            Math.floor(
-              (Date.now() - new Date(m.date || m.createdAt).getTime()) /
-                (1000 * 60 * 60 * 24) -
-                decayGracePeriodDays,
-            ) * 6,
+      decayLevel: m.isRestored
+        ? (m.decayLevel || 0)
+        : Math.max(
+            m.decayLevel || 0,
+            Math.min(
+              85,
+              Math.max(
+                0,
+                Math.floor(
+                  (Date.now() - new Date(m.date || m.createdAt).getTime()) /
+                    (1000 * 60 * 60 * 24) -
+                    decayGracePeriodDays,
+                ) * 6,
+              ),
+            ),
           ),
-        ),
-      ),
+      updatedAt: m.updatedAt,
+      isRestored: m.isRestored,
     }));
 
     setMemories(uiMemories);
@@ -122,6 +126,7 @@ export function MemoryArchiveFeed({
               category: updated.category,
               emotionalTag: updated.emotionalTag,
               date: updated.date || memory.date,
+              updatedAt: updated.updatedAt,
             }
           : memory,
       ),
@@ -131,7 +136,7 @@ export function MemoryArchiveFeed({
   };
 
   const searchableMemories = [...memories].sort((a, b) => {
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 
   const normalizedSearch = searchQuery.trim().toLowerCase();
@@ -144,16 +149,13 @@ export function MemoryArchiveFeed({
     const matchesEmotion =
       selectedEmotion === "All" || memory.emotionalTag === selectedEmotion;
 
-    return matchesSearch && matchesEmotion;
+    const matchesRestored =
+      !showOnlyRestored || memory.isRestored === true;
+
+    return matchesSearch && matchesEmotion && matchesRestored;
   });
 
-  const sortedMemories = [...filteredMemories].sort((a, b) => {
-    if (memorySort === "decay") {
-      return b.decayLevel - a.decayLevel;
-    }
-
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  });
+  const sortedMemories = [...filteredMemories];
 
   const lastPreservedMemories = filteredMemories.slice(0, 3);
 
@@ -190,32 +192,23 @@ export function MemoryArchiveFeed({
 
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs text-muted-foreground font-mono">
-            SORT BY:
+            FILTER:
           </span>
           <button
-            onClick={() => setMemorySort("date")}
-            className={`px-3 py-1 font-mono text-xs transition-colors ${
-              memorySort === "date"
-                ? "bg-terminal-green/20 border border-terminal-green text-terminal-green"
-                : "bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green"
+            onClick={() => setShowOnlyRestored((prev) => !prev)}
+            className={`px-3 py-1 font-mono text-xs transition-colors border ${
+              showOnlyRestored
+                ? "bg-terminal-green/20 border-terminal-green text-terminal-green"
+                : "bg-charcoal border-terminal-green/25 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green"
             }`}
           >
-            DATE
-          </button>
-          <button
-            onClick={() => setMemorySort("decay")}
-            className={`px-3 py-1 font-mono text-xs transition-colors ${
-              memorySort === "decay"
-                ? "bg-terminal-green/20 border border-terminal-green text-terminal-green"
-                : "bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green"
-            }`}
-          >
-            DECAY STATUS
+            {showOnlyRestored ? "SHOWING: RESTORED" : "SHOW RESTORED DATA"}
           </button>
           <button
             onClick={() => {
               setSearchQuery("");
               setSelectedEmotion("All");
+              setShowOnlyRestored(false);
             }}
             className="px-3 py-1 font-mono text-xs bg-black/50 border border-terminal-green/20 text-terminal-green/80 hover:text-terminal-green hover:border-terminal-green/40"
           >
@@ -280,6 +273,7 @@ export function MemoryArchiveFeed({
                 currentUser={currentUser}
                 onDelete={handleDeleteMemory}
                 onUpdate={handleUpdateMemory}
+                onRestore={loadMemories}
               />
             ))}
           </div>
@@ -292,15 +286,18 @@ export function MemoryArchiveFeed({
 
       {/* Grid of Memories */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {sortedMemories.map((memory) => (
-          <MemoryCard
-            key={memory.id}
-            memory={memory}
-            currentUser={currentUser}
-            onDelete={handleDeleteMemory}
-            onUpdate={handleUpdateMemory}
-          />
-        ))}
+        {sortedMemories
+          .filter((memory) => !lastPreservedMemories.some((l) => l.id === memory.id))
+          .map((memory) => (
+            <MemoryCard
+              key={memory.id}
+              memory={memory}
+              currentUser={currentUser}
+              onDelete={handleDeleteMemory}
+              onUpdate={handleUpdateMemory}
+              onRestore={loadMemories}
+            />
+          ))}
       </div>
     </div>
   );

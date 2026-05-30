@@ -96,7 +96,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
 router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const memories = await prisma.memoryArchive.findMany({
-      orderBy: { createdAt: "desc" },
+      orderBy: { date: "desc" },
     });
 
     res.json(memories);
