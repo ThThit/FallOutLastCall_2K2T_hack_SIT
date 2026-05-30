@@ -14,7 +14,7 @@ interface AuthContextType {
     isLoading: boolean;
     error: string | null;
     login: (username: string, password: string) => Promise<void>;
-    register: (username: string, password: string) => Promise<void>;
+    register: (username: string, password: string, sector?: number) => Promise<void>;
     logout: () => Promise<void>;
     clearError: () => void;
 }
@@ -59,11 +59,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    const register = async (username: string, password: string) => {
+    const register = async (username: string, password: string, sector?: number) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await registerUser(username, password);
+            const response = await registerUser(username, password, sector);
             const userData: User = {
                 id: response.id,
                 username: response.username,

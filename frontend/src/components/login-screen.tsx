@@ -18,6 +18,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [sector, setSector] = useState(1);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +44,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
 
     try {
       if (isRegisterMode) {
-        await register(username, password);
+        await register(username, password, sector);
       } else {
         await login(username, password);
       }
@@ -179,6 +180,26 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                     )}
                   </button>
                 </div>
+              </motion.div>
+            )}
+
+            {isRegisterMode && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+              >
+                <label className="block text-xs font-mono text-terminal-green tracking-wide mb-2">
+                  YOUR SECTOR
+                </label>
+                <select
+                  value={sector}
+                  onChange={(e) => setSector(Number(e.target.value))}
+                  className="w-full bg-charcoal border border-terminal-green/30 px-4 py-3 text-terminal-green font-mono focus:border-terminal-green focus:outline-none transition-colors"
+                >
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+                    <option key={s} value={s}>SECTOR {s}</option>
+                  ))}
+                </select>
               </motion.div>
             )}
 

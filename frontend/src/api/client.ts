@@ -23,11 +23,13 @@ export const client = axiosInstance;
 export const registerUser = async (
     userName: string,
     password: string,
+    sector?: number,
 ) => {
     try {
         const response = await axiosInstance.post("/auth/register", {
             userName,
             password,
+            sector,
         });
         return response.data;
     } catch (error: any) {

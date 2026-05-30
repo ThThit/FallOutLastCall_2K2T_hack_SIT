@@ -3,7 +3,7 @@ import authService from "../services/auth.service.js";
 
 export const registerController = async (req: Request, res: Response) => {
   try {
-    const { userName, password } = req.body;
+    const { userName, password, sector } = req.body;
 
     // Validation
     if (!userName || !password) {
@@ -23,8 +23,17 @@ export const registerController = async (req: Request, res: Response) => {
       });
     }
 
+    // Sector validation (1-8). Defaults to 1 if not provided.
+    const sectorNum = sector === undefined ? 1 : Number(sector);
+    if (!Number.isInteger(sectorNum) || sectorNum < 1 || sectorNum > 8) {
+      return res.status(400).json({
+        success: false,
+        error: "Sector must be a number between 1 and 8",
+      });
+    }
+
     // Register user
-    const user = await authService.register(userName, password);
+    const user = await authService.register(userName, password, sectorNum);
 
     // Generate JWT token for immediate use
     const result = await authService.login(userName, password);
