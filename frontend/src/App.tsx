@@ -10,7 +10,6 @@ import { SurvivorProfile } from "./components/survivor-profile";
 import { MobileNav } from "./components/mobile-nav";
 import { NoiseOverlay } from "./components/noise-overlay";
 import { SectorMap } from "./components/sector-map";
-import { AlertsView } from "./components/alerts-view";
 import { CRTGlow } from "./components/crt-glow";
 import { SettingsView } from "./components/settings-view";
 import { VaultView } from "./components/vault-view";
@@ -173,7 +172,6 @@ export default function App() {
                   {activeSection === 'memories' && 'MEMORY ARCHIVE'}
                   {activeSection === 'survivors' && 'SURVIVOR PROFILE'}
                   {activeSection === 'sectors' && 'SECTOR MAP'}
-                  {activeSection === 'alerts' && 'EMERGENCY ALERTS'}
                   {activeSection === 'settings' && 'ABOUT ME'}
                 </h1>
                 <p className="text-sm text-muted-foreground font-mono">
@@ -183,7 +181,6 @@ export default function App() {
                   {activeSection === 'memories' && 'Messages from the fallen'}
                   {activeSection === 'survivors' && 'Your network profile'}
                   {activeSection === 'sectors' && 'Tactical zone overview'}
-                  {activeSection === 'alerts' && 'Critical system notifications'}
                   {activeSection === 'settings' && 'Account & preferences'}
                 </p>
               </div>
@@ -212,7 +209,6 @@ export default function App() {
 
             {activeSection === 'sectors' && <SectorMap />}
 
-            {activeSection === 'alerts' && <AlertsView />}
 
             {activeSection === 'settings' && <SettingsView />}
           </div>
