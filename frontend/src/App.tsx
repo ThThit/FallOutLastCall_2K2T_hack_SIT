@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { AnimatePresence } from "motion/react";
 import { Scanlines } from "./components/scanlines";
 import { StatusBar } from "./components/status-bar";
 import { Sidebar } from "./components/sidebar";
@@ -332,15 +333,17 @@ export default function App() {
                     NO SIGNALS DETECTED
                   </p>
                 )}
-                {!signalsLoading && signals.map((signal) => (
-                  <SignalCard
-                    key={signal.id}
-                    signal={signal}
-                    callsign={callsign}
-                    onDelete={(id) => setSignals((prev) => prev.filter((s) => s.id !== id))}
-                    onUpdate={(updated) => setSignals((prev) => prev.map((s) => s.id === updated.id ? { ...s, ...updated } : s))}
-                  />
-                ))}
+                <AnimatePresence>
+                  {!signalsLoading && signals.map((signal) => (
+                    <SignalCard
+                      key={signal.id}
+                      signal={signal}
+                      callsign={callsign}
+                      onDelete={(id) => setSignals((prev) => prev.filter((s) => s.id !== id))}
+                      onUpdate={(updated) => setSignals((prev) => prev.map((s) => s.id === updated.id ? { ...s, ...updated } : s))}
+                    />
+                  ))}
+                </AnimatePresence>
               </div>
             )}
 

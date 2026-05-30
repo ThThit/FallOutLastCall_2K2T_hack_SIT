@@ -166,7 +166,9 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        exit={{ opacity: 0, height: 0, marginBottom: 0, paddingTop: 0, paddingBottom: 0, overflow: "hidden" }}
+        transition={{ duration: 0.35, ease: "easeInOut" }}
+        layout
         style={isEmergency ? { borderColor: '#f97316', borderWidth: '2px' } : undefined}
         className={`border p-4 transition-colors group ${
           isEmergency
