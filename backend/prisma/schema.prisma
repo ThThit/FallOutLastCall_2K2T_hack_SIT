@@ -20,6 +20,11 @@ model User {
   signals       Signal[]
   verifications Verification[]
 
+  // vivi: trade + vault relations
+  trades         Trade[]
+  acceptedTrades Trade[]     @relation("TradeAcceptor")
+  vaultItems     VaultItem[]
+
   createdAt DateTime @default(now())
 }
 
@@ -108,5 +113,90 @@ enum DangerLevel {
   LOW
   MEDIUM
   HIGH
+  CRITICAL
+}
+
+// ===== vivi: Trade + Vault (barter marketplace) =====
+
+model Trade {
+  id String @id @default(uuid())
+
+  resourceName String
+  quantity     Int
+  condition    ItemCondition
+
+  requestedItem     String
+  requestedQuantity Int
+
+  traderName String
+  category   ResourceCategory
+  location   String?
+
+  status TradeStatus @default(ACTIVE)
+
+  creatorId String
+  creator   User   @relation(fields: [creatorId], references: [id])
+
+  vaultItemId String?
+  vaultItem   VaultItem? @relation(fields: [vaultItemId], references: [id], onDelete: SetNull)
+
+  acceptorId String?
+  acceptor   User?   @relation("TradeAcceptor", fields: [acceptorId], references: [id])
+
+  acceptorVaultItemId String?
+  acceptorVaultItem   VaultItem? @relation("TradeAcceptor", fields: [acceptorVaultItemId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VaultItem {
+  id String @id @default(cuid())
+
+  resourceName String
+  quantity     Int
+  condition    ItemCondition
+  category     ResourceCategory
+  acquiredDate DateTime
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  trades         Trade[]
+  acceptorTrades Trade[]  @relation("TradeAcceptor")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+enum ItemCondition {
+  PRISTINE
+  GOOD
+  WORN
+  DAMAGED
+}
+
+enum TradeStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum ResourceCategory {
+  MEDICINE
+  FOOD
+  FUEL
+  BATTERIES
+  TOOLS
+  PARTS
+  AMMO
+}
+
+enum RarityLevel {
+  COMMON
+  UNCOMMON
+  RARE
   CRITICAL
 }

@@ -38,11 +38,13 @@ export const registerUser = async (
 export const loginUser = async (username: string, password: string) => {
     try {
         const response = await axiosInstance.post("/auth/login", {
-            username,
+            userName: username,
             password,
         });
         if (response.data.token) {
             localStorage.setItem("token", response.data.token);
+            // vivi's vault/trade services read the token under "authToken"
+            localStorage.setItem("authToken", response.data.token);
         }
         return response.data;
     } catch (error: any) {

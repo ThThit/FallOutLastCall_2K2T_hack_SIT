@@ -14,6 +14,7 @@ import { AlertsView } from "./components/alerts-view";
 import { CRTGlow } from "./components/crt-glow";
 import { SettingsView } from "./components/settings-view";
 import { VaultView } from "./components/vault-view";
+import { MarketplaceView } from "./components/marketplace-view";
 import { TradeModal } from "./components/trade-modal";
 import { SignalFeedPage } from "./modules/signals/pages/SignalFeedPage";
 import { ReputationLeaderboard } from "./components/reputation-leaderboard";
@@ -233,51 +234,7 @@ export default function App() {
 
             {activeSection === 'vault' && <VaultView />}
 
-            {activeSection === 'market' && (
-              <div className="space-y-4">
-                {/* Sorting Controls */}
-                <div className="flex items-center gap-2 bg-charcoal border border-terminal-green/20 p-3">
-                  <span className="text-xs text-muted-foreground font-mono">SORT BY:</span>
-                  <button
-                    onClick={() => setMarketSort('rarity')}
-                    className={`px-3 py-1 font-mono text-xs transition-colors ${marketSort === 'rarity'
-                        ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
-                        : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
-                      }`}
-                  >
-                    RARITY
-                  </button>
-                  <button
-                    onClick={() => setMarketSort('condition')}
-                    className={`px-3 py-1 font-mono text-xs transition-colors ${marketSort === 'condition'
-                        ? 'bg-terminal-green/20 border border-terminal-green text-terminal-green'
-                        : 'bg-charcoal border border-terminal-green/30 text-muted-foreground hover:border-terminal-green/50 hover:text-terminal-green'
-                      }`}
-                  >
-                    CONDITION
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {resources
-                    .sort((a, b) => {
-                      if (marketSort === 'rarity') {
-                        const rarityOrder = { common: 0, uncommon: 1, rare: 2, critical: 3 };
-                        return rarityOrder[b.rarity] - rarityOrder[a.rarity];
-                      } else {
-                        const conditionOrder = { damaged: 0, worn: 1, good: 2, pristine: 3 };
-                        return conditionOrder[b.condition] - conditionOrder[a.condition];
-                      }
-                    })
-                    .map((resource) => (
-                      <ResourceCard key={resource.id} resource={resource} onClick={() => {
-                        setSelectedMarketItem(resource);
-                        setShowTradeModal(true);
-                      }} />
-                    ))}
-                </div>
-              </div>
-            )}
+            {activeSection === 'market' && <MarketplaceView />}
 
             {activeSection === 'memories' && (
               <div className="space-y-6">
