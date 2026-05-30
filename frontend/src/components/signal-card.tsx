@@ -15,11 +15,11 @@ function timeAgo(dateStr: string): string {
 
 function getCorruptionLevel(createdAt: string): number {
   const ageDays = (Date.now() - new Date(createdAt).getTime()) / 86400000;
-  if (ageDays < 1) return 0;
-  if (ageDays < 3) return 0.15;
-  if (ageDays < 7) return 0.30;
-  if (ageDays < 14) return 0.50;
-  return 0.70;
+  if (ageDays < 1) return 0;       // clean
+  if (ageDays < 2.5) return 0.15;  // light
+  if (ageDays < 5) return 0.30;    // medium + flicker
+  if (ageDays < 6.5) return 0.50;  // heavy + flicker
+  return 0.70;                     // severe + DATA CORRUPTION DETECTED
 }
 
 function applyCorruption(text: string, level: number): string {
