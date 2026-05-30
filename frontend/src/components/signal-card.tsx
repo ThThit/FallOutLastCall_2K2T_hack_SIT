@@ -56,6 +56,7 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
     () => getVotedSignals()[signal.id] ?? null
   );
   const [showEdit, setShowEdit] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [tick, setTick] = useState(0);
 
   const corruptionLevel = getCorruptionLevel(signal.createdAt);
@@ -207,18 +208,38 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
             </div>
             {isOwn && (
               <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setShowEdit(true)}
-                  className="text-xs font-mono text-muted-foreground hover:text-terminal-green transition-colors"
-                >
-                  <Pencil className="w-3 h-3" />
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="text-xs font-mono text-muted-foreground hover:text-emergency-red transition-colors"
-                >
-                  ✕
-                </button>
+                {confirmDelete ? (
+                  <>
+                    <span className="text-xs font-mono text-emergency-red">DELETE?</span>
+                    <button
+                      onClick={handleDelete}
+                      className="text-xs font-mono text-emergency-red hover:bg-emergency-red/20 px-1.5 py-0.5 border border-emergency-red/50 transition-colors"
+                    >
+                      YES
+                    </button>
+                    <button
+                      onClick={() => setConfirmDelete(false)}
+                      className="text-xs font-mono text-muted-foreground hover:text-terminal-green px-1.5 py-0.5 border border-terminal-green/30 transition-colors"
+                    >
+                      NO
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => setShowEdit(true)}
+                      className="text-xs font-mono text-muted-foreground hover:text-terminal-green transition-colors"
+                    >
+                      <Pencil className="w-3 h-3" />
+                    </button>
+                    <button
+                      onClick={() => setConfirmDelete(true)}
+                      className="text-xs font-mono text-muted-foreground hover:text-emergency-red transition-colors"
+                    >
+                      ✕
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>
