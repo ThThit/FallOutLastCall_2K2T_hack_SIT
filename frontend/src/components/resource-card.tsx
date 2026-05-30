@@ -34,7 +34,8 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
-      className="bg-card border border-terminal-green/20 p-4 hover:border-terminal-green/40 transition-colors"
+      onClick={onClick}
+      className="bg-card border border-terminal-green/20 p-4 hover:border-terminal-green/40 transition-colors cursor-pointer"
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-start gap-3">
@@ -75,10 +76,14 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
 
       <div className="flex items-center justify-between pt-3 border-t border-terminal-green/10">
         <div className="font-mono text-terminal-green">{resource.cost}</div>
+<<<<<<< HEAD
         <button
           onClick={onClick}
           className="px-4 py-1 bg-terminal-green/10 hover:bg-terminal-green/20 text-terminal-green font-mono text-xs tracking-wide transition-colors"
         >
+=======
+        <button className="px-4 py-1 bg-terminal-green/10 hover:bg-terminal-green/20 text-terminal-green font-mono text-xs tracking-wide transition-colors">
+>>>>>>> origin/MemoryArchive
           TRADE
         </button>
       </div>

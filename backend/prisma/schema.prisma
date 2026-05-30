@@ -95,6 +95,52 @@ enum UserRole {
   ADMIN
 }
 
+model MemoryArchive {
+  id              String   @id @default(uuid())
+  title           String
+  survivorAlias   String   @default("Anonymous")
+
+  category        String
+  content         String
+  emotionalTag    String
+
+  date            DateTime @default(now())
+
+  decayLevel      Int      @default(0)
+  isRestored      Boolean  @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  revisions       MemoryArchiveRevision[]
+}
+
+model MemoryArchiveRevision {
+  id                   String   @id @default(uuid())
+  memoryId             String
+  memory               MemoryArchive @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+
+  action               String
+  note                 String?
+
+  titleBefore          String
+  titleAfter           String
+  survivorAliasBefore  String
+  survivorAliasAfter   String
+  categoryBefore       String
+  categoryAfter        String
+  contentBefore        String
+  contentAfter         String
+  emotionalTagBefore   String
+  emotionalTagAfter    String
+  decayLevelBefore     Int?
+  decayLevelAfter      Int?
+  isRestoredBefore     Boolean?
+  isRestoredAfter      Boolean?
+
+  createdAt            DateTime @default(now())
+}
+
 enum VerificationStatus {
   VERIFIED
   SUSPICIOUS

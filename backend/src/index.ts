@@ -8,6 +8,7 @@ import verificationRoutes from "./routes/signal.route.js";
 import userRoutes from "./routes/user.route.js";
 import vaultRoutes from "./routes/vault.routes.js";
 import tradeRoutes from "./routes/trade.routes.js";
+import archiveRoutes from "./routes/archive.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -56,6 +57,9 @@ app.use("/api/signals", verificationRoutes);
 
 // thit's reputation & user routes
 app.use("/api/users", userRoutes);
+
+// MemoryArchive routes
+app.use("/api/archive", archiveRoutes);
 
 // Health check
 app.get("/health", (req, res) => {

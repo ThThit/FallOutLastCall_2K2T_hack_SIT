@@ -5,7 +5,11 @@ import { GlitchText } from "./glitch-text";
 import { useAuth } from "../context/AuthContext";
 
 interface LoginScreenProps {
+<<<<<<< HEAD
   onLogin?: () => void;
+=======
+  onLogin: (callsign: string) => void;
+>>>>>>> origin/MemoryArchive
 }
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
@@ -21,9 +25,14 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+<<<<<<< HEAD
     clearError();
 
     if (username.length < 3) {
+=======
+
+    if (callsign.length < 3) {
+>>>>>>> origin/MemoryArchive
       setWarningMessage("CALLSIGN TOO SHORT");
       setShowWarning(true);
       return;
@@ -41,6 +50,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
       return;
     }
 
+<<<<<<< HEAD
     try {
       if (isRegisterMode) {
         await register(username, password);
@@ -53,6 +63,9 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
       setWarningMessage(err.message || "Authentication failed");
       setShowWarning(true);
     }
+=======
+    onLogin(callsign);
+>>>>>>> origin/MemoryArchive
   };
 
   return (
@@ -197,11 +210,15 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
               disabled={isLoading}
               className="w-full bg-terminal-green/10 hover:bg-terminal-green/20 border border-terminal-green text-terminal-green py-3 font-mono tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
+<<<<<<< HEAD
               {isLoading
                 ? "CONNECTING..."
                 : isRegisterMode
                   ? "REGISTER & CONNECT"
                   : "ESTABLISH CONNECTION"}
+=======
+              {isRegisterMode ? "REGISTER & CONNECT" : "ESTABLISH CONNECTION"}
+>>>>>>> origin/MemoryArchive
             </button>
 
             <button
