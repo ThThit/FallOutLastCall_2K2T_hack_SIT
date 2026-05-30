@@ -319,6 +319,7 @@ export default function App() {
                     signal={signal}
                     callsign={callsign}
                     onDelete={(id) => setSignals((prev) => prev.filter((s) => s.id !== id))}
+                    onUpdate={(updated) => setSignals((prev) => prev.map((s) => s.id === updated.id ? { ...s, ...updated } : s))}
                   />
                 ))}
               </div>
