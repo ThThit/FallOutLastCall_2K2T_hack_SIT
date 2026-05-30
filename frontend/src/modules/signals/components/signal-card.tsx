@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { MapPin, Clock, ThumbsUp, ThumbsDown, AlertTriangle, MessageSquare, Send, Pencil } from "lucide-react";
 import { signalApi } from "../apis/signal.api";
@@ -61,28 +61,6 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
   );
   const [showEdit, setShowEdit] = useState(false);
   const [tick, setTick] = useState(0);
-
-  // Measured-height accordion for the comment section (smooth, no snap)
-  const commentsContentRef = useRef<HTMLDivElement>(null);
-  const [commentsHeight, setCommentsHeight] = useState(0);
-
-  useLayoutEffect(() => {
-    const el = commentsContentRef.current;
-    if (!showComments || !el) return;
-
-    const measure = () => {
-      // scrollHeight excludes the element's own margins — add them back
-      const style = getComputedStyle(el);
-      const margins = parseFloat(style.marginTop) + parseFloat(style.marginBottom);
-      setCommentsHeight(el.scrollHeight + margins);
-    };
-
-    measure();
-    // Keep height in sync with any content change (load more, new comment, etc.)
-    const observer = new ResizeObserver(measure);
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [showComments]);
 
   const corruptionLevel = getCorruptionLevel(signal.createdAt);
   const isCorrupted = corruptionLevel > 0;
@@ -298,16 +276,12 @@ export function SignalCard({ signal, onDelete, onUpdate, callsign }: SignalCardP
         <AnimatePresence>
         {showComments && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: commentsHeight, opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{
-              height: { duration: 0.28, ease: [0.4, 0, 0.2, 1] },
-              opacity: { duration: 0.2, ease: "easeInOut" },
-            }}
-            style={{ overflow: "hidden" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
           >
-          <div ref={commentsContentRef} className="mt-4 pt-4 pb-2 border-t border-terminal-green/10">
+          <div className="mt-4 pt-4 pb-2 border-t border-terminal-green/10">
             {commentsLoading && (
               <p className="text-xs font-mono text-muted-foreground text-center py-4 tracking-widest animate-pulse">
                 RECEIVING TRANSMISSIONS...
