@@ -2,13 +2,15 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { Radio, AlertTriangle, Eye, EyeOff } from "lucide-react";
 import { GlitchText } from "./glitch-text";
+import { useAuth } from "../context/AuthContext";
 
 interface LoginScreenProps {
-  onLogin: () => void;
+  onLogin?: () => void;
 }
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
-  const [callsign, setCallsign] = useState("");
+  const { login, register, isLoading, error, clearError } = useAuth();
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showWarning, setShowWarning] = useState(false);
@@ -16,29 +18,42 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [sector, setSector] = useState(1);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (callsign.length < 3) {
+    clearError();
+
+    if (username.length < 3) {
       setWarningMessage("CALLSIGN TOO SHORT");
       setShowWarning(true);
       return;
     }
-    
+
     if (password.length < 6) {
       setWarningMessage("PASSWORD MUST BE AT LEAST 6 CHARACTERS");
       setShowWarning(true);
       return;
     }
-    
+
     if (isRegisterMode && password !== confirmPassword) {
       setWarningMessage("PASSWORDS DO NOT MATCH");
       setShowWarning(true);
       return;
     }
-    
-    onLogin();
+
+    try {
+      if (isRegisterMode) {
+        await register(username, password, sector);
+      } else {
+        await login(username, password);
+      }
+      onLogin?.();
+      setShowWarning(false);
+    } catch (err: any) {
+      setWarningMessage(err.message || "Authentication failed");
+      setShowWarning(true);
+    }
   };
 
   return (
@@ -79,7 +94,10 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
               <AlertTriangle className="w-4 h-4 text-emergency-red mt-0.5" />
               <div className="text-xs text-muted-foreground font-mono leading-relaxed">
                 <p className="text-emergency-red mb-2">SYSTEM WARNING</p>
-                <p>Network unstable. Signal interference detected. Connection may be monitored.</p>
+                <p>
+                  Network unstable. Signal interference detected. Connection may
+                  be monitored.
+                </p>
               </div>
             </div>
           </div>
@@ -87,13 +105,13 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-mono text-terminal-green tracking-wide mb-2">
-                {isRegisterMode ? 'CREATE CALLSIGN' : 'ENTER CALLSIGN'}
+                {isRegisterMode ? "CREATE CALLSIGN" : "ENTER CALLSIGN"}
               </label>
               <input
                 type="text"
-                value={callsign}
+                value={username}
                 onChange={(e) => {
-                  setCallsign(e.target.value.toUpperCase());
+                  setUsername(e.target.value.toUpperCase());
                   setShowWarning(false);
                 }}
                 placeholder="SURVIVOR-###"
@@ -104,7 +122,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
 
             <div>
               <label className="block text-xs font-mono text-terminal-green tracking-wide mb-2">
-                {isRegisterMode ? 'CREATE PASSWORD' : 'ENTER PASSWORD'}
+                {isRegisterMode ? "CREATE PASSWORD" : "ENTER PASSWORD"}
               </label>
               <div className="relative">
                 <input
@@ -165,21 +183,46 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
               </motion.div>
             )}
 
+            {isRegisterMode && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+              >
+                <label className="block text-xs font-mono text-terminal-green tracking-wide mb-2">
+                  YOUR SECTOR
+                </label>
+                <select
+                  value={sector}
+                  onChange={(e) => setSector(Number(e.target.value))}
+                  className="w-full bg-charcoal border border-terminal-green/30 px-4 py-3 text-terminal-green font-mono focus:border-terminal-green focus:outline-none transition-colors"
+                >
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+                    <option key={s} value={s}>SECTOR {s}</option>
+                  ))}
+                </select>
+              </motion.div>
+            )}
+
             {showWarning && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="text-xs text-emergency-red font-mono"
               >
-                {warningMessage}
+                {warningMessage || error}
               </motion.div>
             )}
 
             <button
               type="submit"
-              className="w-full bg-terminal-green/10 hover:bg-terminal-green/20 border border-terminal-green text-terminal-green py-3 font-mono tracking-widest transition-colors"
+              disabled={isLoading}
+              className="w-full bg-terminal-green/10 hover:bg-terminal-green/20 border border-terminal-green text-terminal-green py-3 font-mono tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isRegisterMode ? 'REGISTER & CONNECT' : 'ESTABLISH CONNECTION'}
+              {isLoading
+                ? "CONNECTING..."
+                : isRegisterMode
+                  ? "REGISTER & CONNECT"
+                  : "ESTABLISH CONNECTION"}
             </button>
 
             <button
@@ -191,7 +234,9 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
               }}
               className="w-full bg-charcoal border border-terminal-green/30 hover:border-terminal-green/50 text-muted-foreground hover:text-terminal-green py-3 font-mono text-xs tracking-wide transition-colors"
             >
-              {isRegisterMode ? 'ALREADY REGISTERED? LOG IN' : 'NEW SURVIVOR? REGISTER'}
+              {isRegisterMode
+                ? "ALREADY REGISTERED? LOG IN"
+                : "NEW SURVIVOR? REGISTER"}
             </button>
           </form>
 

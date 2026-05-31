@@ -6,7 +6,7 @@ export class AuthService {
     /**
      * Register a new user
      */
-    async register(username: string, password: string) {
+    async register(username: string, password: string, sector: number = 1) {
         // Check if username already exists
         const existingUser = await prisma.user.findUnique({
             where: { username },
@@ -24,12 +24,14 @@ export class AuthService {
                 username,
                 password: hashedPassword,
                 reputationScore: 0,
+                sector,
             },
         });
 
         return {
             id: user.id,
             username: user.username,
+            role: user.role,
         };
     }
 
@@ -63,6 +65,7 @@ export class AuthService {
             user: {
                 id: user.id,
                 username: user.username,
+                role: user.role,
             },
         };
     }

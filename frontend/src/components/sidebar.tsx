@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { Radio, Package, Archive, Bell, Users, Map, UserCircle, Vault } from "lucide-react";
+import { Radio, Package, Archive, Users, Map, UserCircle, Vault } from "lucide-react";
 
 interface SidebarProps {
   activeSection: string;
@@ -12,7 +12,6 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
     { id: 'vault', icon: Vault, label: 'VAULT' },
     { id: 'market', icon: Package, label: 'MARKET' },
     { id: 'memories', icon: Archive, label: 'ARCHIVE' },
-    { id: 'alerts', icon: Bell, label: 'ALERTS' },
     { id: 'survivors', icon: Users, label: 'SURVIVORS' },
     { id: 'sectors', icon: Map, label: 'SECTORS' },
   ];

@@ -8,10 +8,9 @@
         "strict": true,
         "resolveJsonModule": true,
         "isolatedModules": true,
-        "outDir": "dist",
-        "rootDir": "src",
+        // "outDir": "dist",
         "types": ["node"]
     },
-    "include": ["src"],
+    "include": ["src", "prisma"],
     "exclude": ["node_modules", "dist"]
 }

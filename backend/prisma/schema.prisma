@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
+// Unified schema — Peter's Signal feed (base) + thit's Trust/Reputation layer.
+// Trust score & reputation are calculated from Peter's verifiedCount/unverifiedCount.
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -13,52 +10,135 @@ datasource db {
 }
 
 model User {
-  id              String               @id @default(cuid())
-  username        String               @unique
+  id              String   @id @default(cuid())
+  username        String   @unique
   password        String
+  role            UserRole @default(USER)
+  reputationScore Int      @default(0)
+  sector          Int      @default(1)
 
-  reputationScore Int                  @default(0)
+  signals       Signal[]
+  verifications Verification[]
 
-  signals         Signal[]
-  verifications   SignalVerification[]
+  // vivi: trade + vault relations
+  trades         Trade[]
+  acceptedTrades Trade[]     @relation("TradeAcceptor")
+  vaultItems     VaultItem[]
 
-  createdAt       DateTime             @default(now())
+  createdAt DateTime @default(now())
 }
 
 model Signal {
-  id               String                @id @default(cuid())
+  id         String @id @default(cuid())
+  authorName String // Peter: callsign shown on the feed
 
-  title            String
-  message          String
-  category         SignalCategory
-  dangerLevel      DangerLevel
+  // Optional link to an authenticated author (thit: reputation lives on the User)
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
 
-  userId           String
-  user             User                  @relation(fields: [userId], references: [id])
+  content String
+  sector  Int
 
-  verifications    SignalVerification[]
+  // Peter's fields
+  priority  String    @default("STANDARD")
+  deletedAt DateTime?
 
-  trustScore       Float                 @default(0)
-  verificationRate Float                 @default(0)
+  // thit's optional classification fields
+  title       String?
+  category    SignalCategory?
+  dangerLevel DangerLevel?
 
-  createdAt        DateTime              @default(now())
-  updatedAt        DateTime              @updatedAt
+  // Trust/verification — Peter's counts; thit calculates trust & reputation from these
+  trustScore      Float @default(50)
+  verifiedCount   Int   @default(0)
+  unverifiedCount Int   @default(0)
+
+  // thit's moderation
+  flagged    Boolean @default(false)
+  flagReason String?
+
+  comments      Comment[]
+  verifications Verification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model SignalVerification {
-  id          String             @id @default(cuid())
+model Comment {
+  id         String   @id @default(cuid())
+  signalId   String
+  signal     Signal   @relation(fields: [signalId], references: [id])
+  authorName String
+  content    String
+  createdAt  DateTime @default(now())
+}
 
-  signalId    String
-  signal      Signal             @relation(fields: [signalId], references: [id])
+model Verification {
+  id String @id @default(cuid())
 
-  userId      String
-  user        User               @relation(fields: [userId], references: [id])
+  signalId String
+  signal   Signal @relation(fields: [signalId], references: [id])
 
-  status      VerificationStatus
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  createdAt   DateTime           @default(now())
+  status VerificationStatus
+
+  createdAt DateTime @default(now())
 
   @@unique([signalId, userId])
+}
+
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+model MemoryArchive {
+  id              String   @id @default(uuid())
+  title           String
+  survivorAlias   String   @default("Anonymous")
+
+  category        String
+  content         String
+  emotionalTag    String
+
+  date            DateTime @default(now())
+
+  decayLevel      Int      @default(0)
+  isRestored      Boolean  @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  revisions       MemoryArchiveRevision[]
+}
+
+model MemoryArchiveRevision {
+  id                   String   @id @default(uuid())
+  memoryId             String
+  memory               MemoryArchive @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+
+  action               String
+  note                 String?
+
+  titleBefore          String
+  titleAfter           String
+  survivorAliasBefore  String
+  survivorAliasAfter   String
+  categoryBefore       String
+  categoryAfter        String
+  contentBefore        String
+  contentAfter         String
+  emotionalTagBefore   String
+  emotionalTagAfter    String
+  decayLevelBefore     Int?
+  decayLevelAfter      Int?
+  isRestoredBefore     Boolean?
+  isRestoredAfter      Boolean?
+
+  createdAt            DateTime @default(now())
 }
 
 enum VerificationStatus {
@@ -79,5 +159,90 @@ enum DangerLevel {
   LOW
   MEDIUM
   HIGH
+  CRITICAL
+}
+
+// ===== vivi: Trade + Vault (barter marketplace) =====
+
+model Trade {
+  id String @id @default(uuid())
+
+  resourceName String
+  quantity     Int
+  condition    ItemCondition
+
+  requestedItem     String
+  requestedQuantity Int
+
+  traderName String
+  category   ResourceCategory
+  location   String?
+
+  status TradeStatus @default(ACTIVE)
+
+  creatorId String
+  creator   User   @relation(fields: [creatorId], references: [id])
+
+  vaultItemId String?
+  vaultItem   VaultItem? @relation(fields: [vaultItemId], references: [id], onDelete: SetNull)
+
+  acceptorId String?
+  acceptor   User?   @relation("TradeAcceptor", fields: [acceptorId], references: [id])
+
+  acceptorVaultItemId String?
+  acceptorVaultItem   VaultItem? @relation("TradeAcceptor", fields: [acceptorVaultItemId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VaultItem {
+  id String @id @default(cuid())
+
+  resourceName String
+  quantity     Int
+  condition    ItemCondition
+  category     ResourceCategory
+  acquiredDate DateTime
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  trades         Trade[]
+  acceptorTrades Trade[]  @relation("TradeAcceptor")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+enum ItemCondition {
+  PRISTINE
+  GOOD
+  WORN
+  DAMAGED
+}
+
+enum TradeStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum ResourceCategory {
+  MEDICINE
+  FOOD
+  FUEL
+  BATTERIES
+  TOOLS
+  PARTS
+  AMMO
+}
+
+enum RarityLevel {
+  COMMON
+  UNCOMMON
+  RARE
   CRITICAL
 }

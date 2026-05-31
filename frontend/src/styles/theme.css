@@ -24,7 +24,7 @@
   --secondary: #2a2a2a;
   --secondary-foreground: #00ff41;
   --muted: #1a1a1a;
-  --muted-foreground: #6b8e23;
+  --muted-foreground: #a0b0a0;
   --accent: #00d9ff;
   --accent-foreground: #0a0a0a;
   --destructive: #ff3333;
@@ -191,35 +191,89 @@
   }
 
   @keyframes flicker {
-    0%, 100% { opacity: 1; }
-    41% { opacity: 0.8; }
-    42% { opacity: 1; }
-    43% { opacity: 0.9; }
-    45% { opacity: 0.95; }
-    46% { opacity: 1; }
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    41% {
+      opacity: 0.8;
+    }
+
+    42% {
+      opacity: 1;
+    }
+
+    43% {
+      opacity: 0.9;
+    }
+
+    45% {
+      opacity: 0.95;
+    }
+
+    46% {
+      opacity: 1;
+    }
   }
 
   @keyframes pulse-glow {
-    0%, 100% {
+
+    0%,
+    100% {
       box-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
     }
+
     50% {
       box-shadow: 0 0 20px rgba(0, 255, 65, 0.8);
     }
   }
 
   @keyframes static-noise {
-    0% { transform: translate(0, 0); }
-    10% { transform: translate(-5%, -5%); }
-    20% { transform: translate(-10%, 5%); }
-    30% { transform: translate(5%, -10%); }
-    40% { transform: translate(-5%, 15%); }
-    50% { transform: translate(-10%, 5%); }
-    60% { transform: translate(15%, 0); }
-    70% { transform: translate(0, 10%); }
-    80% { transform: translate(-15%, 0); }
-    90% { transform: translate(10%, 5%); }
-    100% { transform: translate(5%, 0); }
+    0% {
+      transform: translate(0, 0);
+    }
+
+    10% {
+      transform: translate(-5%, -5%);
+    }
+
+    20% {
+      transform: translate(-10%, 5%);
+    }
+
+    30% {
+      transform: translate(5%, -10%);
+    }
+
+    40% {
+      transform: translate(-5%, 15%);
+    }
+
+    50% {
+      transform: translate(-10%, 5%);
+    }
+
+    60% {
+      transform: translate(15%, 0);
+    }
+
+    70% {
+      transform: translate(0, 10%);
+    }
+
+    80% {
+      transform: translate(-15%, 0);
+    }
+
+    90% {
+      transform: translate(10%, 5%);
+    }
+
+    100% {
+      transform: translate(5%, 0);
+    }
   }
 
   .animate-flicker {
@@ -228,5 +282,22 @@
 
   .animate-pulse-glow {
     animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes glitch-flicker {
+    0%,
+    45%,
+    55%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.88;
+    }
+  }
+
+  .animate-glitch {
+    animation: glitch-flicker 3s infinite;
   }
 }
