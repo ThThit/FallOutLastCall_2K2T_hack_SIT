@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { marketplaceAPI } from "../services/api";
-import { authAPI } from "../services/auth";
+import { useAuth } from "../context/AuthContext";
 
 export const useMarketplace = () => {
+  const { isLoggedIn } = useAuth();
   const [trades, setTrades] = useState<any[]>([]);
   const [demandMap, setDemandMap] = useState<Record<string, number>>({});
   const [availableItems, setAvailableItems] = useState<any[]>([]);
@@ -28,8 +29,7 @@ export const useMarketplace = () => {
 
   const fetchAvailableItems = async () => {
     try {
-      const token = authAPI.getToken();
-      if (!token) return;
+      if (!isLoggedIn) return;
       const data = await marketplaceAPI.getAvailableItems();
       setAvailableItems(data.items || []);
     } catch (err: any) {
@@ -39,8 +39,7 @@ export const useMarketplace = () => {
 
   const fetchTradeHistory = async () => {
     try {
-      const token = authAPI.getToken();
-      if (!token) return;
+      if (!isLoggedIn) return;
       const data = await marketplaceAPI.getTradeHistory();
       setTradeHistory(data.history || []);
     } catch {

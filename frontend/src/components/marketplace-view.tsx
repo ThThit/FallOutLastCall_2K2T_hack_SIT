@@ -6,6 +6,7 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { useMarketplace } from "../hooks/useMarketplace";
 import { useVault } from "../hooks/useVault";
+import { useAuth } from "../context/AuthContext";
 import { CreateTradeModal } from "./create-trade-modal";
 
 // ─── helpers ────────────────────────────────────────────────────────────────
@@ -751,7 +752,8 @@ export function MarketplaceView() {
         fetchTrades(viewMine ? { mine: "true" } : undefined);
     }, [viewMine]);
 
-    const myUserId = localStorage.getItem("userId");
+    const { user } = useAuth();
+    const myUserId = user?.id ?? null;
 
     // Compute scarcity: categories with 2+ demand requests
     const scarceCategories = useMemo(() => {

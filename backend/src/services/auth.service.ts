@@ -78,6 +78,22 @@ export class AuthService {
     }
 
     /**
+     * Get the current user's public profile (used by /auth/me to rehydrate
+     * the session from the token cookie).
+     */
+    async getProfile(userId: string) {
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+            throw new Error("User not found");
+        }
+        return {
+            id: user.id,
+            username: user.username,
+            role: user.role,
+        };
+    }
+
+    /**
      * Verify JWT token
      */
     verifyToken(token: string): { id: string; username: string; } {

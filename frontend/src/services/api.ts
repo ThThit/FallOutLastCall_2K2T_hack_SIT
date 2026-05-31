@@ -1,15 +1,12 @@
 const API_BASE_URL = "http://localhost:3000/api";
 
-// Get auth token from localStorage - only returns token if it exists
-const getAuthToken = () => localStorage.getItem("authToken");
+// Auth rides on the httpOnly `token` cookie — every request sends it via
+// `credentials: "include"`; nothing reads/writes the JWT in JS.
 
-// On a 401 (stale/expired token), clear the saved auth and return to login
+// On a 401 (stale/expired cookie), reload — AuthContext's /me check then resolves
+// to logged-out and the login screen is shown.
 const handleAuthError = (response: Response) => {
   if (response.status === 401) {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("userId");
     window.location.reload();
   }
 };
@@ -20,7 +17,7 @@ export const vaultAPI = {
   getItems: async (filters?: any) => {
     const params = new URLSearchParams(filters || {});
     const response = await fetch(`${API_BASE_URL}/vault?${params}`, {
-      headers: { Authorization: `Bearer ${getAuthToken()}` },
+      credentials: "include",
     });
     handleAuthError(response);
     if (!response.ok) throw new Error("Failed to fetch vault items");
@@ -32,9 +29,9 @@ export const vaultAPI = {
     const response = await fetch(`${API_BASE_URL}/vault`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${getAuthToken()}`,
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify(vaultData),
     });
     handleAuthError(response);
@@ -45,7 +42,7 @@ export const vaultAPI = {
   // Get vault stats
   getStats: async () => {
     const response = await fetch(`${API_BASE_URL}/vault/stats`, {
-      headers: { Authorization: `Bearer ${getAuthToken()}` },
+      credentials: "include",
     });
     handleAuthError(response);
     if (!response.ok) throw new Error("Failed to fetch stats");
@@ -59,7 +56,7 @@ export const vaultAPI = {
 
     const response = await fetch(url, {
       method: "DELETE",
-      headers: { Authorization: `Bearer ${getAuthToken()}` },
+      credentials: "include",
     });
     handleAuthError(response);
     if (!response.ok) throw new Error("Failed to remove item");
@@ -73,7 +70,7 @@ export const marketplaceAPI = {
   getTrades: async (filters?: any) => {
     const params = new URLSearchParams(filters || {});
     const response = await fetch(`${API_BASE_URL}/trade?${params}`, {
-      headers: { Authorization: `Bearer ${getAuthToken()}` },
+      credentials: "include",
     });
     handleAuthError(response);
     if (!response.ok) throw new Error("Failed to fetch trades");
@@ -83,7 +80,7 @@ export const marketplaceAPI = {
   // Get user's available items to trade
   getAvailableItems: async () => {
     const response = await fetch(`${API_BASE_URL}/trade/available/items`, {
-      headers: { Authorization: `Bearer ${getAuthToken()}` },
+      credentials: "include",
     });
     handleAuthError(response);
     if (!response.ok) throw new Error("Failed to fetch available items");
@@ -95,9 +92,9 @@ export const marketplaceAPI = {
     const response = await fetch(`${API_BASE_URL}/trade`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${getAuthToken()}`,
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify(tradeData),
     });
     handleAuthError(response);
@@ -110,9 +107,9 @@ export const marketplaceAPI = {
     const response = await fetch(`${API_BASE_URL}/trade/${tradeId}`, {
       method: "PATCH",
       headers: {
-        Authorization: `Bearer ${getAuthToken()}`,
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify(data),
     });
     handleAuthError(response);
@@ -124,7 +121,7 @@ export const marketplaceAPI = {
   cancelTrade: async (tradeId: string) => {
     const response = await fetch(`${API_BASE_URL}/trade/${tradeId}`, {
       method: "DELETE",
-      headers: { Authorization: `Bearer ${getAuthToken()}` },
+      credentials: "include",
     });
     handleAuthError(response);
     if (!response.ok) throw new Error("Failed to cancel trade");
@@ -134,7 +131,7 @@ export const marketplaceAPI = {
   // Get user trade history (completed + cancelled)
   getTradeHistory: async () => {
     const response = await fetch(`${API_BASE_URL}/trade/history`, {
-      headers: { Authorization: `Bearer ${getAuthToken()}` },
+      credentials: "include",
     });
     handleAuthError(response);
     if (!response.ok) throw new Error("Failed to fetch trade history");
@@ -146,9 +143,9 @@ export const marketplaceAPI = {
     const response = await fetch(`${API_BASE_URL}/trade/${tradeId}/accept`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${getAuthToken()}`,
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({ tradeId, acceptorVaultItemId }),
     });
     handleAuthError(response);
@@ -284,6 +281,7 @@ export const restoreMemoryData = async (id: string) => {
   const response = await fetch(`${BASE_URL}/${encodeURIComponent(id)}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     // We send a payload to reset the decay and mark it as restored
     body: JSON.stringify({ decayLevel: 0, isRestored: true }),
   });

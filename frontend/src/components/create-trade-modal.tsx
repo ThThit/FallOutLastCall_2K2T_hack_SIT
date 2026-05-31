@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Plus, Package2, X, AlertTriangle, Zap } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 const CATEGORIES = ["MEDICINE", "FOOD", "FUEL", "BATTERIES", "TOOLS", "PARTS", "AMMO"] as const;
 
@@ -40,7 +41,7 @@ export function CreateTradeModal({ vaultItems, onClose, onSubmit }: CreateTradeM
   const [urgency, setUrgency] = useState<string>("GOOD");
 
   const selectedVaultItem = vaultItems.find((i) => i.id === selectedVaultId);
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,7 +68,7 @@ export function CreateTradeModal({ vaultItems, onClose, onSubmit }: CreateTradeM
         quantity: vaultQty,
         requestedItem: requestedItem.toUpperCase(),
         requestedQuantity,
-        traderName: user.username || "UNKNOWN",
+        traderName: user?.username || "UNKNOWN",
         location: location.trim() || undefined,
       };
     } else {
@@ -82,7 +83,7 @@ export function CreateTradeModal({ vaultItems, onClose, onSubmit }: CreateTradeM
         category,
         requestedItem: requestedItem.toUpperCase(),
         requestedQuantity,
-        traderName: user.username || "UNKNOWN",
+        traderName: user?.username || "UNKNOWN",
         location: location.trim() || undefined,
       };
     }

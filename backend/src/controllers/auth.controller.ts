@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import authService from "../services/auth.service.js";
+import { AuthenticatedRequest } from "../types/index.js";
 
 export const registerController = async (req: Request, res: Response) => {
   try {
@@ -94,6 +95,26 @@ export const loginController = async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error("Login error:", error);
 
+    return res.status(401).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+export const meController = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!req.userId) {
+      return res.status(401).json({ success: false, error: "Not authenticated" });
+    }
+
+    const user = await authService.getProfile(req.userId);
+
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error: any) {
     return res.status(401).json({
       success: false,
       error: error.message,

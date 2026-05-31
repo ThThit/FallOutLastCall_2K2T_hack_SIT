@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { vaultAPI } from "../services/api";
-import { authAPI } from "../services/auth";
+import { useAuth } from "../context/AuthContext";
 
 export const useVault = () => {
+  const { isLoggedIn } = useAuth();
   const [items, setItems] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -45,14 +46,13 @@ export const useVault = () => {
 
   useEffect(() => {
     // Only fetch vault data if user is authenticated
-    const token = authAPI.getToken();
-    if (token) {
+    if (isLoggedIn) {
       fetchVaultData();
     } else {
       setLoading(false);
       setError("Not authenticated");
     }
-  }, []);
+  }, [isLoggedIn]);
 
   return {
     items,
